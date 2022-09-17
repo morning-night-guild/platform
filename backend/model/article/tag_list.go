@@ -23,7 +23,7 @@ func NewTagList(values []Tag) (TagList, error) {
 	return tags, nil
 }
 
-// distinct 重複を排除するメソッド
+// distinct 重複を排除するメソッド.
 func (t TagList) distinct() TagList {
 	tmp := make(map[Tag]struct{}, t.Len())
 
@@ -55,7 +55,7 @@ func (t TagList) Len() int {
 	return len(t)
 }
 
-// StringSlice 文字列型のスライスを提供するメソッド
+// StringSlice 文字列型のスライスを提供するメソッド.
 func (t TagList) StringSlice() []string {
 	list := make([]string, 0, t.Len())
 
