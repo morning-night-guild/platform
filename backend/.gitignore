@@ -1,0 +1,6 @@
+adapter/gateway/ent/*/*
+adapter/gateway/ent/*.go
+!adapter/gateway/ent/schema/*
+!adapter/gateway/ent/generate.go
+.migrate.sh
+main
