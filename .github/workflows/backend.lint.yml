@@ -15,6 +15,9 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: backend/go.mod
+      - name: Go Generate
+        working-directory: ./backend
+        run: go generate ./...
       - name: Golangci lint
         uses: golangci/golangci-lint-action@v3
         with:
