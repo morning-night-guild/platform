@@ -37,3 +37,5 @@ issues:
         - funlen
         - nosprintfhostport
         - dupl
+        - containedctx
+        - goerr113
