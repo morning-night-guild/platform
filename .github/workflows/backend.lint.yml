@@ -1,0 +1,22 @@
+name: backend lint
+
+on:
+  pull_request:
+    paths:
+      - backend/**/*.go
+      - backend/.golangci.yml
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: backend/go.mod
+      - name: Golangci lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.49.0
+          skip-pkg-cache: true
