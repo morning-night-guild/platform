@@ -14,24 +14,29 @@ const maxTagLength = 5
 
 // NewTagList タグリストを新規作成する関数.
 func NewTagList(values []Tag) (TagList, error) {
-	tmp := make(map[Tag]struct{}, len(values))
-
-	for _, v := range values {
-		tmp[v] = struct{}{}
-	}
-
-	uniq := make([]Tag, 0, len(values))
-	for t := range tmp {
-		uniq = append(uniq, t)
-	}
-
-	tags := TagList(uniq)
+	tags := TagList(values).distinct()
 
 	if err := tags.validate(); err != nil {
 		return nil, err
 	}
 
 	return tags, nil
+}
+
+// distinct 重複を排除するメソッド
+func (t TagList) distinct() TagList {
+	tmp := make(map[Tag]struct{}, t.Len())
+
+	for _, v := range t {
+		tmp[v] = struct{}{}
+	}
+
+	uniq := make([]Tag, 0, t.Len())
+	for t := range tmp {
+		uniq = append(uniq, t)
+	}
+
+	return TagList(uniq)
 }
 
 // validate タグリストを検証するメソッド.
@@ -48,4 +53,15 @@ func (t TagList) validate() error {
 // Len タグリストに含まれるのタグの個数を提供するメソッド.
 func (t TagList) Len() int {
 	return len(t)
+}
+
+// StringSlice 文字列型のスライスを提供するメソッド
+func (t TagList) StringSlice() []string {
+	list := make([]string, 0, t.Len())
+
+	for _, tag := range t {
+		list = append(list, tag.String())
+	}
+
+	return list
 }

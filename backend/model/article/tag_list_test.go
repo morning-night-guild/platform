@@ -2,6 +2,7 @@ package article_test
 
 import (
 	"reflect"
+	"sort"
 	"testing"
 
 	"github.com/morning-night-guild/platform/model/article"
@@ -97,6 +98,8 @@ func TestNewTagList(t *testing.T) {
 
 				return
 			}
+			sort.Slice(got, func(i, j int) bool { return got[i].String() < got[j].String() })
+			sort.Slice(tt.want, func(i, j int) bool { return got[i].String() < got[j].String() })
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewTagList() = %v, want %v", got, tt.want)
 			}
