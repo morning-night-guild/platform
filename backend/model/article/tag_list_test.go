@@ -43,6 +43,24 @@ func TestNewTagList(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "重複したタグは排除してタグリストが作成できる",
+			args: args{
+				value: []article.Tag{
+					article.Tag("tag"),
+					article.Tag("tag"),
+					article.Tag("tag"),
+					article.Tag("tag"),
+					article.Tag("tag"),
+				},
+			},
+			want: article.TagList(
+				[]article.Tag{
+					article.Tag("tag"),
+				},
+			),
+			wantErr: false,
+		},
+		{
 			name: "空タグリストが作成できる",
 			args: args{
 				value: []article.Tag{},

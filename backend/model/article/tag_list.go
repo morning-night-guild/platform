@@ -13,8 +13,19 @@ type TagList []Tag
 const maxTagLength = 5
 
 // NewTagList タグリストを新規作成する関数.
-func NewTagList(value []Tag) (TagList, error) {
-	tags := TagList(value)
+func NewTagList(values []Tag) (TagList, error) {
+	tmp := make(map[Tag]struct{}, len(values))
+
+	for _, v := range values {
+		tmp[v] = struct{}{}
+	}
+
+	uniq := make([]Tag, 0, len(values))
+	for t := range tmp {
+		uniq = append(uniq, t)
+	}
+
+	tags := TagList(uniq)
 
 	if err := tags.validate(); err != nil {
 		return nil, err
