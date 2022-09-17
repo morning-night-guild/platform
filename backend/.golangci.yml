@@ -39,3 +39,4 @@ issues:
         - dupl
         - containedctx
         - goerr113
+        - cyclop
