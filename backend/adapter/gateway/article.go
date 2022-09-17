@@ -40,10 +40,10 @@ func (a *Article) Save(ctx context.Context, item model.Article) error {
 		Exec(ctx)
 
 	if err != nil && isDuplicatedError(err) {
-		if ea, err := a.findByURL(ctx, item.URL.String()); err != nil {
-			return err
-		} else {
+		if ea, err := a.findByURL(ctx, item.URL.String()); err == nil {
 			id = ea.ID
+		} else {
+			return err
 		}
 	} else {
 		return errors.Wrap(err, "failed to save")
