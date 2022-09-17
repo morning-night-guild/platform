@@ -20,3 +20,4 @@ jobs:
         with:
           version: v1.49.0
           skip-pkg-cache: true
+          working-directory: ./backend
