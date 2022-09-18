@@ -2,9 +2,11 @@ package gateway_test
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"testing"
 
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/morning-night-guild/platform/adapter/gateway"
 	"github.com/morning-night-guild/platform/adapter/gateway/ent"
@@ -33,7 +35,9 @@ func (r *RDBClientMock) Of(dsn string) (*gateway.RDB, error) {
 		enttest.WithOptions(ent.Log(r.t.Log)),
 	}
 
-	db := enttest.Open(r.t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
+	dataSourceName := fmt.Sprintf("file:%s?mode=memory&cache=shared&_fk=1", dsn)
+
+	db := enttest.Open(r.t, "sqlite3", dataSourceName, opts...)
 
 	return &gateway.RDB{
 		Client: db,
@@ -43,15 +47,15 @@ func (r *RDBClientMock) Of(dsn string) (*gateway.RDB, error) {
 func TestArticleSave(t *testing.T) {
 	t.Parallel()
 
-	rdb, err := NewRDBClientMock(t).Of("")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	ag := gateway.NewArticle(rdb)
-
 	t.Run("記事を保存できる", func(t *testing.T) {
 		t.Parallel()
+
+		rdb, err := NewRDBClientMock(t).Of(uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ag := gateway.NewArticle(rdb)
 
 		ctx := context.Background()
 
@@ -97,6 +101,13 @@ func TestArticleSave(t *testing.T) {
 	t.Run("タグを含む記事が保存できる", func(t *testing.T) {
 		t.Parallel()
 
+		rdb, err := NewRDBClientMock(t).Of(uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ag := gateway.NewArticle(rdb)
+
 		ctx := context.Background()
 
 		if err := ag.Save(ctx, model.CreateArticle(
@@ -117,6 +128,13 @@ func TestArticleSave(t *testing.T) {
 
 	t.Run("既にある記事に既にあるタグを保存しようとしてもエラーにならない", func(t *testing.T) {
 		t.Parallel()
+
+		rdb, err := NewRDBClientMock(t).Of(uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ag := gateway.NewArticle(rdb)
 
 		ctx := context.Background()
 
