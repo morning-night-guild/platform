@@ -3,6 +3,7 @@ package controller_test
 import (
 	"context"
 	"errors"
+	"os"
 	"reflect"
 	"testing"
 
@@ -30,6 +31,8 @@ func (s ShareMock) Execute(ctx context.Context, input port.ShareArticleInput) (p
 
 func TestArticleShare(t *testing.T) {
 	t.Parallel()
+
+	os.Setenv("API_KEY", "test")
 
 	type fields struct {
 		apiKey string
