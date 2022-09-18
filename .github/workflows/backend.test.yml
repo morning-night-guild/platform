@@ -20,13 +20,17 @@ jobs:
           go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
           go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
           go install github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@latest
-      - name: Set up wire
-        run: go install github.com/google/wire/cmd/wire@latest
       - name: Generate connect code
         working-directory: ./api
         run: buf generate
+      - name: Go Generate
+        working-directory: ./backend
+        run: go generate ./...
+      - name: Set up wire
+        working-directory: ./backend
+        run: |
+          go install github.com/google/wire/cmd/wire@latest
+          wire
       - name: Go Test
         working-directory: ./backend
-        run: | 
-          go generate ./...
-          go test ./...
+        run: go test ./...
