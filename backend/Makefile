@@ -31,7 +31,7 @@ run:
 
 .PHONY: gen
 gen:
-	@go generate ./... && wire
+	@rm -rf wire_gen.go && go generate ./... && wire
 
 .PHONY: migrate
 migrate:
