@@ -50,6 +50,7 @@ func CreateArticle(
 
 	return Article{
 		ID:        id,
+		Title:     title,
 		URL:       url,
 		Thumbnail: thumbnail,
 		TagList:   tags,

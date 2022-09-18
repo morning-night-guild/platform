@@ -30,13 +30,11 @@ func NewOGP() *OGP {
 func (o *OGP) Create(ctx context.Context, url article.URL) (model.Article, error) {
 	gr, err := http.NewRequest(http.MethodGet, url.String(), nil)
 	if err != nil {
-		//
 		return model.Article{}, err
 	}
 
 	res, err := o.client.Do(gr.WithContext(ctx))
 	if err != nil {
-		//
 		return model.Article{}, err
 	}
 
@@ -48,7 +46,6 @@ func (o *OGP) Create(ctx context.Context, url article.URL) (model.Article, error
 
 	err = og.ProcessHTML(strings.NewReader(string(body)))
 	if err != nil {
-		//
 		return model.Article{}, err
 	}
 

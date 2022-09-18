@@ -7,18 +7,17 @@ import (
 	"github.com/bufbuild/connect-go"
 	articlev1 "github.com/morning-night-guild/platform/driver/connect/article/v1"
 	"github.com/morning-night-guild/platform/model/article"
-	"github.com/morning-night-guild/platform/usecase"
 	"github.com/morning-night-guild/platform/usecase/port"
 )
 
 // Article.
 type Article struct {
-	share usecase.Usecase[port.ShareArticleInput, port.ShareArticleOutput]
+	share port.ShareArticle
 }
 
 // NewArticle 記事のコントローラを新規作成する関数.
 func NewArticle(
-	share usecase.Usecase[port.ShareArticleInput, port.ShareArticleOutput],
+	share port.ShareArticle,
 ) *Article {
 	return &Article{
 		share: share,
@@ -26,7 +25,7 @@ func NewArticle(
 }
 
 // Share 記事を共有するコントローラメソッド.
-func (a *Article) Share(
+func (a Article) Share(
 	ctx context.Context,
 	req *connect.Request[articlev1.ShareRequest],
 ) (*connect.Response[articlev1.ShareResponse], error) {

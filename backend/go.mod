@@ -6,16 +6,17 @@ require (
 	github.com/bufbuild/connect-go v0.4.0
 	github.com/dyatlov/go-opengraph/opengraph v0.0.0-20220524092352-606d7b1e5f8a
 	github.com/google/uuid v1.3.0
+	github.com/google/wire v0.5.0
 	github.com/lib/pq v1.10.5
 	github.com/mattn/go-sqlite3 v1.14.13
 	github.com/pkg/errors v0.9.1
+	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 )
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
-	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 )
 

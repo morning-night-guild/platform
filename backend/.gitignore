@@ -3,3 +3,4 @@ adapter/gateway/ent/*.go
 !adapter/gateway/ent/schema/*
 !adapter/gateway/ent/generate.go
 driver/connect
+wire_gen.go

@@ -9,7 +9,7 @@ POSTGRES_USER := postgres
 POSTGRES_PASS := postgres
 POSTGRES_PORT := 5432
 DATABASE_URL := postgres://$(POSTGRES_USER):$(POSTGRES_PASS)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable
-API_KEY := test
+API_KEY := local
 
 .PHONY: lint
 lint:
@@ -27,7 +27,7 @@ test:
 
 .PHONY: run
 run:
-	@go run main.go
+	@go run main.go wire_gen.go
 
 .PHONY: gen
 gen:

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"log"
 
 	me "github.com/morning-night-guild/platform/model/errors"
 	"google.golang.org/grpc/codes"
@@ -25,6 +26,8 @@ var ErrUnauthorized = status.New(
 
 // handleError 発生したエラーを対応するgrpcのステータス込みのエラーに変換する関数.
 func handleError(err error) error {
+	log.Printf("error: %v", err)
+
 	switch {
 	case asValidationError(err):
 		return ErrInvalidArgument
