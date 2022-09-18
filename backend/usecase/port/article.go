@@ -8,9 +8,7 @@ import (
 // ShareArticleInput.
 type ShareArticleInput struct {
 	usecase.Input
-	Title     article.Title
-	URL       article.URL
-	Thumbnail article.Thumbnail
+	URL article.URL
 }
 
 // ShareArticleOutput.

@@ -3,8 +3,6 @@ package article
 import (
 	"context"
 
-	"github.com/morning-night-guild/platform/model"
-	"github.com/morning-night-guild/platform/model/article"
 	"github.com/morning-night-guild/platform/usecase/port"
 	"github.com/morning-night-guild/platform/usecase/repository"
 )
@@ -14,25 +12,28 @@ var _ port.ShareArticle = (*ShareInteractor)(nil)
 // ShareInteractor 記事共有のインタラクター.
 type ShareInteractor struct {
 	articleRepository repository.Article // 記事のリポジトリ
+	ogpRepository     repository.OGP     // OGPリポジトリ
 }
 
 // NewShareInteractor 記事共有のインタラクターのファクトリ関数.
-func NewShareInteractor(articleRepository repository.Article) *ShareInteractor {
+func NewShareInteractor(
+	articleRepository repository.Article,
+	ogpRepository repository.OGP,
+) *ShareInteractor {
 	return &ShareInteractor{
 		articleRepository: articleRepository,
+		ogpRepository:     ogpRepository,
 	}
 }
 
 // Execute 記事共有のインタラクターを実行する.
 func (s *ShareInteractor) Execute(ctx context.Context, input port.ShareArticleInput) (port.ShareArticleOutput, error) {
-	article := model.CreateArticle(
-		input.Title,
-		input.URL,
-		input.Thumbnail,
-		article.TagList{},
-	)
+	a, err := s.ogpRepository.Create(ctx, input.URL)
+	if err != nil {
+		return port.ShareArticleOutput{}, err
+	}
 
-	if err := s.articleRepository.Save(ctx, article); err != nil {
+	if err := s.articleRepository.Save(ctx, a); err != nil {
 		return port.ShareArticleOutput{}, err
 	}
 
