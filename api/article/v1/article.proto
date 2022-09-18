@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package article.v1;
+
+option go_package = "github.com/morning-night-guild/platform/driver/connect/article/v1;articlev1";
+
+message ShareRequest {
+    string url = 1;
+}
+
+message ShareResponse {}
+
+service ArticleService {
+    // Need X-API-KEY Header
+    rpc Share(ShareRequest) returns (ShareResponse) {}
+}
