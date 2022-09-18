@@ -30,7 +30,7 @@ func NewURL(value string) (URL, error) {
 // validate URLを検証するメソッド.
 func (u URL) validate() error {
 	if _, err := url.Parse(u.String()); err != nil {
-		return err
+		return errors.NewValidationError(err.Error())
 	}
 
 	if !strings.HasPrefix(u.String(), "https://") {

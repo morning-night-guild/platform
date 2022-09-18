@@ -40,3 +40,4 @@ issues:
         - containedctx
         - goerr113
         - cyclop
+        - errorlint

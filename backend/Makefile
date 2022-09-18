@@ -9,6 +9,7 @@ POSTGRES_USER := postgres
 POSTGRES_PASS := postgres
 POSTGRES_PORT := 5432
 DATABASE_URL := postgres://$(POSTGRES_USER):$(POSTGRES_PASS)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable
+API_KEY := test
 
 .PHONY: lint
 lint:
@@ -21,7 +22,8 @@ test:
 	go list ./... | \
 	grep -v github.com/morning-night-guild/platform/adapter/gateway/ent | \
 	grep -v github.com/morning-night-guild/platform/cmd/migrate \
-	`
+	` \
+	-count=1
 
 .PHONY: run
 run:
