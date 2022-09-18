@@ -51,6 +51,8 @@ func TestArticleSave(t *testing.T) {
 	ag := gateway.NewArticle(rdb)
 
 	t.Run("記事を保存できる", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := context.Background()
 
 		a := model.CreateArticle(
@@ -93,6 +95,8 @@ func TestArticleSave(t *testing.T) {
 	})
 
 	t.Run("タグを含む記事が保存できる", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := context.Background()
 
 		if err := ag.Save(ctx, model.CreateArticle(
@@ -112,6 +116,8 @@ func TestArticleSave(t *testing.T) {
 	})
 
 	t.Run("既にある記事に既にあるタグを保存しようとしてもエラーにならない", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := context.Background()
 
 		a1 := model.CreateArticle(
