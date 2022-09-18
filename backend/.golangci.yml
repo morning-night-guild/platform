@@ -41,3 +41,4 @@ issues:
         - goerr113
         - cyclop
         - errorlint
+        - tenv
