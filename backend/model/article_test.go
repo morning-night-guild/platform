@@ -13,11 +13,12 @@ func TestNewArticle(t *testing.T) {
 	t.Parallel()
 
 	type args struct {
-		id        article.ID
-		title     article.Title
-		url       article.URL
-		thumbnail article.Thumbnail
-		tags      article.TagList
+		id          article.ID
+		title       article.Title
+		url         article.URL
+		description article.Description
+		thumbnail   article.Thumbnail
+		tags        article.TagList
 	}
 
 	tests := []struct {
@@ -29,18 +30,20 @@ func TestNewArticle(t *testing.T) {
 		{
 			name: "記事モデルが作成できる",
 			args: args{
-				id:        article.ID(uuid.MustParse("2f8e01fb-bf67-45cc-83b0-4cfa0548a9b2")),
-				title:     article.Title("タイトル"),
-				url:       article.URL("https://example.com"),
-				thumbnail: article.Thumbnail("https://example.com"),
-				tags:      article.TagList{},
+				id:          article.ID(uuid.MustParse("2f8e01fb-bf67-45cc-83b0-4cfa0548a9b2")),
+				title:       article.Title("タイトル"),
+				url:         article.URL("https://example.com"),
+				description: article.Description("説明"),
+				thumbnail:   article.Thumbnail("https://example.com"),
+				tags:        article.TagList{},
 			},
 			want: model.Article{
-				ID:        article.ID(uuid.MustParse("2f8e01fb-bf67-45cc-83b0-4cfa0548a9b2")),
-				Title:     article.Title("タイトル"),
-				URL:       article.URL("https://example.com"),
-				Thumbnail: article.Thumbnail("https://example.com"),
-				TagList:   article.TagList{},
+				ID:          article.ID(uuid.MustParse("2f8e01fb-bf67-45cc-83b0-4cfa0548a9b2")),
+				Title:       article.Title("タイトル"),
+				URL:         article.URL("https://example.com"),
+				Description: article.Description("説明"),
+				Thumbnail:   article.Thumbnail("https://example.com"),
+				TagList:     article.TagList{},
 			},
 			wantErr: false,
 		},
@@ -50,7 +53,14 @@ func TestNewArticle(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			got, err := model.NewArticle(tt.args.id, tt.args.title, tt.args.url, tt.args.thumbnail, tt.args.tags)
+			got, err := model.NewArticle(
+				tt.args.id,
+				tt.args.title,
+				tt.args.url,
+				tt.args.description,
+				tt.args.thumbnail,
+				tt.args.tags,
+			)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewArticle() error = %v, wantErr %v", err, tt.wantErr)
 

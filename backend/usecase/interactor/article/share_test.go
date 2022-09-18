@@ -75,6 +75,7 @@ func TestShareInteractorExecute(t *testing.T) {
 					Article: model.CreateArticle(
 						article.Title("タイトル"),
 						article.URL("https://example.com"),
+						article.Description("説明"),
 						article.Thumbnail("https://example.com/image"),
 						article.TagList{},
 					),
@@ -99,6 +100,7 @@ func TestShareInteractorExecute(t *testing.T) {
 					Article: model.CreateArticle(
 						article.Title("タイトル"),
 						article.URL("https://example.com"),
+						article.Description("説明"),
 						article.Thumbnail("https://example.com/image"),
 						article.TagList{},
 					),

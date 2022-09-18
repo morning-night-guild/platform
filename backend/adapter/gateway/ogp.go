@@ -54,6 +54,11 @@ func (o *OGP) Create(ctx context.Context, url article.URL) (model.Article, error
 		return model.Article{}, err
 	}
 
+	description, err := article.NewDescription(og.Description)
+	if err != nil {
+		return model.Article{}, err
+	}
+
 	imageURL := ""
 	if len(og.Images) > 0 {
 		imageURL = og.Images[0].URL
@@ -67,6 +72,7 @@ func (o *OGP) Create(ctx context.Context, url article.URL) (model.Article, error
 	return model.CreateArticle(
 		title,
 		url,
+		description,
 		thumbnail,
 		article.TagList{},
 	), nil

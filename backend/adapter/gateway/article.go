@@ -34,6 +34,7 @@ func (a *Article) Save(ctx context.Context, item model.Article) error {
 		SetID(id).
 		SetTitle(item.Title.String()).
 		SetURL(item.URL.String()).
+		SetDescription(item.Description.String()).
 		SetThumbnail(item.Thumbnail.String()).
 		OnConflict().
 		DoNothing().

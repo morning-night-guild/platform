@@ -21,6 +21,7 @@ func (Article) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.String("title"),
 		field.String("url").Unique(),
+		field.String("description"),
 		field.String("thumbnail"),
 		field.Time("created_at").Default(time.Now().UTC),
 		field.Time("updated_at").Default(time.Now().UTC).UpdateDefault(time.Now().UTC),

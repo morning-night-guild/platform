@@ -62,6 +62,7 @@ func TestArticleSave(t *testing.T) {
 		a := model.CreateArticle(
 			article.Title("タイトル"),
 			article.URL("https://example.com"),
+			article.Description("説明"),
 			article.Thumbnail("https://example.com"),
 			article.TagList{},
 		)
@@ -79,6 +80,7 @@ func TestArticleSave(t *testing.T) {
 			article.ID(found.ID),
 			article.Title(found.Title),
 			article.URL(found.URL),
+			article.Description(found.Description),
 			article.Thumbnail(found.Thumbnail),
 			article.TagList{},
 		)
@@ -91,6 +93,7 @@ func TestArticleSave(t *testing.T) {
 		if err := ag.Save(ctx, model.CreateArticle(
 			article.Title("タイトル"),
 			article.URL("https://example.com"),
+			article.Description("説明"),
 			article.Thumbnail("https://example.com"),
 			article.TagList{},
 		)); err != nil {
@@ -113,6 +116,7 @@ func TestArticleSave(t *testing.T) {
 		if err := ag.Save(ctx, model.CreateArticle(
 			article.Title("タイトル"),
 			article.URL("https://example.com"),
+			article.Description("説明"),
 			article.Thumbnail("https://example.com"),
 			article.TagList([]article.Tag{
 				article.Tag("tag1"),
@@ -141,6 +145,7 @@ func TestArticleSave(t *testing.T) {
 		a1 := model.CreateArticle(
 			article.Title("タイトル"),
 			article.URL("https://example.com1"),
+			article.Description("説明"),
 			article.Thumbnail("https://example.com"),
 			article.TagList([]article.Tag{
 				article.Tag("tag1"),
@@ -151,6 +156,7 @@ func TestArticleSave(t *testing.T) {
 		a2 := model.CreateArticle(
 			article.Title("タイトル"),
 			article.URL("https://example.com1"),
+			article.Description("説明"),
 			article.Thumbnail("https://example.com"),
 			article.TagList([]article.Tag{
 				article.Tag("tag1"),
