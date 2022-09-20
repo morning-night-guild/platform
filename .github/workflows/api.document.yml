@@ -1,7 +1,9 @@
 name: document
 
 on:
-  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   document:
