@@ -1,4 +1,4 @@
-name: document
+name: api document
 
 on:
   push:
