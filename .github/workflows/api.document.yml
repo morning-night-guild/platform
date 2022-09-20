@@ -46,14 +46,14 @@ jobs:
         run: |
           go install github.com/google/wire/cmd/wire@latest
           wire
-      - name: Migrate
+      - name: Database migrate
         working-directory: ./backend
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
         run: go run cmd/migrate/main.go
       - name: Generate database document
         run: tbls doc "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable" public/database
-      - name: Generate grpc document
+      - name: Generate api document
         working-directory: .
         run: |
           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
