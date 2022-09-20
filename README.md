@@ -1,5 +1,10 @@
 # platform
 
+## document
+
+- [api](https://github.com/morning-night-guild/platform/tree/gh-pages/api)
+- [database](https://github.com/morning-night-guild/platform/tree/gh-pages/database)
+
 ## directory
 
 ```bash
