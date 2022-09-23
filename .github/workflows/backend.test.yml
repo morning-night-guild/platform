@@ -3,7 +3,7 @@ name: backend test
 on:
   push:
     branches:
-      - "main"
+      - main
     paths:
       - backend/**/*.go
   pull_request:
@@ -16,15 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version-file: backend/go.mod
-      - name: Set up connect
-        run: |
-          go install github.com/bufbuild/buf/cmd/buf@latest
-          go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-          go install github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@latest
+        uses: ./.github/actions/go
       - name: Generate connect code
         working-directory: ./api
         run: buf generate
@@ -33,9 +25,7 @@ jobs:
         run: go generate ./...
       - name: Set up wire
         working-directory: ./backend
-        run: |
-          go install github.com/google/wire/cmd/wire@latest
-          wire
+        run: wire
       - name: Go Test
         working-directory: ./backend
         run: go test ./...
