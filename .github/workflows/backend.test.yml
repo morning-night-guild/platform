@@ -7,8 +7,6 @@ on:
     paths:
       - backend/**/*.go
   pull_request:
-    paths:
-      - backend/**/*.go
 
 jobs:
   test:
