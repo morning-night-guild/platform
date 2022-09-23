@@ -2,6 +2,9 @@ name: backend lint
 
 on:
   pull_request:
+    paths:
+      - backend/**/*.go
+      - backend/.golangci.yml
 
 jobs:
   lint:

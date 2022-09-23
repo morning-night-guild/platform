@@ -7,7 +7,6 @@ on:
     paths:
       - api/**/*.proto
       - backend/adapter/gateway/ent/schema/*.go
-  pull_request:
 
 jobs:
   document:
