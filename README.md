@@ -1,5 +1,9 @@
 # platform
 
+<a href="https://codecov.io/gh/morning-night-guild/platform" >
+<img src="https://codecov.io/gh/morning-night-guild/platform/branch/main/graph/badge.svg?token=OZM65W4G5Q"/>
+</a>
+
 ## document
 
 - [api](https://github.com/morning-night-guild/platform/tree/gh-pages/api)
