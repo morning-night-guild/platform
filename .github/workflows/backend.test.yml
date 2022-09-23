@@ -1,6 +1,9 @@
 name: backend test
 
 on:
+  push:
+    branches:
+      - "main"
   pull_request:
     paths:
       - backend/**/*.go
@@ -34,3 +37,13 @@ jobs:
       - name: Go Test
         working-directory: ./backend
         run: go test ./...
+      - name: Coverage
+        working-directory: ./backend
+        run: |
+          go test ./...  -coverpkg=./... -coverprofile ./coverage_temp.txt
+          cat coverage_temp.txt | grep -v "/ent/" | grep -v "/driver/" | grep -v "/cmd/" > coverage.txt
+          rm coverage_temp.txt
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
