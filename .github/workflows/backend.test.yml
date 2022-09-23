@@ -34,7 +34,10 @@ jobs:
         run: go test ./...
       - name: coverage
         working-directory: ./backend
-        run: go test ./...  -coverpkg=./... -coverprofile ./coverage.txt
+        run: |
+          go test ./...  -coverpkg=./... -coverprofile ./coverage_temp.txt
+          cat coverage_temp.txt | grep -v "/ent/" | grep -v "/driver/" > coverage.txt
+          rm coverage_temp.txt
       - name: Upload coverage
         uses: codecov/codecov-action@v1
         with:
