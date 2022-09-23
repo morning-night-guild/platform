@@ -2,8 +2,6 @@ name: backend test
 
 on:
   pull_request:
-    paths:
-      - backend/**/*.go
 
 jobs:
   test:
