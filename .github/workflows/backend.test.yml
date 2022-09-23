@@ -35,7 +35,7 @@ jobs:
       - name: Go Test
         working-directory: ./backend
         run: go test ./...
-      - name: coverage
+      - name: Coverage
         working-directory: ./backend
         run: |
           go test ./...  -coverpkg=./... -coverprofile ./coverage_temp.txt
