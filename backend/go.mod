@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
 	github.com/lib/pq v1.10.7
-	github.com/mattn/go-sqlite3 v1.14.13
+	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/pkg/errors v0.9.1
 	golang.org/x/net v0.0.0-20220920203100-d0c6ba3f52d9
 	google.golang.org/grpc v1.49.0
