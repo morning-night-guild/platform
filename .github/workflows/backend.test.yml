@@ -46,6 +46,6 @@ jobs:
           cat coverage_temp.txt | grep -v "/ent/" | grep -v "/driver/" | grep -v "/cmd/" > coverage.txt
           rm coverage_temp.txt
       - name: Upload coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
