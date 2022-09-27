@@ -1,5 +1,5 @@
-POSTGRES_VERSION = 14.5
 APP_NAME = morning-night-guild-platform
+POSTGRES_VERSION = 14.5
 
 export
 POSTGRES_IMAGE := postgres:$(POSTGRES_VERSION)-alpine
@@ -10,6 +10,14 @@ POSTGRES_PASS := postgres
 POSTGRES_PORT := 5432
 DATABASE_URL := postgres://$(POSTGRES_USER):$(POSTGRES_PASS)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable
 API_KEY := local
+
+.PHONY: aqua
+aqua: # export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"
+	@go run github.com/aquaproj/aqua-installer@latest
+
+.PHONY: tool
+tool:
+	@aqua i
 
 .PHONY: lint
 lint:
