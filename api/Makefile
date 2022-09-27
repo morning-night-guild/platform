@@ -1,3 +1,7 @@
+.PHONY: tool
+tool:
+	@aqua i
+
 .PHONY: lint
 lint:
 	@buf lint
