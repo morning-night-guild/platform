@@ -6,9 +6,13 @@ on:
       - main
     paths:
       - backend/**/*.go
+      - backend/go.mod
+      - backend/go.sum
   pull_request:
     paths:
       - backend/**/*.go
+      - backend/go.mod
+      - backend/go.sum
 
 jobs:
   test:
