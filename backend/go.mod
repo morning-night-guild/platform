@@ -3,7 +3,7 @@ module github.com/morning-night-guild/platform
 go 1.19
 
 require (
-	github.com/bufbuild/connect-go v0.4.0
+	github.com/bufbuild/connect-go v0.5.0
 	github.com/dyatlov/go-opengraph/opengraph v0.0.0-20220524092352-606d7b1e5f8a
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
