@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - api/**/*.proto
-      - backend/adapter/gateway/ent/schema/*.go
+      - backend/pkg/ent/schema/*.go
 
 jobs:
   document:

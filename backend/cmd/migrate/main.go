@@ -5,13 +5,14 @@ import (
 	"log"
 	"os"
 
-	"github.com/morning-night-guild/platform/driver/database"
+	_ "github.com/lib/pq"
+	"github.com/morning-night-guild/platform/pkg/ent"
 )
 
 func main() {
 	dsn := os.Getenv("DATABASE_URL")
 
-	client, err := database.NewClient().Of(dsn)
+	client, err := ent.Open("postgres", dsn)
 	if err != nil {
 		log.Printf("Failed create schema: %v", err)
 
