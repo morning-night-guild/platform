@@ -37,7 +37,7 @@ jobs:
         working-directory: ./backend
         run: go generate ./...
       - name: Set up wire
-        working-directory: ./backend
+        working-directory: ./backend/app/core
         run: wire
       - name: Database migrate
         working-directory: ./backend
