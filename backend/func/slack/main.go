@@ -169,8 +169,6 @@ func (s SlackHandler) handleSlackEvent(ctx context.Context, event slackevents.Ev
 			return err
 		}
 
-		log.Printf("receved event data is message=%v, text=%s", ev.Message, ev.Text)
-
 		if _, err := s.articleServiceClient.Share(ctx, u); err != nil {
 			return err
 		}
@@ -232,8 +230,6 @@ func (a ArticleServiceClient) Share(
 	}
 
 	request.Header().Set("X-API-KEY", apiKey)
-
-	log.Printf("url is %s", url)
 
 	return a.Client.Share(ctx, &request)
 }
