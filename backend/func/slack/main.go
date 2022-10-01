@@ -104,29 +104,6 @@ func main() {
 	log.Println("HTTPServer shutdown")
 }
 
-type ArticleServiceClient struct {
-	Client articlev1connect.ArticleServiceClient
-}
-
-func (a ArticleServiceClient) Share(
-	ctx context.Context,
-	url string,
-) (*connect.Response[articlev1.ShareResponse], error) {
-	ar := articlev1.ShareRequest{
-		Url: url,
-	}
-
-	request := connect.Request[articlev1.ShareRequest]{
-		Msg: &ar,
-	}
-
-	request.Header().Set("X-API-KEY", apiKey)
-
-	log.Printf("url is %s", url)
-
-	return a.Client.Share(ctx, &request)
-}
-
 type SlackHandler struct {
 	articleServiceClient ArticleServiceClient
 }
@@ -140,7 +117,7 @@ func (s SlackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := verify(r.Header, body, secret); err != nil {
+	if err := s.verify(r.Header, body, secret); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 
 		return
@@ -154,7 +131,7 @@ func (s SlackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if eventsAPIEvent.Type == slackevents.URLVerification {
-		challenge(w, body)
+		s.challenge(w, body)
 
 		return
 	}
@@ -176,16 +153,7 @@ func (s SlackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s SlackHandler) handleSlackEvent(ctx context.Context, event slackevents.EventsAPIInnerEvent) error {
 	switch ev := event.Data.(type) {
 	// @see https://api.slack.com/events/link_shared
-	case *slackevents.LinkSharedEvent:
-		for _, link := range ev.Links {
-			if _, err := url.Parse(link.URL); err != nil {
-				return err
-			}
-
-			if _, err := s.articleServiceClient.Share(ctx, link.URL); err != nil {
-				return err
-			}
-		}
+	// link_shareのイベントは発火しなかったため一旦断念
 	// @see https://api.slack.com/events/message
 	case *slackevents.MessageEvent:
 		if len(ev.Text) == 0 {
@@ -213,7 +181,7 @@ func (s SlackHandler) handleSlackEvent(ctx context.Context, event slackevents.Ev
 	return nil
 }
 
-func verify(header http.Header, body []byte, secret string) error {
+func (s SlackHandler) verify(header http.Header, body []byte, secret string) error {
 	sv, err := slack.NewSecretsVerifier(header, secret)
 	if err != nil {
 		return errors.Wrap(err, "failed new secrets verify")
@@ -230,7 +198,7 @@ func verify(header http.Header, body []byte, secret string) error {
 	return nil
 }
 
-func challenge(w http.ResponseWriter, body []byte) {
+func (s SlackHandler) challenge(w http.ResponseWriter, body []byte) {
 	var r *slackevents.ChallengeResponse
 
 	if err := json.Unmarshal(body, &r); err != nil {
@@ -242,4 +210,27 @@ func challenge(w http.ResponseWriter, body []byte) {
 	w.Header().Set("Content-Type", "text")
 
 	_, _ = w.Write([]byte(r.Challenge))
+}
+
+type ArticleServiceClient struct {
+	Client articlev1connect.ArticleServiceClient
+}
+
+func (a ArticleServiceClient) Share(
+	ctx context.Context,
+	url string,
+) (*connect.Response[articlev1.ShareResponse], error) {
+	ar := articlev1.ShareRequest{
+		Url: url,
+	}
+
+	request := connect.Request[articlev1.ShareRequest]{
+		Msg: &ar,
+	}
+
+	request.Header().Set("X-API-KEY", apiKey)
+
+	log.Printf("url is %s", url)
+
+	return a.Client.Share(ctx, &request)
 }
