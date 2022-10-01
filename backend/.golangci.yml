@@ -32,6 +32,8 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - wastedassign
+    # disable because conflict with go fmt
+    - revive
 issues:
   exclude-rules:
     - path: _test\.go
