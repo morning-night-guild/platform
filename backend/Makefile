@@ -43,7 +43,7 @@ run:
 
 .PHONY: gen
 gen:
-	@rm -rf wire_gen.go && go generate ./... && wire
+	@rm -rf app/core/wire_gen.go && go generate ./... && (cd app/core && wire)
 
 .PHONY: migrate
 migrate:

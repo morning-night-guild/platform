@@ -1,6 +1,6 @@
-adapter/gateway/ent/*/*
-adapter/gateway/ent/*.go
-!adapter/gateway/ent/schema/*
-!adapter/gateway/ent/generate.go
-driver/connect
+pkg/ent/*/*
+pkg/ent/*.go
+!pkg/ent/schema/*
+!pkg/ent/generate.go
+pkg/connect
 wire_gen.go
