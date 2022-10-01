@@ -6,7 +6,7 @@ linters-settings:
 linters:
   enable-all: true
   disable:
-    # disable because the large amount of correspondence 
+    # disable because the large amount of correspondence
     - wrapcheck
     # disable because unnecessary field declaration
     - exhaustruct
@@ -18,7 +18,7 @@ linters:
     - golint
     # disable because deprecated since golangci-lint since v1.46.0
     - exhaustivestruct
-    # disable because deprecated since golangci-lint since v1.48.0 
+    # disable because deprecated since golangci-lint since v1.48.0
     - ifshort
     # disable because deprecated since golangci-lint since v1.48.1
     - nosnakecase
@@ -44,3 +44,7 @@ issues:
         - cyclop
         - errorlint
         - tenv
+    - path: func/slack/main.go
+      linters:
+        - gochecknoinits
+        - gochecknoglobals
