@@ -175,7 +175,10 @@ func (s SlackHandler) handleSlackEvent(ctx context.Context, event slackevents.Ev
 			return err
 		}
 	default:
-		return fmt.Errorf("undefined event %+v", ev)
+		// errorを返すとslackがリトライしてくるため
+		log.Printf("undefined event %+v", ev)
+
+		return nil
 	}
 
 	return nil
