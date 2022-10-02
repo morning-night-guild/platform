@@ -46,8 +46,7 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	hc := http.DefaultClient
-	ac := articlev1connect.NewArticleServiceClient(hc, coreServiceURL)
+	ac := articlev1connect.NewArticleServiceClient(http.DefaultClient, coreServiceURL)
 
 	mux.Handle("/", SlackHandler{
 		Secret: secret,
