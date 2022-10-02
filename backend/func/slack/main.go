@@ -29,46 +29,35 @@ const (
 	readHeaderTimeout = 30 * time.Second
 )
 
-var (
-	secret         string
-	coreServiceURL string
-	apiKey         string
-)
-
-func init() {
-	secret = os.Getenv("SLACK_SIGNING_SECRET")
-
+func main() {
+	secret := os.Getenv("SLACK_SIGNING_SECRET")
 	if len(secret) == 0 {
 		log.Fatal("secret no set")
 	}
 
-	coreServiceURL = os.Getenv("CORE_SERVICE_URL")
-
-	if len(secret) == 0 {
+	coreServiceURL := os.Getenv("CORE_SERVICE_URL")
+	if len(coreServiceURL) == 0 {
 		log.Fatal("service url no set")
 	}
 
-	apiKey = os.Getenv("API_KEY")
-
-	if len(secret) == 0 {
+	apiKey := os.Getenv("API_KEY")
+	if len(apiKey) == 0 {
 		log.Fatal("api key no set")
 	}
-}
 
-func main() {
 	mux := http.NewServeMux()
-
 	hc := http.DefaultClient
 	ac := articlev1connect.NewArticleServiceClient(hc, coreServiceURL)
 
 	mux.Handle("/", SlackHandler{
-		articleServiceClient: ArticleServiceClient{
+		Secret: secret,
+		ArticleServiceClient: ArticleServiceClient{
+			APIKey: apiKey,
 			Client: ac,
 		},
 	})
 
 	port := os.Getenv("PORT")
-
 	if port == "" {
 		port = "8080"
 	}
@@ -105,7 +94,8 @@ func main() {
 }
 
 type SlackHandler struct {
-	articleServiceClient ArticleServiceClient
+	Secret               string
+	ArticleServiceClient ArticleServiceClient
 }
 
 func (s SlackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +107,7 @@ func (s SlackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.verify(r.Header, body, secret); err != nil {
+	if err := s.verify(r.Header, body, s.Secret); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 
 		return
@@ -169,7 +159,7 @@ func (s SlackHandler) handleSlackEvent(ctx context.Context, event slackevents.Ev
 			return err
 		}
 
-		if _, err := s.articleServiceClient.Share(ctx, u); err != nil {
+		if _, err := s.ArticleServiceClient.Share(ctx, u); err != nil {
 			return err
 		}
 	default:
@@ -214,6 +204,7 @@ func (s SlackHandler) challenge(w http.ResponseWriter, body []byte) {
 }
 
 type ArticleServiceClient struct {
+	APIKey string
 	Client articlev1connect.ArticleServiceClient
 }
 
@@ -229,7 +220,7 @@ func (a ArticleServiceClient) Share(
 		Msg: &ar,
 	}
 
-	request.Header().Set("X-API-KEY", apiKey)
+	request.Header().Set("X-API-KEY", a.APIKey)
 
 	return a.Client.Share(ctx, &request)
 }
