@@ -4,25 +4,24 @@ import (
 	"errors"
 	"log"
 
+	"github.com/bufbuild/connect-go"
 	me "github.com/morning-night-guild/platform/app/core/model/errors"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
-var ErrInternal = status.New(
-	codes.Internal,
-	"internal server",
-).Err()
+var ErrInternal = connect.NewError(
+	connect.CodeInternal,
+	errors.New("internal server"),
+)
 
-var ErrInvalidArgument = status.New(
-	codes.InvalidArgument,
-	"bad request",
-).Err()
+var ErrInvalidArgument = connect.NewError(
+	connect.CodeInvalidArgument,
+	errors.New("bad request"),
+)
 
-var ErrUnauthorized = status.New(
-	codes.Unauthenticated,
-	"unauthorized",
-).Err()
+var ErrUnauthorized = connect.NewError(
+	connect.CodeUnauthenticated,
+	errors.New("unauthorized"),
+)
 
 // handleError 発生したエラーを対応するgrpcのステータス込みのエラーに変換する関数.
 func handleError(err error) error {
