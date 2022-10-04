@@ -8,19 +8,24 @@ import (
 	me "github.com/morning-night-guild/platform/app/core/model/errors"
 )
 
+var errInternal = errors.New("internal server")
+
 var ErrInternal = connect.NewError(
 	connect.CodeInternal,
-	errors.New("internal server"),
+	errInternal,
 )
+
+var errInvalidArgument = errors.New("bad request")
 
 var ErrInvalidArgument = connect.NewError(
 	connect.CodeInvalidArgument,
-	errors.New("bad request"),
+	errInvalidArgument,
 )
+var errUnauthorized = errors.New("unauthorized")
 
 var ErrUnauthorized = connect.NewError(
 	connect.CodeUnauthenticated,
-	errors.New("unauthorized"),
+	errUnauthorized,
 )
 
 // handleError 発生したエラーを対応するgrpcのステータス込みのエラーに変換する関数.
