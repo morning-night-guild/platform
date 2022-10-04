@@ -10,7 +10,7 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/pkg/errors v0.9.1
-	golang.org/x/net bcab6841153b
+	golang.org/x/net v0.0.0-20221002022538-bcab6841153b
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 )
