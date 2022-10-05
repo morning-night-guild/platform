@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/morning-night-guild/platform/app/core/adapter/controller"
+	"github.com/morning-night-guild/platform/app/core/driver/middleware"
 	"github.com/morning-night-guild/platform/pkg/connect/article/v1/articlev1connect"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -31,7 +32,7 @@ func NewHTTPServer(
 ) *HTTPServer {
 	mux := http.NewServeMux()
 
-	mux.Handle(articlev1connect.NewArticleServiceHandler(article))
+	mux.Handle(middleware.Handle(articlev1connect.NewArticleServiceHandler(article)))
 
 	port := os.Getenv("PORT")
 
