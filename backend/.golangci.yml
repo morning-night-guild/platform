@@ -44,6 +44,3 @@ issues:
         - cyclop
         - errorlint
         - tenv
-    - path: func/slack/main.go
-      linters:
-        - gochecknoglobals
