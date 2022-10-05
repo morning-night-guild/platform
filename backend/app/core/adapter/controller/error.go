@@ -32,9 +32,11 @@ func handleError(ctx context.Context, err error) error {
 	switch {
 	case asValidationError(err):
 		log.Warn(err.Error())
+
 		return ErrInvalidArgument
 	default:
 		log.Error(err.Error())
+
 		return ErrInternal
 	}
 }
