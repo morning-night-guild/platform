@@ -10,6 +10,9 @@ import (
 type key struct{}
 
 func SetLogCtx(ctx context.Context) context.Context {
+	// デフォルト値でロギング設定をしているので
+	// errorは発生しない
+	// -> errorはにぎりつぶしても問題ない
 	logger, _ := zap.NewProduction()
 
 	rid := uuid.NewString()
@@ -25,6 +28,9 @@ func GetLogCtx(ctx context.Context) *zap.Logger {
 	log, ok := v.(*zap.Logger)
 
 	if !ok {
+		// デフォルト値でロギング設定をしているので
+		// errorは発生しない
+		// -> errorはにぎりつぶしても問題ない
 		logger, _ := zap.NewProduction()
 
 		return logger
