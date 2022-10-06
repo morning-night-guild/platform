@@ -84,7 +84,7 @@ func isDuplicatedError(ctx context.Context, err error) bool {
 	if errors.Is(err, sql.ErrNoRows) {
 		log := log.GetLogCtx(ctx)
 
-		log.Error(err.Error())
+		log.Debug(err.Error())
 
 		return true
 	}
