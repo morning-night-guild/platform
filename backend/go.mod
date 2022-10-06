@@ -10,27 +10,17 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/pkg/errors v0.9.1
-<<<<<<< HEAD
 	go.uber.org/zap v1.23.0
-	golang.org/x/net v0.0.0-20221002022538-bcab6841153b
-	google.golang.org/grpc v1.49.0
-=======
 	golang.org/x/net v0.0.0-20221004154528-8021a29435af
->>>>>>> main
 	google.golang.org/protobuf v1.28.1
 )
 
 require (
-<<<<<<< HEAD
-	github.com/golang/protobuf v1.5.2 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006 // indirect
 )
 
 require (
-=======
->>>>>>> main
 	ariga.io/atlas v0.7.2-0.20220927111110-867ee0cca56a // indirect
 	entgo.io/ent v0.11.3
 	github.com/agext/levenshtein v1.2.3 // indirect

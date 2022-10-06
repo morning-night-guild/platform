@@ -6,12 +6,7 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	me "github.com/morning-night-guild/platform/app/core/model/errors"
-<<<<<<< HEAD
 	"github.com/morning-night-guild/platform/pkg/log"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-=======
->>>>>>> main
 )
 
 var errInternal = errors.New("internal server")
