@@ -10,10 +10,13 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/pkg/errors v0.9.1
+	github.com/slack-go/slack v0.11.3
 	go.uber.org/zap v1.23.0
 	golang.org/x/net v0.0.0-20221004154528-8021a29435af
 	google.golang.org/protobuf v1.28.1
 )
+
+require github.com/gorilla/websocket v1.5.0 // indirect
 
 require (
 	go.uber.org/atomic v1.7.0 // indirect
