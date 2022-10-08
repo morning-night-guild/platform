@@ -47,7 +47,7 @@ jobs:
       - name: Deployer image Build & Push
         env:
           IMAGE: ${{ secrets.GCP_DOCKER_REPO }}/deployer
-          GO_VERSION: 1.19.1
+          GO_VERSION: 1.19.2
           KO_VERSION: latest
         run: |
           IMAGE_TAG=v`date +%Y%m%d%H%M`
