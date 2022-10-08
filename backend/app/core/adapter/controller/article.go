@@ -35,7 +35,7 @@ func (a Article) Share(
 
 	url, err := article.NewURL(req.Msg.Url)
 	if err != nil {
-		return nil, handleError(err)
+		return nil, handleError(ctx, err)
 	}
 
 	input := port.ShareArticleInput{
@@ -43,7 +43,7 @@ func (a Article) Share(
 	}
 
 	if _, err := a.share.Execute(ctx, input); err != nil {
-		return nil, handleError(err)
+		return nil, handleError(ctx, err)
 	}
 
 	return connect.NewResponse(&articlev1.ShareResponse{}), nil

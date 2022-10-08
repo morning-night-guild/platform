@@ -39,7 +39,7 @@ test:
 
 .PHONY: run
 run:
-	@go run main.go wire_gen.go
+	@go run app/core/main.go app/core/wire_gen.go
 
 .PHONY: gen
 gen:

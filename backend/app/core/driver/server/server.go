@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,7 +11,9 @@ import (
 	"time"
 
 	"github.com/morning-night-guild/platform/app/core/adapter/controller"
+	"github.com/morning-night-guild/platform/app/core/driver/middleware"
 	"github.com/morning-night-guild/platform/pkg/connect/article/v1/articlev1connect"
+	"github.com/morning-night-guild/platform/pkg/log"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
@@ -31,7 +32,7 @@ func NewHTTPServer(
 ) *HTTPServer {
 	mux := http.NewServeMux()
 
-	mux.Handle(articlev1connect.NewArticleServiceHandler(article))
+	mux.Handle(middleware.Handle(articlev1connect.NewArticleServiceHandler(article)))
 
 	port := os.Getenv("PORT")
 
@@ -51,11 +52,13 @@ func NewHTTPServer(
 }
 
 func (s *HTTPServer) Run() {
-	log.Printf("Server running on %s", s.Addr)
+	log.Log().Sugar().Infof("Server running on %s", s.Addr)
 
 	go func() {
 		if err := s.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalln("Server closed with error:", err)
+			log.Log().Sugar().Errorf("Server closed with error: %s", err.Error())
+
+			os.Exit(1)
 		}
 	}()
 
@@ -63,15 +66,15 @@ func (s *HTTPServer) Run() {
 
 	signal.Notify(quit, syscall.SIGTERM, os.Interrupt)
 
-	log.Printf("SIGNAL %d received, then shutting down...\n", <-quit)
+	log.Log().Sugar().Infof("SIGNAL %d received, then shutting down...\n", <-quit)
 
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownTime*time.Second)
 
 	defer cancel()
 
 	if err := s.Shutdown(ctx); err != nil {
-		log.Println("Failed to gracefully shutdown:", err)
+		log.Log().Sugar().Infof("Failed to gracefully shutdown:", err)
 	}
 
-	log.Println("HTTPServer shutdown")
+	log.Log().Info("HTTPServer shutdown")
 }
