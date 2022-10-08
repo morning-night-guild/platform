@@ -3,7 +3,7 @@ module github.com/morning-night-guild/platform
 go 1.19
 
 require (
-	github.com/bufbuild/connect-go v0.5.0
+	github.com/bufbuild/connect-go v1.0.0
 	github.com/dyatlov/go-opengraph/opengraph v0.0.0-20220524092352-606d7b1e5f8a
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
@@ -11,16 +11,11 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/pkg/errors v0.9.1
 	github.com/slack-go/slack v0.11.3
-	golang.org/x/net v0.0.0-20221002022538-bcab6841153b
-	google.golang.org/grpc v1.49.0
+	golang.org/x/net v0.0.0-20221004154528-8021a29435af
 	google.golang.org/protobuf v1.28.1
 )
 
-require (
-	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/gorilla/websocket v1.5.0 // indirect
-	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006 // indirect
-)
+require github.com/gorilla/websocket v1.5.0 // indirect
 
 require (
 	ariga.io/atlas v0.7.2-0.20220927111110-867ee0cca56a // indirect
