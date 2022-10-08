@@ -17,7 +17,7 @@ steps:
       - "KO_DOCKER_REPO=gcr.io/$PROJECT_ID"
       - "REVISION_SERVICE_ACCOUNT=$_REVISION_SERVICE_ACCOUNT"
       - "API_KEY=${_API_KEY}:latest"
-      - "DATABASE_URL=${_DATABASE_URL_SECRET}:latest"
+      - "DATABASE_URL=${_DATABASE_URL}:latest"
     script: |
       gcloud run \
       deploy platform \
