@@ -3,12 +3,12 @@ package gateway
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"github.com/morning-night-guild/platform/app/core/model"
 	"github.com/morning-night-guild/platform/app/core/usecase/repository"
 	"github.com/morning-night-guild/platform/pkg/ent"
 	"github.com/morning-night-guild/platform/pkg/ent/article"
+	"github.com/morning-night-guild/platform/pkg/log"
 	"github.com/pkg/errors"
 )
 
@@ -40,7 +40,7 @@ func (a *Article) Save(ctx context.Context, item model.Article) error {
 		DoNothing().
 		Exec(ctx)
 
-	if err != nil && isDuplicatedError(err) {
+	if err != nil && isDuplicatedError(ctx, err) {
 		if ea, err := a.findByURL(ctx, item.URL.String()); err == nil {
 			id = ea.ID
 		} else {
@@ -70,7 +70,7 @@ func (a *Article) Save(ctx context.Context, item model.Article) error {
 		return nil
 	}
 
-	if isDuplicatedError(err) {
+	if isDuplicatedError(ctx, err) {
 		return nil
 	}
 
@@ -78,11 +78,13 @@ func (a *Article) Save(ctx context.Context, item model.Article) error {
 }
 
 // isDuplicatedError 重複エラーであるかを判定する関数.
-func isDuplicatedError(err error) bool {
+func isDuplicatedError(ctx context.Context, err error) bool {
 	// https://github.com/ent/ent/issues/2176 により、
 	// on conflict do nothingとしてもerror no rowsが返るため、個別にハンドリングする
 	if errors.Is(err, sql.ErrNoRows) {
-		log.Print(err)
+		log := log.GetLogCtx(ctx)
+
+		log.Debug(err.Error())
 
 		return true
 	}

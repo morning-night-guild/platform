@@ -10,8 +10,14 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/pkg/errors v0.9.1
+	go.uber.org/zap v1.23.0
 	golang.org/x/net v0.0.0-20221004154528-8021a29435af
 	google.golang.org/protobuf v1.28.1
+)
+
+require (
+	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/multierr v1.6.0 // indirect
 )
 
 require (
