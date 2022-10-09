@@ -1,0 +1,32 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+steps:
+  - name: "gcr.io/$PROJECT_ID/builder"
+    script: |
+      aqua i
+      buf generate
+    dir: "api"
+  - name: "gcr.io/$PROJECT_ID/builder"
+    script: |
+      aqua i
+      go generate ./...
+      wire gen ./app/core
+    dir: "backend"
+  - name: "gcr.io/$PROJECT_ID/deployer"
+    env:
+      - "KO_DOCKER_REPO=gcr.io/$PROJECT_ID"
+      - "REVISION_SERVICE_ACCOUNT=$_REVISION_SERVICE_ACCOUNT"
+      - "API_KEY=${_API_KEY}:latest"
+      - "DATABASE_URL=${_DATABASE_URL}:latest"
+    script: |
+      gcloud run \
+      deploy platform \
+      --image $(SOURCE_DATE_EPOCH=$(date +%s) ko build ./) \
+      --region asia-northeast1 \
+      --cpu 1 \
+      --memory 128Mi \
+      --max-instances 1 \
+      --service-account $REVISION_SERVICE_ACCOUNT \
+      --set-secrets API_KEY=$API_KEY,DATABASE_URL=$DATABASE_URL \
+      --allow-unauthenticated
+    dir: "backend/app/core"

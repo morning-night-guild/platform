@@ -1,0 +1,61 @@
+name: push
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - container/*
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Authenticate to Google Cloud
+        uses: "google-github-actions/auth@v0"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_FOR_GCR }}
+          audience: https://github.com/morning-night-guild
+      - name: Set up Cloud SDK
+        uses: "google-github-actions/setup-gcloud@v0"
+      - name: Set up docker auth
+        run: gcloud auth configure-docker
+      - name: Builder image Build & Push
+        env:
+          IMAGE: ${{ secrets.GCP_DOCKER_REPO }}/builder
+          AQUA_VERSION: v1.19.2
+          PROTOC_VERSION: v3.20.2
+        run: |
+          IMAGE_TAG=v`date +%Y%m%d%H%M`
+          docker build \
+            --build-arg AQUA_VERSION=${{ env.AQUA_VERSION }} \
+            --build-arg PROTOC_VERSION=${{ env.PROTOC_VERSION }} \
+            --tag ${{ env.IMAGE }}:${IMAGE_TAG} \
+            --tag ${{ env.IMAGE }}:latest \
+            .
+          docker push -a ${{ env.IMAGE }}
+        working-directory: ./container/builder
+      - name: Deployer image Build & Push
+        env:
+          IMAGE: ${{ secrets.GCP_DOCKER_REPO }}/deployer
+          GO_VERSION: 1.19.2
+          KO_VERSION: latest
+        run: |
+          IMAGE_TAG=v`date +%Y%m%d%H%M`
+          docker build \
+            --build-arg GO_VERSION=${{ env.GO_VERSION }} \
+            --build-arg KO_VERSION=${{ env.KO_VERSION }} \
+            --tag ${{ env.IMAGE }}:${IMAGE_TAG} \
+            --tag ${{ env.IMAGE }}:latest \
+            .
+          docker push -a ${{ env.IMAGE }}
+        working-directory: ./container/deployer
