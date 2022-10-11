@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"os"
+	"strconv"
 
 	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-guild/platform/app/core/model/article"
@@ -47,4 +48,31 @@ func (a Article) Share(
 	}
 
 	return connect.NewResponse(&articlev1.ShareResponse{}), nil
+}
+
+// List 記事を取得するコントローラメソッド.
+func (a Article) List(
+	ctx context.Context,
+	req *connect.Request[articlev1.ListRequest],
+) (*connect.Response[articlev1.ListResponse], error) {
+	size := 2
+
+	articles := make([]*articlev1.Article, 0, size)
+
+	for i := 0; i < size; i++ {
+		articles = append(articles, &articlev1.Article{
+			Id:          strconv.Itoa(i),
+			Title:       "example",
+			Url:         "https://example.com",
+			Description: "example description",
+			Thumbnail:   "",
+			Tags:        []string{"Go"},
+		})
+	}
+
+	res := connect.NewResponse(&articlev1.ListResponse{
+		Articles: articles,
+	})
+
+	return res, nil
 }
