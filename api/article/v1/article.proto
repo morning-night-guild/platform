@@ -31,10 +31,12 @@ message ShareResponse {}
 
 // 一覧リクエスト
 message ListRequest {
-  uint32 page = 1;
+  string page_token = 1;
+  uint32 max_page_size = 2;
 }
 
 // 一覧レスポンス
 message ListResponse {
   repeated Article articles = 1;
+  string next_page_token = 2;
 }
