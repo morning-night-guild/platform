@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/bufbuild/connect-go"
@@ -156,6 +157,74 @@ func TestArticleShare(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Article.Share() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestArticleList(t *testing.T) {
+	t.Parallel()
+
+	type fields struct {
+		share port.ShareArticle
+	}
+
+	type args struct {
+		ctx context.Context
+		req *connect.Request[articlev1.ListRequest]
+	}
+
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *connect.Response[articlev1.ListResponse]
+		wantErr bool
+	}{
+		{
+			name: "記事の一覧が取得できる",
+			fields: fields{
+				share: NewShareMock(nil),
+			},
+			args: args{
+				ctx: context.Background(),
+				req: &connect.Request[articlev1.ListRequest]{
+					Msg: &articlev1.ListRequest{
+						PageToken:   "",
+						MaxPageSize: 1,
+					},
+				},
+			},
+			want: connect.NewResponse(&articlev1.ListResponse{
+				Articles: []*articlev1.Article{
+					{
+						Id:          strconv.Itoa(0),
+						Title:       "example",
+						Url:         "https://example.com",
+						Description: "example description",
+						Thumbnail:   "",
+						Tags:        []string{"Go"},
+					},
+				},
+				NextPageToken: "",
+			}),
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			a := controller.NewArticle(tt.fields.share)
+			got, err := a.List(tt.args.ctx, tt.args.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Article.List() error = %v, wantErr %v", err, tt.wantErr)
+
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Article.List() = %v, want %v", got, tt.want)
 			}
 		})
 	}
