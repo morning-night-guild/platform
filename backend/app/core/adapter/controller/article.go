@@ -55,7 +55,7 @@ func (a Article) List(
 	ctx context.Context,
 	req *connect.Request[articlev1.ListRequest],
 ) (*connect.Response[articlev1.ListResponse], error) {
-	size := 2
+	size := int(req.Msg.MaxPageSize)
 
 	articles := make([]*articlev1.Article, 0, size)
 
@@ -71,7 +71,8 @@ func (a Article) List(
 	}
 
 	res := connect.NewResponse(&articlev1.ListResponse{
-		Articles: articles,
+		Articles:      articles,
+		NextPageToken: "",
 	})
 
 	return res, nil
