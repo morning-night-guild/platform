@@ -4,13 +4,39 @@ package article.v1;
 
 option go_package = "github.com/morning-night-guild/platform/pkg/connect/article/v1;articlev1";
 
+// 記事サービス
+service ArticleService {
+  // Need X-API-KEY Header
+  rpc Share(ShareRequest) returns (ShareResponse) {}
+  rpc List(ListRequest) returns (ListResponse) {}
+}
+
+// 記事モデル
+message Article {
+  string id = 1;
+  string title = 2;
+  string url = 3;
+  string description = 4;
+  string thumbnail = 5;
+  repeated string tags = 6;
+}
+
+// 共有リクエスト
 message ShareRequest {
   string url = 1;
 }
 
+// 共有レスポンス
 message ShareResponse {}
 
-service ArticleService {
-  // Need X-API-KEY Header
-  rpc Share(ShareRequest) returns (ShareResponse) {}
+// 一覧リクエスト
+message ListRequest {
+  string page_token = 1;
+  uint32 max_page_size = 2;
+}
+
+// 一覧レスポンス
+message ListResponse {
+  repeated Article articles = 1;
+  string next_page_token = 2;
 }
