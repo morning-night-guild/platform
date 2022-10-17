@@ -37,7 +37,7 @@ test:
 	` \
 	-count=1
 
-.PHONY: run
+.PHONY: core
 run:
 	@go run app/core/main.go app/core/wire_gen.go
 
