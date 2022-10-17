@@ -131,8 +131,8 @@ func (a *Article) FindAll(ctx context.Context, index repository.Index, size repo
 
 		articles[i] = model.ReconstructArticle(
 			ea.ID,
-			ea.Title,
 			ea.URL,
+			ea.Title,
 			ea.Description,
 			ea.Thumbnail,
 			tags,

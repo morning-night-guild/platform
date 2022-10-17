@@ -70,8 +70,8 @@ func (o *OGP) Create(ctx context.Context, url article.URL) (model.Article, error
 	}
 
 	return model.CreateArticle(
-		title,
 		url,
+		title,
 		description,
 		thumbnail,
 		article.TagList{},

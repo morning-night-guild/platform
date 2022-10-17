@@ -42,8 +42,8 @@ func TestShareInteractorExecute(t *testing.T) {
 				},
 				ogpRepository: &mock.OGP{
 					Article: model.CreateArticle(
-						article.Title("title"),
 						article.URL("https://example.com"),
+						article.Title("title"),
 						article.Description("description"),
 						article.Thumbnail("https://example.com/image"),
 						article.TagList{},
@@ -67,8 +67,8 @@ func TestShareInteractorExecute(t *testing.T) {
 				},
 				ogpRepository: &mock.OGP{
 					Article: model.CreateArticle(
-						article.Title("title"),
 						article.URL("https://example.com"),
+						article.Title("title"),
 						article.Description("description"),
 						article.Thumbnail("https://example.com/image"),
 						article.TagList{},

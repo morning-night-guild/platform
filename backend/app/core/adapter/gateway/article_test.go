@@ -61,8 +61,8 @@ func TestArticleSave(t *testing.T) {
 		ctx := context.Background()
 
 		a := model.CreateArticle(
-			article.Title("title"),
 			article.URL("https://example.com"),
+			article.Title("title"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com"),
 			article.TagList{},
@@ -79,8 +79,8 @@ func TestArticleSave(t *testing.T) {
 
 		got, _ := model.NewArticle(
 			article.ID(found.ID),
-			article.Title(found.Title),
 			article.URL(found.URL),
+			article.Title(found.Title),
 			article.Description(found.Description),
 			article.Thumbnail(found.Thumbnail),
 			article.TagList{},
@@ -92,8 +92,8 @@ func TestArticleSave(t *testing.T) {
 
 		// 同じURLを保存してもerrorにならないことを確認
 		if err := ag.Save(ctx, model.CreateArticle(
-			article.Title("title"),
 			article.URL("https://example.com"),
+			article.Title("title"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com"),
 			article.TagList{},
@@ -115,8 +115,8 @@ func TestArticleSave(t *testing.T) {
 		ctx := context.Background()
 
 		if err := ag.Save(ctx, model.CreateArticle(
-			article.Title("title"),
 			article.URL("https://example.com"),
+			article.Title("title"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com"),
 			article.TagList([]article.Tag{
@@ -144,8 +144,8 @@ func TestArticleSave(t *testing.T) {
 		ctx := context.Background()
 
 		a1 := model.CreateArticle(
-			article.Title("title"),
 			article.URL("https://example.com"),
+			article.Title("title"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com"),
 			article.TagList([]article.Tag{
@@ -155,8 +155,8 @@ func TestArticleSave(t *testing.T) {
 		)
 
 		a2 := model.CreateArticle(
-			article.Title("title"),
 			article.URL("https://example.com"),
+			article.Title("title"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com"),
 			article.TagList([]article.Tag{
@@ -207,8 +207,8 @@ func TestArticleList(t *testing.T) {
 		ctx := context.Background()
 
 		item1 := model.CreateArticle(
-			article.Title("title1"),
 			article.URL("https://example.com/1"),
+			article.Title("title1"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com/1"),
 			article.TagList([]article.Tag{
@@ -222,8 +222,8 @@ func TestArticleList(t *testing.T) {
 		}
 
 		item2 := model.CreateArticle(
-			article.Title("title2"),
 			article.URL("https://example.com/2"),
+			article.Title("title2"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com/2"),
 			article.TagList([]article.Tag{
@@ -261,8 +261,8 @@ func TestArticleList(t *testing.T) {
 		ctx := context.Background()
 
 		item1 := model.CreateArticle(
-			article.Title("title1"),
 			article.URL("https://example.com/1"),
+			article.Title("title1"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com/1"),
 			article.TagList([]article.Tag{
@@ -276,8 +276,8 @@ func TestArticleList(t *testing.T) {
 		}
 
 		item2 := model.CreateArticle(
-			article.Title("title2"),
 			article.URL("https://example.com/2"),
+			article.Title("title2"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com/2"),
 			article.TagList([]article.Tag{
@@ -315,8 +315,8 @@ func TestArticleList(t *testing.T) {
 		ctx := context.Background()
 
 		item1 := model.CreateArticle(
-			article.Title("title1"),
 			article.URL("https://example.com/1"),
+			article.Title("title1"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com/1"),
 			article.TagList([]article.Tag{
@@ -330,8 +330,8 @@ func TestArticleList(t *testing.T) {
 		}
 
 		item2 := model.CreateArticle(
-			article.Title("title2"),
 			article.URL("https://example.com/2"),
+			article.Title("title2"),
 			article.Description("description"),
 			article.Thumbnail("https://example.com/2"),
 			article.TagList([]article.Tag{
