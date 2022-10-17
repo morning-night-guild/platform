@@ -106,3 +106,128 @@ func TestNewTagList(t *testing.T) {
 		})
 	}
 }
+
+func TestContains(t *testing.T) {
+	t.Parallel()
+
+	type args struct {
+		value article.Tag
+	}
+
+	tests := []struct {
+		name    string
+		tagList article.TagList
+		args    args
+		want    bool
+	}{
+		{
+			name: "リスト内にタグが存在する場合はtrueが返る",
+			tagList: []article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+				article.Tag("tag3"),
+				article.Tag("tag4"),
+				article.Tag("tag5"),
+			},
+			args: args{
+				value: article.Tag("tag1"),
+			},
+			want: true,
+		},
+		{
+			name: "リスト内にタグが存在しない場合はfalseが返る",
+			tagList: []article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+				article.Tag("tag3"),
+				article.Tag("tag4"),
+				article.Tag("tag5"),
+			},
+			args: args{
+				value: article.Tag("tag99"),
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := tt.tagList.Contains(tt.args.value)
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAppend(t *testing.T) {
+	t.Parallel()
+
+	type args struct {
+		value article.Tag
+	}
+
+	tests := []struct {
+		name    string
+		tagList article.TagList
+		args    args
+		want    article.TagList
+	}{
+		{
+			name: "リスト内に対象のタグが存在する場合、元のタグリストが返る",
+			tagList: []article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+				article.Tag("tag3"),
+				article.Tag("tag4"),
+				article.Tag("tag5"),
+			},
+			args: args{
+				value: article.Tag("tag1"),
+			},
+			want: []article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+				article.Tag("tag3"),
+				article.Tag("tag4"),
+				article.Tag("tag5"),
+			},
+		},
+		{
+			name: "リスト内に対象のタグが存在しない場合、対象のタグが追加されたタグリストが返る",
+			tagList: []article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+				article.Tag("tag3"),
+				article.Tag("tag4"),
+				article.Tag("tag5"),
+			},
+			args: args{
+				value: article.Tag("tag99"),
+			},
+			want: []article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+				article.Tag("tag3"),
+				article.Tag("tag4"),
+				article.Tag("tag5"),
+				article.Tag("tag99"),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := tt.tagList.Append(tt.args.value)
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
