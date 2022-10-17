@@ -2,13 +2,14 @@ package gateway
 
 import (
 	"context"
-	"database/sql"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/morning-night-guild/platform/app/core/model"
 	"github.com/morning-night-guild/platform/app/core/usecase/repository"
 	"github.com/morning-night-guild/platform/pkg/ent"
 	"github.com/morning-night-guild/platform/pkg/ent/article"
-	"github.com/morning-night-guild/platform/pkg/log"
+	"github.com/morning-night-guild/platform/pkg/ent/articletag"
 	"github.com/pkg/errors"
 )
 
@@ -30,23 +31,27 @@ func NewArticle(rdb *RDB) *Article {
 func (a *Article) Save(ctx context.Context, item model.Article) error {
 	id := item.ID.Value()
 
+	now := time.Now().UTC()
+
 	err := a.rdb.Article.Create().
 		SetID(id).
 		SetTitle(item.Title.String()).
 		SetURL(item.URL.String()).
 		SetDescription(item.Description.String()).
 		SetThumbnail(item.Thumbnail.String()).
+		SetCreatedAt(now).
+		SetUpdatedAt(now).
 		OnConflict().
 		DoNothing().
 		Exec(ctx)
 
-	if err != nil && isDuplicatedError(ctx, err) {
-		if ea, err := a.findByURL(ctx, item.URL.String()); err == nil {
+	if err != nil && a.rdb.IsDuplicatedError(ctx, err) {
+		if ea, err := a.rdb.Article.Query().Where(article.URLEQ(item.URL.String())).First(ctx); err == nil {
 			id = ea.ID
 		} else {
-			return err
+			return errors.Wrap(err, "failed to save")
 		}
-	} else {
+	} else if err != nil {
 		return errors.Wrap(err, "failed to save")
 	}
 
@@ -70,29 +75,69 @@ func (a *Article) Save(ctx context.Context, item model.Article) error {
 		return nil
 	}
 
-	if isDuplicatedError(ctx, err) {
+	if a.rdb.IsDuplicatedError(ctx, err) {
 		return nil
 	}
 
 	return errors.Wrap(err, "failed to save")
 }
 
-// isDuplicatedError 重複エラーであるかを判定する関数.
-func isDuplicatedError(ctx context.Context, err error) bool {
-	// https://github.com/ent/ent/issues/2176 により、
-	// on conflict do nothingとしてもerror no rowsが返るため、個別にハンドリングする
-	if errors.Is(err, sql.ErrNoRows) {
-		log := log.GetLogCtx(ctx)
-
-		log.Debug(err.Error())
-
-		return true
+// FindAll 記事を取得するメソッド.
+func (a *Article) FindAll(ctx context.Context, index repository.Index, size repository.Size) ([]model.Article, error) {
+	// ent articles
+	eas, err := a.rdb.Article.Query().
+		Order(ent.Desc(article.FieldCreatedAt)).
+		Offset(index.Int()).
+		Limit(size.Int()).
+		All(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to article query")
 	}
 
-	return false
-}
+	// article ids
+	aids := make([]uuid.UUID, len(eas))
 
-// findByURL URLから記事を検索するメソッド.
-func (a *Article) findByURL(ctx context.Context, url string) (*ent.Article, error) {
-	return a.rdb.Article.Query().Where(article.URLEQ(url)).First(ctx)
+	// ent article map
+	eam := make(map[uuid.UUID]ent.Article, len(eas))
+
+	for i, ea := range eas {
+		aids[i] = ea.ID
+		eam[ea.ID] = *ea
+	}
+
+	// ent article tags
+	eats, err := a.rdb.ArticleTag.Query().
+		Where(articletag.ArticleIDIn(aids...)).
+		All(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to article tag query")
+	}
+
+	// each article id tag slice
+	// ent article tag map
+	eatm := make(map[uuid.UUID][]string)
+
+	for _, eat := range eats {
+		eatm[eat.ArticleID] = append(eatm[eat.ArticleID], eat.Tag)
+	}
+
+	articles := make([]model.Article, len(eas))
+
+	for i, ea := range eas {
+		tags, ok := eatm[ea.ID]
+		if !ok {
+			tags = []string{}
+		}
+
+		articles[i] = model.ReconstructArticle(
+			ea.ID,
+			ea.Title,
+			ea.URL,
+			ea.Description,
+			ea.Thumbnail,
+			tags,
+		)
+	}
+
+	return articles, nil
 }
