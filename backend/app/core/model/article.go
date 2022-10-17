@@ -1,6 +1,9 @@
 package model
 
-import "github.com/morning-night-guild/platform/app/core/model/article"
+import (
+	"github.com/google/uuid"
+	"github.com/morning-night-guild/platform/app/core/model/article"
+)
 
 // Article 記事モデル.
 type Article struct {
@@ -35,6 +38,31 @@ func NewArticle(
 	}
 
 	return article, nil
+}
+
+// ReconstructArticle 記事モデルの再構築関数.
+func ReconstructArticle(
+	id uuid.UUID,
+	title string,
+	url string,
+	description string,
+	thumbnail string,
+	tags []string,
+) Article {
+	tagList := make([]article.Tag, 0, len(tags))
+
+	for _, tag := range tags {
+		tagList = append(tagList, article.Tag(tag))
+	}
+
+	return Article{
+		ID:          article.ID(id),
+		Title:       article.Title(title),
+		URL:         article.URL(url),
+		Description: article.Description(description),
+		Thumbnail:   article.Thumbnail(thumbnail),
+		TagList:     article.TagList(tagList),
+	}
 }
 
 // validate 記事を検証するメソッド.
