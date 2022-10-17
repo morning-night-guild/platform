@@ -43,7 +43,7 @@ core:
 
 .PHONY: gen
 gen:
-	@rm -rf app/core/wire_gen.go && go generate ./... && (cd app/core && wire)
+	@rm -rf app/core/wire_gen.go && go generate ./... && (cd app/core && wire) && go mod tidy
 
 .PHONY: migrate
 migrate:
