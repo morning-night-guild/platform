@@ -9,41 +9,10 @@ import (
 	"github.com/morning-night-guild/platform/app/core/model"
 	"github.com/morning-night-guild/platform/app/core/model/article"
 	interactor "github.com/morning-night-guild/platform/app/core/usecase/interactor/article"
+	"github.com/morning-night-guild/platform/app/core/usecase/mock"
 	"github.com/morning-night-guild/platform/app/core/usecase/port"
 	"github.com/morning-night-guild/platform/app/core/usecase/repository"
 )
-
-var (
-	_ repository.Article = (*ArticleMock)(nil)
-	_ repository.OGP     = (*OGPMock)(nil)
-)
-
-// Article 記事リポジトリのモック.
-type ArticleMock struct {
-	Err error
-}
-
-// Save 記事を保存するモックメソッド.
-func (a *ArticleMock) Save(ctx context.Context, article model.Article) error {
-	return a.Err
-}
-
-// OGP OGPリポジトリのモック.
-type OGPMock struct {
-	Article model.Article
-	Err     error
-}
-
-// Create 記事を作成するモックメソッド.
-func (o *OGPMock) Create(ctx context.Context, url article.URL) (model.Article, error) {
-	if o.Err != nil {
-		return model.Article{}, o.Err
-	}
-
-	o.Article.URL = url
-
-	return o.Article, nil
-}
 
 func TestShareInteractorExecute(t *testing.T) {
 	t.Parallel()
@@ -68,14 +37,14 @@ func TestShareInteractorExecute(t *testing.T) {
 		{
 			name: "記事を共有できる",
 			fields: fields{
-				articleRepository: &ArticleMock{
+				articleRepository: &mock.Article{
 					Err: nil,
 				},
-				ogpRepository: &OGPMock{
+				ogpRepository: &mock.OGP{
 					Article: model.CreateArticle(
-						article.Title("タイトル"),
+						article.Title("title"),
 						article.URL("https://example.com"),
-						article.Description("説明"),
+						article.Description("description"),
 						article.Thumbnail("https://example.com/image"),
 						article.TagList{},
 					),
@@ -93,14 +62,14 @@ func TestShareInteractorExecute(t *testing.T) {
 		{
 			name: "記事Repositoryのerrorを握りつぶさない",
 			fields: fields{
-				articleRepository: &ArticleMock{
+				articleRepository: &mock.Article{
 					Err: errors.New("article repository error"),
 				},
-				ogpRepository: &OGPMock{
+				ogpRepository: &mock.OGP{
 					Article: model.CreateArticle(
-						article.Title("タイトル"),
+						article.Title("title"),
 						article.URL("https://example.com"),
-						article.Description("説明"),
+						article.Description("description"),
 						article.Thumbnail("https://example.com/image"),
 						article.TagList{},
 					),
@@ -118,10 +87,10 @@ func TestShareInteractorExecute(t *testing.T) {
 		{
 			name: "OGPRepositoryのerrorを握りつぶさない",
 			fields: fields{
-				articleRepository: &ArticleMock{
+				articleRepository: &mock.Article{
 					Err: nil,
 				},
-				ogpRepository: &OGPMock{
+				ogpRepository: &mock.OGP{
 					Article: model.Article{},
 					Err:     errors.New("ogp repository error"),
 				},
