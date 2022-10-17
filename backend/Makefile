@@ -38,7 +38,7 @@ test:
 	-count=1
 
 .PHONY: core
-run:
+core:
 	@go run app/core/main.go app/core/wire_gen.go
 
 .PHONY: gen
