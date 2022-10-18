@@ -355,4 +355,82 @@ func TestArticleList(t *testing.T) {
 			t.Errorf("FindAll() = %v, want %v", got, articles)
 		}
 	})
+
+	t.Run("保存されている記事数を超えるサイズを指定して記事を一覧できる", func(t *testing.T) {
+		t.Parallel()
+
+		rdb, err := NewRDBClientMock(t).Of(uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ag := gateway.NewArticle(rdb)
+
+		ctx := context.Background()
+
+		item := model.CreateArticle(
+			article.URL("https://example.com"),
+			article.Title("title"),
+			article.Description("description"),
+			article.Thumbnail("https://example.com"),
+			article.TagList([]article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+			}),
+		)
+
+		if err := ag.Save(ctx, item); err != nil {
+			t.Fatal(err)
+		}
+
+		got, err := ag.FindAll(ctx, repository.Index(0), repository.Size(2))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		articles := []model.Article{item}
+
+		if !reflect.DeepEqual(got, articles) {
+			t.Errorf("FindAll() = %v, want %v", got, articles)
+		}
+	})
+
+	t.Run("保存されている記事数を超えてインデックスを指定して記事を一覧できる", func(t *testing.T) {
+		t.Parallel()
+
+		rdb, err := NewRDBClientMock(t).Of(uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ag := gateway.NewArticle(rdb)
+
+		ctx := context.Background()
+
+		item := model.CreateArticle(
+			article.URL("https://example.com"),
+			article.Title("title"),
+			article.Description("description"),
+			article.Thumbnail("https://example.com"),
+			article.TagList([]article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+			}),
+		)
+
+		if err := ag.Save(ctx, item); err != nil {
+			t.Fatal(err)
+		}
+
+		got, err := ag.FindAll(ctx, repository.Index(2), repository.Size(2))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		articles := []model.Article{}
+
+		if !reflect.DeepEqual(got, articles) {
+			t.Errorf("FindAll() = %v, want %v", got, articles)
+		}
+	})
 }
