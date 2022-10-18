@@ -35,7 +35,7 @@ func NewSize(value int) (Size, error) {
 	}
 
 	if value > maxSize {
-		msg := fmt.Sprintf("size must be less than %d", maxSize)
+		msg := fmt.Sprintf("size must be or less %d", maxSize)
 
 		return Size(-1), errors.NewValidationError(msg)
 	}
