@@ -4,12 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/morning-night-guild/platform/app/core/model"
 	"github.com/morning-night-guild/platform/app/core/usecase/repository"
 	"github.com/morning-night-guild/platform/pkg/ent"
 	"github.com/morning-night-guild/platform/pkg/ent/article"
-	"github.com/morning-night-guild/platform/pkg/ent/articletag"
 	"github.com/pkg/errors"
 )
 
@@ -85,7 +83,8 @@ func (a *Article) Save(ctx context.Context, item model.Article) error {
 // FindAll 記事を取得するメソッド.
 func (a *Article) FindAll(ctx context.Context, index repository.Index, size repository.Size) ([]model.Article, error) {
 	// ent articles
-	eas, err := a.rdb.Article.Query().
+	eas, err := a.rdb.Debug().Article.Query().
+		WithTags().
 		Order(ent.Desc(article.FieldCreatedAt)).
 		Offset(index.Int()).
 		Limit(size.Int()).
@@ -94,39 +93,12 @@ func (a *Article) FindAll(ctx context.Context, index repository.Index, size repo
 		return nil, errors.Wrap(err, "failed to article query")
 	}
 
-	// article ids
-	aids := make([]uuid.UUID, len(eas))
-
-	// ent article map
-	eam := make(map[uuid.UUID]ent.Article, len(eas))
-
-	for i, ea := range eas {
-		aids[i] = ea.ID
-		eam[ea.ID] = *ea
-	}
-
-	// ent article tags
-	eats, err := a.rdb.ArticleTag.Query().
-		Where(articletag.ArticleIDIn(aids...)).
-		All(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to article tag query")
-	}
-
-	// each article id tag slice
-	// ent article tag map
-	eatm := make(map[uuid.UUID][]string)
-
-	for _, eat := range eats {
-		eatm[eat.ArticleID] = append(eatm[eat.ArticleID], eat.Tag)
-	}
-
 	articles := make([]model.Article, len(eas))
 
 	for i, ea := range eas {
-		tags, ok := eatm[ea.ID]
-		if !ok {
-			tags = []string{}
+		tags := make([]string, len(ea.Edges.Tags))
+		for i, tag := range ea.Edges.Tags {
+			tags[i] = tag.Tag
 		}
 
 		articles[i] = model.ReconstructArticle(
