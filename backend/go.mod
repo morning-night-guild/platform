@@ -12,7 +12,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/slack-go/slack v0.11.3
 	go.uber.org/zap v1.23.0
-	golang.org/x/net cb67ada4b0ad
+	golang.org/x/net v0.0.0-20221019024206-cb67ada4b0ad
 	google.golang.org/protobuf v1.28.1
 )
 
