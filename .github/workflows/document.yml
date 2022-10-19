@@ -65,7 +65,7 @@ jobs:
 
       - name: Generate connect code
         working-directory: ./api
-        run: buf generate --template buf.backend.gen.yaml
+        run: buf generate --template buf.gen.yaml
 
       - name: Go Generate
         working-directory: ./backend
