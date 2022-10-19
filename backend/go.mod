@@ -3,7 +3,7 @@ module github.com/morning-night-guild/platform
 go 1.19
 
 require (
-	github.com/bufbuild/connect-go v1.0.0
+	github.com/bufbuild/connect-go v1.1.0
 	github.com/dyatlov/go-opengraph/opengraph v0.0.0-20220524092352-606d7b1e5f8a
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
@@ -12,7 +12,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/slack-go/slack v0.11.3
 	go.uber.org/zap v1.23.0
-	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b
+	golang.org/x/net v0.0.0-20221019024206-cb67ada4b0ad
 	google.golang.org/protobuf v1.28.1
 )
 
