@@ -37,8 +37,7 @@ func (ArticleTag) Edges() []ent.Edge {
 // Indexes of the ArticleTag.
 func (ArticleTag) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("tag", "article_id").
-			Unique(),
+		index.Fields("tag", "article_id").Unique(),
 		index.Fields("tag"),
 		index.Fields("article_id"),
 	}
