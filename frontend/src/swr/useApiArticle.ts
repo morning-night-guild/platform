@@ -1,12 +1,12 @@
 import useSWR from 'swr';
 
-import { ArticleService } from '../api/article/v1/article_connectweb';
-import { Article } from '../api/article/v1/article_pb';
 import { createPromiseClient } from '@bufbuild/connect-web';
+import { ArticleService } from '../api/article/v1/article_connectweb';
+import type { Article } from '../api/article/v1/article_pb';
 import { transport } from './transport';
 
 // 1画面に表示する記事の最大数
-const MAX_PAGE_SIZE = 100;
+const maxPageSize = 100;
 
 // クライアント作成
 const client = createPromiseClient(ArticleService, transport);
@@ -22,20 +22,16 @@ const articlesState: ArticlesState = {
 };
 
 export const useListArticles = () => {
-    const req = {
-        maxPageSize: MAX_PAGE_SIZE,
+    const request = {
+        maxPageSize,
         pageToken: articlesState.currentIndex,
     };
 
-    const fetcher = () => client.list(req);
+    const fetcher = async () => client.list(request);
 
-    const { data, error } = useSWR('/api/v1/articles', fetcher);
+    const { data } = useSWR('/api/v1/articles', fetcher);
     articlesState.data = data?.articles ?? [];
     articlesState.currentIndex = data?.nextPageToken;
-    articlesState.error = error;
 
-    return {
-        data,
-        error,
-    };
+    return data;
 };

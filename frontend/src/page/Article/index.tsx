@@ -1,10 +1,10 @@
 import { Grid, GridItem, Center, Heading, Box } from '@chakra-ui/react';
 import { Header } from '../Header';
-import { ArticleCard } from './ArticleCard';
 import { useListArticles } from '../../swr/useApiArticle';
+import { ArticleCard } from './ArticleCard';
 
 export function Article() {
-    const { data, error } = useListArticles();
+    const data = useListArticles();
 
     return (
         <>
