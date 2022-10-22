@@ -83,7 +83,7 @@ func (a *Article) Save(ctx context.Context, item model.Article) error {
 // FindAll 記事を取得するメソッド.
 func (a *Article) FindAll(ctx context.Context, index repository.Index, size repository.Size) ([]model.Article, error) {
 	// ent articles
-	eas, err := a.rdb.Debug().Article.Query().
+	eas, err := a.rdb.Article.Query().
 		WithTags().
 		Order(ent.Desc(article.FieldCreatedAt)).
 		Offset(index.Int()).
