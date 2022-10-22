@@ -14,8 +14,8 @@ func TestNewArticle(t *testing.T) {
 
 	type args struct {
 		id          article.ID
-		title       article.Title
 		url         article.URL
+		title       article.Title
 		description article.Description
 		thumbnail   article.Thumbnail
 		tags        article.TagList
@@ -31,16 +31,16 @@ func TestNewArticle(t *testing.T) {
 			name: "記事モデルが作成できる",
 			args: args{
 				id:          article.ID(uuid.MustParse("2f8e01fb-bf67-45cc-83b0-4cfa0548a9b2")),
-				title:       article.Title("タイトル"),
 				url:         article.URL("https://example.com"),
+				title:       article.Title("タイトル"),
 				description: article.Description("説明"),
 				thumbnail:   article.Thumbnail("https://example.com"),
 				tags:        article.TagList{},
 			},
 			want: model.Article{
 				ID:          article.ID(uuid.MustParse("2f8e01fb-bf67-45cc-83b0-4cfa0548a9b2")),
-				Title:       article.Title("タイトル"),
 				URL:         article.URL("https://example.com"),
+				Title:       article.Title("タイトル"),
 				Description: article.Description("説明"),
 				Thumbnail:   article.Thumbnail("https://example.com"),
 				TagList:     article.TagList{},
@@ -55,8 +55,8 @@ func TestNewArticle(t *testing.T) {
 			t.Parallel()
 			got, err := model.NewArticle(
 				tt.args.id,
-				tt.args.title,
 				tt.args.url,
+				tt.args.title,
 				tt.args.description,
 				tt.args.thumbnail,
 				tt.args.tags,

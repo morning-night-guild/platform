@@ -39,6 +39,26 @@ func (t TagList) distinct() TagList {
 	return TagList(uniq)
 }
 
+// Contains リスト内のタグの存在チェックを行うメソッド.
+func (t TagList) Contains(target Tag) bool {
+	for _, tag := range t {
+		if tag.String() == target.String() {
+			return true
+		}
+	}
+
+	return false
+}
+
+// Append タグを追加するメソッド.
+func (t TagList) Append(tag Tag) TagList {
+	if t.Contains(tag) {
+		return t
+	}
+
+	return append(t, tag)
+}
+
 // validate タグリストを検証するメソッド.
 func (t TagList) validate() error {
 	if t.Len() > maxTagLength {

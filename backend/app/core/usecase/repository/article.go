@@ -8,4 +8,5 @@ import (
 
 type Article interface {
 	Save(context.Context, model.Article) error
+	FindAll(context.Context, Index, Size) ([]model.Article, error)
 }
