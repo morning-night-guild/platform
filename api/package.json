@@ -3,7 +3,7 @@
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
-    "@bufbuild/protoc-gen-connect-web": "^0.2.1",
-    "@bufbuild/protoc-gen-es": "^0.1.1"
+    "@bufbuild/protoc-gen-connect-web": "0.2.1",
+    "@bufbuild/protoc-gen-es": "0.1.1"
   }
 }
