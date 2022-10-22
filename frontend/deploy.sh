@@ -11,9 +11,9 @@ wget https://github.com/protocolbuffers/protobuf/releases/download/${PROTOC_VERS
     rm protobuf.zip && \
     chmod -R 755 /usr/local/bin/protobuf/*
 
-export PATH=PATH:/usr/local/bin/protobuf/
+export PATH=$PATH:/usr/local/bin/protobuf/
 
-curl -sL https://rpm.nodesource.com/setup_8.x | sudo bash -
+curl -sL https://rpm.nodesource.com/setup_8.x | bash -
 
 yum install nodejs
 
