@@ -4,7 +4,7 @@ steps:
   - name: "gcr.io/$PROJECT_ID/builder"
     script: |
       aqua i
-      buf generate
+      buf generate --template buf.backend.gen.yaml
     dir: "api"
   - name: "gcr.io/$PROJECT_ID/builder"
     script: |
