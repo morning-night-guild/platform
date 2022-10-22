@@ -20,6 +20,6 @@ VERSION="1.9.0" && \
     -o "${BIN}/buf" && \
   chmod +x "${BIN}/buf"
 
-(cd ../api && npm install && buf generage --template buf.frontend.gen.yaml)
+(cd ../api && npm install && buf generate --template buf.frontend.gen.yaml)
 
 yarn build
