@@ -32,8 +32,8 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [string](#string) |  |  |
-| title | [string](#string) |  |  |
 | url | [string](#string) |  |  |
+| title | [string](#string) |  |  |
 | description | [string](#string) |  |  |
 | thumbnail | [string](#string) |  |  |
 | tags | [string](#string) | repeated |  |
@@ -113,8 +113,8 @@
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Share | [ShareRequest](#article-v1-ShareRequest) | [ShareResponse](#article-v1-ShareResponse) | Need X-API-KEY Header |
-| List | [ListRequest](#article-v1-ListRequest) | [ListResponse](#article-v1-ListResponse) |  |
+| Share | [ShareRequest](#article-v1-ShareRequest) | [ShareResponse](#article-v1-ShareResponse) | 共有 Need X-API-KEY Header |
+| List | [ListRequest](#article-v1-ListRequest) | [ListResponse](#article-v1-ListResponse) | 一覧 |
 
  
 
