@@ -13,11 +13,12 @@ wget https://github.com/protocolbuffers/protobuf/releases/download/${PROTOC_VERS
 
 export PATH=$PATH:/usr/local/bin/protobuf/
 
-curl -sL https://rpm.nodesource.com/setup_8.x | bash -
-
-yum install nodejs
-
-npm install -g yarn
+BIN="/usr/local/bin" && \
+VERSION="1.9.0" && \
+  curl -sSL \
+    "https://github.com/bufbuild/buf/releases/download/v${VERSION}/buf-$(uname -s)-$(uname -m)" \
+    -o "${BIN}/buf" && \
+  chmod +x "${BIN}/buf"
 
 (cd ../api && npm install && buf generage --template buf.frontend.gen.yaml)
 
