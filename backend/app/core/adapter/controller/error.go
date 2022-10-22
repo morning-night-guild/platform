@@ -31,15 +31,17 @@ var ErrUnauthorized = connect.NewError(
 
 // handleError 発生したエラーを対応するgrpcのステータス込みのエラーに変換する関数.
 func handleError(ctx context.Context, err error) error {
-	log := log.GetLogCtx(ctx)
+	logger := log.GetLogCtx(ctx)
 
 	switch {
-	case asValidationError(err):
-		log.Warn(err.Error())
+	case
+		asValidationError(err),
+		asURLError(err):
+		logger.Warn(err.Error())
 
 		return ErrInvalidArgument
 	default:
-		log.Error(err.Error())
+		logger.Error(err.Error())
 
 		return ErrInternal
 	}
@@ -47,6 +49,12 @@ func handleError(ctx context.Context, err error) error {
 
 func asValidationError(err error) bool {
 	var target me.ValidationError
+
+	return errors.As(err, &target)
+}
+
+func asURLError(err error) bool {
+	var target me.URLError
 
 	return errors.As(err, &target)
 }
