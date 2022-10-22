@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -17,6 +16,7 @@ import (
 	"github.com/bufbuild/connect-go"
 	articlev1 "github.com/morning-night-guild/platform/pkg/connect/article/v1"
 	"github.com/morning-night-guild/platform/pkg/connect/article/v1/articlev1connect"
+	"github.com/morning-night-guild/platform/pkg/log"
 	"github.com/pkg/errors"
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
@@ -32,17 +32,17 @@ const (
 func main() {
 	secret := os.Getenv("SLACK_SIGNING_SECRET")
 	if len(secret) == 0 {
-		log.Fatal("secret no set")
+		log.Log().Fatal("secret no set")
 	}
 
 	coreServiceURL := os.Getenv("CORE_SERVICE_URL")
 	if len(coreServiceURL) == 0 {
-		log.Fatal("service url no set")
+		log.Log().Fatal("service url no set")
 	}
 
 	apiKey := os.Getenv("API_KEY")
 	if len(apiKey) == 0 {
-		log.Fatal("api key no set")
+		log.Log().Fatal("api key no set")
 	}
 
 	mux := http.NewServeMux()
@@ -67,11 +67,11 @@ func main() {
 		ReadHeaderTimeout: readHeaderTimeout,
 	}
 
-	log.Printf("Server running on %s", s.Addr)
+	log.Log().Sugar().Infof("Server running on %s", s.Addr)
 
 	go func() {
 		if err := s.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalln("Server closed with error:", err)
+			log.Log().Sugar().Fatalf("Server closed with error: %v", err)
 		}
 	}()
 
@@ -79,17 +79,17 @@ func main() {
 
 	signal.Notify(quit, syscall.SIGTERM, os.Interrupt)
 
-	log.Printf("SIGNAL %d received, then shutting down...\n", <-quit)
+	log.Log().Sugar().Infof("SIGNAL %d received, then shutting down...\n", <-quit)
 
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownTime*time.Second)
 
 	defer cancel()
 
 	if err := s.Shutdown(ctx); err != nil {
-		log.Println("Failed to gracefully shutdown:", err)
+		log.Log().Sugar().Warnf("Failed to gracefully shutdown: %v", err)
 	}
 
-	log.Println("HTTPServer shutdown")
+	log.Log().Info("HTTPServer shutdown")
 }
 
 type SlackHandler struct {
@@ -98,6 +98,10 @@ type SlackHandler struct {
 }
 
 func (s SlackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := log.SetLogCtx(r.Context())
+
+	logger := log.GetLogCtx(ctx)
+
 	// @see https://github.com/slack-go/slack/blob/master/examples/eventsapi/events.go
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -128,10 +132,11 @@ func (s SlackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if eventsAPIEvent.Type == slackevents.CallbackEvent {
 		innerEvent := eventsAPIEvent.InnerEvent
 
-		log.Printf("receved event type is %s", innerEvent.Type)
+		logger.Sugar().Infof("receved event type is %s", innerEvent.Type)
 
-		if err := s.handleSlackEvent(r.Context(), innerEvent); err != nil {
-			log.Printf("error occurred %v", err)
+		if err := s.handleSlackEvent(ctx, innerEvent); err != nil {
+			logger.Sugar().Errorf("error occurred %v", err)
+
 			w.WriteHeader(http.StatusInternalServerError)
 
 			return
@@ -140,19 +145,26 @@ func (s SlackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s SlackHandler) handleSlackEvent(ctx context.Context, event slackevents.EventsAPIInnerEvent) error {
+	logger := log.GetLogCtx(ctx)
+
 	switch ev := event.Data.(type) {
 	// @see https://api.slack.com/events/link_shared
 	// link_shareのイベントは発火しなかったため一旦断念
 	// @see https://api.slack.com/events/message
 	case *slackevents.MessageEvent:
+		logger.Sugar().Infof("message event is %+v", ev)
+
 		if len(ev.Text) == 0 {
-			log.Println("message is empty")
+			logger.Warn("message is empty")
 
 			return nil
 		}
 
 		r := regexp.MustCompile(`http(.*)://([a-zA-Z0-9/\-\_\.]*)`)
+
 		u := r.FindString(ev.Text)
+
+		logger.Sugar().Infof("found url is %s", u)
 
 		if _, err := url.Parse(u); err != nil {
 			return err
@@ -163,7 +175,7 @@ func (s SlackHandler) handleSlackEvent(ctx context.Context, event slackevents.Ev
 		}
 	default:
 		// errorを返すとslackがリトライしてくるため
-		log.Printf("undefined event %+v", ev)
+		logger.Sugar().Infof("undefined event %+v", ev)
 
 		return nil
 	}
