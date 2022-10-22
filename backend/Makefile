@@ -45,6 +45,10 @@ core:
 gen:
 	@rm -rf app/core/wire_gen.go && go generate ./... && (cd app/core && wire) && go mod tidy
 
+.PHONY: doc
+doc:
+	@rm -rf doc && tbls doc "postgres://$(POSTGRES_USER):$(POSTGRES_PASS)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable" doc/databases
+
 .PHONY: migrate
 migrate:
 	@go run cmd/migrate/main.go

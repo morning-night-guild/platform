@@ -1,3 +1,4 @@
+doc
 pkg/ent/*/*
 pkg/ent/*.go
 !pkg/ent/schema/*

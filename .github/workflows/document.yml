@@ -1,0 +1,123 @@
+name: document
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - api/**/*.proto
+      - backend/pkg/ent/schema/*.go
+  pull_request:
+    paths:
+      - api/**/*.proto
+      - backend/pkg/ent/schema/*.go
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up protoc
+        uses: arduino/setup-protoc@v1
+
+      - name: Generate grpc document
+        run: |
+          go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+          mkdir -p public/api
+          protoc --doc_out=./public/api --doc_opt=markdown,README.md $(find api -name '*.proto')
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: document-api
+          path: public
+
+  database:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14.5
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: ./.github/actions/go
+
+      - name: Set up tbls
+        run: go install github.com/k1LoW/tbls@main
+
+      - name: Generate connect code
+        working-directory: ./api
+        run: buf generate --template buf.gen.yaml
+
+      - name: Go Generate
+        working-directory: ./backend
+        run: go generate ./...
+
+      - name: Set up wire
+        working-directory: ./backend/app/core
+        run: wire
+
+      - name: Migrate
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+        run: go run cmd/migrate/main.go
+
+      - name: Generate database document
+        run: tbls doc "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable" public/database
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: document-database
+          path: public
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: [api, database]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download document api
+        uses: actions/download-artifact@v3
+        with:
+          name: document-api
+
+      - name: Download document database
+        uses: actions/download-artifact@v3
+        with:
+          name: document-database
+
+      - name: Confirm
+        working-directory: api
+        run: ls -la
+
+      - name: Copy
+        run: |
+          mkdir public
+          cp -r api/ public/
+          cp -r database/ public/
+
+      - name: Publish
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
