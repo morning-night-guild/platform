@@ -1,6 +1,6 @@
 .PHONY: tool
 tool:
-	@aqua i
+	@aqua i && npm install
 
 .PHONY: lint
 lint:
@@ -10,9 +10,13 @@ lint:
 format:
 	@buf format -w
 
-.PHONY: gen
-gen:
-	@buf generate
+.PHONY: backend
+backend:
+	@buf generate --template buf.backend.gen.yaml
+
+.PHONY: frontend
+frontend:
+	@buf generate --template buf.frontend.gen.yaml
 
 .PHONY: doc
 doc:
