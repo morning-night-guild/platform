@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/dyatlov/go-opengraph/opengraph"
 	"github.com/morning-night-guild/platform/app/core/model"
 	"github.com/morning-night-guild/platform/app/core/model/article"
+	"github.com/morning-night-guild/platform/app/core/model/errors"
 	"github.com/morning-night-guild/platform/app/core/usecase/repository"
 )
 
@@ -39,6 +41,12 @@ func (o *OGP) Create(ctx context.Context, url article.URL) (model.Article, error
 	}
 
 	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		msg := fmt.Sprintf("failed to open url. http status is %d, url is %s", res.StatusCode, url.String())
+
+		return model.Article{}, errors.NewURLError(msg)
+	}
 
 	body, _ := io.ReadAll(res.Body)
 
