@@ -44,3 +44,5 @@ issues:
         - cyclop
         - errorlint
         - tenv
+        - gocognit
+        - maintidx

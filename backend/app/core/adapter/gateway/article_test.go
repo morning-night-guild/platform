@@ -11,6 +11,7 @@ import (
 	"github.com/morning-night-guild/platform/app/core/adapter/gateway"
 	"github.com/morning-night-guild/platform/app/core/model"
 	"github.com/morning-night-guild/platform/app/core/model/article"
+	"github.com/morning-night-guild/platform/app/core/usecase/repository"
 	"github.com/morning-night-guild/platform/pkg/ent"
 	"github.com/morning-night-guild/platform/pkg/ent/articletag"
 	"github.com/morning-night-guild/platform/pkg/ent/enttest"
@@ -60,9 +61,9 @@ func TestArticleSave(t *testing.T) {
 		ctx := context.Background()
 
 		a := model.CreateArticle(
-			article.Title("タイトル"),
 			article.URL("https://example.com"),
-			article.Description("説明"),
+			article.Title("title"),
+			article.Description("description"),
 			article.Thumbnail("https://example.com"),
 			article.TagList{},
 		)
@@ -78,8 +79,8 @@ func TestArticleSave(t *testing.T) {
 
 		got, _ := model.NewArticle(
 			article.ID(found.ID),
-			article.Title(found.Title),
 			article.URL(found.URL),
+			article.Title(found.Title),
 			article.Description(found.Description),
 			article.Thumbnail(found.Thumbnail),
 			article.TagList{},
@@ -91,9 +92,9 @@ func TestArticleSave(t *testing.T) {
 
 		// 同じURLを保存してもerrorにならないことを確認
 		if err := ag.Save(ctx, model.CreateArticle(
-			article.Title("タイトル"),
 			article.URL("https://example.com"),
-			article.Description("説明"),
+			article.Title("title"),
+			article.Description("description"),
 			article.Thumbnail("https://example.com"),
 			article.TagList{},
 		)); err != nil {
@@ -114,9 +115,9 @@ func TestArticleSave(t *testing.T) {
 		ctx := context.Background()
 
 		if err := ag.Save(ctx, model.CreateArticle(
-			article.Title("タイトル"),
 			article.URL("https://example.com"),
-			article.Description("説明"),
+			article.Title("title"),
+			article.Description("description"),
 			article.Thumbnail("https://example.com"),
 			article.TagList([]article.Tag{
 				article.Tag("tag1"),
@@ -143,9 +144,9 @@ func TestArticleSave(t *testing.T) {
 		ctx := context.Background()
 
 		a1 := model.CreateArticle(
-			article.Title("タイトル"),
-			article.URL("https://example.com1"),
-			article.Description("説明"),
+			article.URL("https://example.com"),
+			article.Title("title"),
+			article.Description("description"),
 			article.Thumbnail("https://example.com"),
 			article.TagList([]article.Tag{
 				article.Tag("tag1"),
@@ -154,9 +155,9 @@ func TestArticleSave(t *testing.T) {
 		)
 
 		a2 := model.CreateArticle(
-			article.Title("タイトル"),
-			article.URL("https://example.com1"),
-			article.Description("説明"),
+			article.URL("https://example.com"),
+			article.Title("title"),
+			article.Description("description"),
 			article.Thumbnail("https://example.com"),
 			article.TagList([]article.Tag{
 				article.Tag("tag1"),
@@ -186,6 +187,250 @@ func TestArticleSave(t *testing.T) {
 
 		if !reflect.DeepEqual(a1.TagList, got) {
 			t.Errorf("NewArticle() = %v, want %v", got, a1.TagList)
+		}
+	})
+}
+
+func TestArticleList(t *testing.T) {
+	t.Parallel()
+
+	t.Run("記事を一覧できる（単数）", func(t *testing.T) {
+		t.Parallel()
+
+		rdb, err := NewRDBClientMock(t).Of(uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ag := gateway.NewArticle(rdb)
+
+		ctx := context.Background()
+
+		item1 := model.CreateArticle(
+			article.URL("https://example.com/1"),
+			article.Title("title1"),
+			article.Description("description"),
+			article.Thumbnail("https://example.com/1"),
+			article.TagList([]article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+			}),
+		)
+
+		if err := ag.Save(ctx, item1); err != nil {
+			t.Fatal(err)
+		}
+
+		item2 := model.CreateArticle(
+			article.URL("https://example.com/2"),
+			article.Title("title2"),
+			article.Description("description"),
+			article.Thumbnail("https://example.com/2"),
+			article.TagList([]article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+			}),
+		)
+
+		if err := ag.Save(ctx, item2); err != nil {
+			t.Fatal(err)
+		}
+
+		got, err := ag.FindAll(ctx, repository.Index(0), repository.Size(1))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		articles := []model.Article{item2}
+
+		if !reflect.DeepEqual(got, articles) {
+			t.Errorf("FindAll() = %v, want %v", got, articles)
+		}
+	})
+
+	t.Run("オフセットを指定して記事を一覧できる（単数）", func(t *testing.T) {
+		t.Parallel()
+
+		rdb, err := NewRDBClientMock(t).Of(uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ag := gateway.NewArticle(rdb)
+
+		ctx := context.Background()
+
+		item1 := model.CreateArticle(
+			article.URL("https://example.com/1"),
+			article.Title("title1"),
+			article.Description("description"),
+			article.Thumbnail("https://example.com/1"),
+			article.TagList([]article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+			}),
+		)
+
+		if err := ag.Save(ctx, item1); err != nil {
+			t.Fatal(err)
+		}
+
+		item2 := model.CreateArticle(
+			article.URL("https://example.com/2"),
+			article.Title("title2"),
+			article.Description("description"),
+			article.Thumbnail("https://example.com/2"),
+			article.TagList([]article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+			}),
+		)
+
+		if err := ag.Save(ctx, item2); err != nil {
+			t.Fatal(err)
+		}
+
+		got, err := ag.FindAll(ctx, repository.Index(1), repository.Size(1))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		articles := []model.Article{item1}
+
+		if !reflect.DeepEqual(got, articles) {
+			t.Errorf("FindAll() = %v, want %v", got, articles)
+		}
+	})
+
+	t.Run("記事を一覧できる（複数）", func(t *testing.T) {
+		t.Parallel()
+
+		rdb, err := NewRDBClientMock(t).Of(uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ag := gateway.NewArticle(rdb)
+
+		ctx := context.Background()
+
+		item1 := model.CreateArticle(
+			article.URL("https://example.com/1"),
+			article.Title("title1"),
+			article.Description("description"),
+			article.Thumbnail("https://example.com/1"),
+			article.TagList([]article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+			}),
+		)
+
+		if err := ag.Save(ctx, item1); err != nil {
+			t.Fatal(err)
+		}
+
+		item2 := model.CreateArticle(
+			article.URL("https://example.com/2"),
+			article.Title("title2"),
+			article.Description("description"),
+			article.Thumbnail("https://example.com/2"),
+			article.TagList([]article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+			}),
+		)
+
+		if err := ag.Save(ctx, item2); err != nil {
+			t.Fatal(err)
+		}
+
+		got, err := ag.FindAll(ctx, repository.Index(0), repository.Size(2))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		articles := []model.Article{item2, item1}
+
+		if !reflect.DeepEqual(got, articles) {
+			t.Errorf("FindAll() = %v, want %v", got, articles)
+		}
+	})
+
+	t.Run("保存されている記事数を超えるサイズを指定して記事を一覧できる", func(t *testing.T) {
+		t.Parallel()
+
+		rdb, err := NewRDBClientMock(t).Of(uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ag := gateway.NewArticle(rdb)
+
+		ctx := context.Background()
+
+		item := model.CreateArticle(
+			article.URL("https://example.com"),
+			article.Title("title"),
+			article.Description("description"),
+			article.Thumbnail("https://example.com"),
+			article.TagList([]article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+			}),
+		)
+
+		if err := ag.Save(ctx, item); err != nil {
+			t.Fatal(err)
+		}
+
+		got, err := ag.FindAll(ctx, repository.Index(0), repository.Size(2))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		articles := []model.Article{item}
+
+		if !reflect.DeepEqual(got, articles) {
+			t.Errorf("FindAll() = %v, want %v", got, articles)
+		}
+	})
+
+	t.Run("保存されている記事数を超えてインデックスを指定して記事を一覧できる", func(t *testing.T) {
+		t.Parallel()
+
+		rdb, err := NewRDBClientMock(t).Of(uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ag := gateway.NewArticle(rdb)
+
+		ctx := context.Background()
+
+		item := model.CreateArticle(
+			article.URL("https://example.com"),
+			article.Title("title"),
+			article.Description("description"),
+			article.Thumbnail("https://example.com"),
+			article.TagList([]article.Tag{
+				article.Tag("tag1"),
+				article.Tag("tag2"),
+			}),
+		)
+
+		if err := ag.Save(ctx, item); err != nil {
+			t.Fatal(err)
+		}
+
+		got, err := ag.FindAll(ctx, repository.Index(2), repository.Size(2))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		articles := []model.Article{}
+
+		if !reflect.DeepEqual(got, articles) {
+			t.Errorf("FindAll() = %v, want %v", got, articles)
 		}
 	})
 }

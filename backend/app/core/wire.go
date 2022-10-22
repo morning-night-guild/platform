@@ -41,6 +41,8 @@ var gatewaySet = wire.NewSet(
 var interactorSet = wire.NewSet(
 	wire.Bind(new(port.ShareArticle), new(*article.ShareInteractor)),
 	article.NewShareInteractor,
+	wire.Bind(new(port.ListArticle), new(*article.ListInteractor)),
+	article.NewListInteractor,
 )
 
 var controllerSet = wire.NewSet(

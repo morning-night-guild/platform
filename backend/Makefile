@@ -37,13 +37,13 @@ test:
 	` \
 	-count=1
 
-.PHONY: run
-run:
+.PHONY: core
+core:
 	@go run app/core/main.go app/core/wire_gen.go
 
 .PHONY: gen
 gen:
-	@rm -rf app/core/wire_gen.go && go generate ./... && (cd app/core && wire)
+	@rm -rf app/core/wire_gen.go && go generate ./... && (cd app/core && wire) && go mod tidy
 
 .PHONY: migrate
 migrate:
