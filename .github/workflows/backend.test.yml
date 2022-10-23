@@ -21,8 +21,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up Go
-        uses: ./.github/actions/go
+      - name: Set up backend
+        uses: ./.github/actions/backend/setup
 
       - name: Generate connect code
         working-directory: ./api
