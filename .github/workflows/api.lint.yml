@@ -7,7 +7,7 @@ on:
       - api/**/*.proto
 
 jobs:
-  check:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
