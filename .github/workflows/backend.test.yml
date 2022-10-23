@@ -10,6 +10,8 @@ on:
       - backend/go.sum
   pull_request:
     paths:
+      - .github/actions/backend/setup/action.yml
+      - .github/workflows/backend.test.yml
       - backend/**/*.go
       - backend/go.mod
       - backend/go.sum
