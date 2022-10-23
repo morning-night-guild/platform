@@ -1,0 +1,28 @@
+name: frontend lint
+
+on:
+  pull_request:
+    paths:
+      - frontend/*
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up frontend
+        uses: ./.github/actions/frontend/setup
+
+      - name: Install
+        working-directory: ./frontend
+        run: yarn install
+
+      - name: Build
+        working-directory: ./frontend
+        run: yarn build
+
+      - name: Lint
+        working-directory: ./frontend
+        run: yarn xo
