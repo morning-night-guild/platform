@@ -3,6 +3,7 @@ name: api lint
 on:
   pull_request:
     paths:
+      - .github/workflows/api.lint.yml
       - api/**/*.proto
 
 jobs:
