@@ -15,13 +15,13 @@ jobs:
       - name: Set up frontend
         uses: ./.github/actions/frontend/setup
 
-      - name: Generate connect code
-        working-directory: ./api
-        run: buf generate --template buf.frontend.gen.yaml
-
       - name: Install
         working-directory: ./frontend
         run: yarn install
+
+      - name: Generate connect code
+        working-directory: ./api
+        run: buf generate --template buf.frontend.gen.yaml
 
       - name: Build
         working-directory: ./frontend
