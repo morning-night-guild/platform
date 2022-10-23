@@ -13,8 +13,8 @@
     "dependencies": {
         "@bufbuild/connect-web": "0.2.1",
         "@bufbuild/protobuf": "0.1.1",
-        "@chakra-ui/icons": "1.1.7",
-        "@chakra-ui/react": "1.8.9",
+        "@chakra-ui/icons": "2.0.11",
+        "@chakra-ui/react": "2.3.6",
         "@emotion/react": "11.10.4",
         "@emotion/styled": "11.10.4",
         "framer-motion": "5.6.0",
