@@ -21,7 +21,9 @@ jobs:
 
       - name: Generate connect code
         working-directory: ./api
-        run: buf generate --template buf.frontend.gen.yaml
+        run: |
+          npm install
+          buf generate --template buf.frontend.gen.yaml
 
       - name: Build
         working-directory: ./frontend
