@@ -1,12 +1,18 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 steps:
-  - name: "gcr.io/$PROJECT_ID/builder"
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/platform-builder", "."]
+    dir: "container/builder"
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/platform-deployer", "."]
+    dir: "container/deployer"
+  - name: "gcr.io/$PROJECT_ID/platform-builder"
     script: |
       aqua i
       buf generate --template buf.backend.gen.yaml
     dir: "api"
-  - name: "gcr.io/$PROJECT_ID/deployer"
+  - name: "gcr.io/$PROJECT_ID/platform-deployer"
     env:
       - "KO_DOCKER_REPO=gcr.io/$PROJECT_ID"
       - "REVISION_SERVICE_ACCOUNT=$_REVISION_SERVICE_ACCOUNT"
