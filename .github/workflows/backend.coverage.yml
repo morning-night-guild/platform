@@ -1,16 +1,23 @@
-name: backend test
+name: backend coverage
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend/**/*.go
+      - backend/go.mod
+      - backend/go.sum
   pull_request:
     paths:
       - .github/actions/backend/setup/action.yml
-      - .github/workflows/backend.test.yml
+      - .github/workflows/backend.coverage.yml
       - backend/**/*.go
       - backend/go.mod
       - backend/go.sum
 
 jobs:
-  test:
+  coverage:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,6 +38,14 @@ jobs:
         working-directory: ./backend/app/core
         run: wire
 
-      - name: Go Test
+      - name: Coverage
         working-directory: ./backend
-        run: go test ./...
+        run: |
+          go test ./...  -coverpkg=./... -coverprofile ./coverage_temp.txt
+          cat coverage_temp.txt | grep -v "/ent/" | grep -v "/driver/" | grep -v "/cmd/" > coverage.txt
+          rm coverage_temp.txt
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

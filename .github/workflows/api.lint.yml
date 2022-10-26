@@ -3,24 +3,25 @@ name: api lint
 on:
   pull_request:
     paths:
+      - .github/workflows/api.lint.yml
       - api/**/*.proto
 
 jobs:
-  check:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Set up Buf
         uses: bufbuild/buf-setup-action@v1
         with:
           version : 'latest'
-      
+
       - name: Buf lint
         working-directory: ./api
         run: buf lint
-      
+
       - name: Buf format
         working-directory: ./api
         run: buf format -d --exit-code
