@@ -47,7 +47,7 @@ steps:
     script: |
       gcloud run \
       deploy platform \
-      --image $(SOURCE_DATE_EPOCH=$(date +%s) ko build --sbom=none ./) \
+      --image $(SOURCE_DATE_EPOCH=$(date +%s) ko build --sbom=none --bare ./) \
       --region asia-northeast1 \
       --cpu 1 \
       --memory 128Mi \
