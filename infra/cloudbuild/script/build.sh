@@ -1,6 +1,6 @@
 #!/bin/sh
 
-apt update && apt install -y wget curl 
+apt update && apt install -y wget curl zip
 
 # install go
 wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz 
