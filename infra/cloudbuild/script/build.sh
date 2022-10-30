@@ -32,4 +32,4 @@ go install github.com/google/ko@${KO_VERSION}
     aqua i && \
     go generate ./... && \
     wire gen ./app/${SERVICE_NAME} && \
-    SOURCE_DATE_EPOCH=$(date +%s) KO_DOCKER_REPO=${GCP_REPO}/${SERVICE_NAME} ko build --sbom=none --bare ./)
+    SOURCE_DATE_EPOCH=$(date +%s) KO_DOCKER_REPO=${GCP_REPO}/${SERVICE_NAME} ko build --sbom=none --bare ./app/${SERVICE_NAME})
