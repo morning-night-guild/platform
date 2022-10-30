@@ -271,10 +271,10 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
-"@bufbuild/connect-web@0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@bufbuild/connect-web/-/connect-web-0.2.1.tgz#a7ee2914bf1b77d640fc4ee3c3a89d626f3015fa"
-  integrity sha512-L580cL9VZCXcjwXMCvIvdFBqdQofVBQcL+jmSis7m8ZxPj5NQ4p7fUhQRTsZMWHkyWINdlZnr7WsHQL0BT7wPQ==
+"@bufbuild/connect-web@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@bufbuild/connect-web/-/connect-web-0.3.0.tgz#8159df168e099d5aa6a47366d95c74b1cb1fe0b3"
+  integrity sha512-2vu1WYk7j2uzCpxJEMK3bxwHGaWwG+GeObTon3Mf+vwpFjO+B+wm+wb4nWMcG23WVdAtIOkUD5aoRBNPYbSlbA==
 
 "@bufbuild/protobuf@0.2.0":
   version "0.2.0"
