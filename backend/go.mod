@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
 	github.com/lib/pq v1.10.7
-	github.com/mattn/go-sqlite3 v1.14.15
+	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.2
 	github.com/slack-go/slack v0.11.3
@@ -25,8 +25,8 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.7.2-0.20220927111110-867ee0cca56a // indirect
-	entgo.io/ent v0.11.3
+	ariga.io/atlas v0.7.3-0.20221011160332-3ca609863edd // indirect
+	entgo.io/ent v0.11.4
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
