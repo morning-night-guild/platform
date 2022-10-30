@@ -40,7 +40,7 @@ steps:
     dir: "backend"
   - name: "gcr.io/$PROJECT_ID/platform-deployer"
     env:
-      - "KO_DOCKER_REPO=gcr.io/$PROJECT_ID"
+      - "KO_DOCKER_REPO=gcr.io/$PROJECT_ID/core"
       - "REVISION_SERVICE_ACCOUNT=$_REVISION_SERVICE_ACCOUNT"
       - "API_KEY=${_API_KEY}:latest"
       - "DATABASE_URL=${_DATABASE_URL}:latest"
