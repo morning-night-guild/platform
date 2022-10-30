@@ -1,0 +1,29 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+steps:
+  - name: debian:bullseye
+    env:
+      - SERVICE_NAME=$_SERVICE_NAME
+      - GO_VERSION=1.19.2
+      - AQUA_VERSION=1.19.2
+      - PROTOC_VERSION=3.20.2
+      - KO_VERSION=latest
+      - GCP_REPO=gcr.io/$PROJECT_ID
+    script: |
+      sh infra/cloudbuild/script/build.sh
+  - name: gcr.io/cloud-builders/gcloud
+    env:
+      - SERVICE_NAME=$_SERVICE_NAME
+      - GCP_REPO=gcr.io/$PROJECT_ID
+      - REVISION_SERVICE_ACCOUNT=$_REVISION_SERVICE_ACCOUNT
+      - API_KEY=${_API_KEY}:latest
+    script: |
+      gcloud run deploy $SERVICE_NAME \
+        --image $GCP_REPO/$SERVICE_NAME:latest \
+        --region asia-northeast1 \
+        --cpu 1 \
+        --memory 128Mi \
+        --max-instances 1 \
+        --service-account $REVISION_SERVICE_ACCOUNT \
+        --set-secrets API_KEY=$API_KEY \
+        --allow-unauthenticated
