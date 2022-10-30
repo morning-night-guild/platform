@@ -276,10 +276,10 @@
   resolved "https://registry.yarnpkg.com/@bufbuild/connect-web/-/connect-web-0.2.1.tgz#a7ee2914bf1b77d640fc4ee3c3a89d626f3015fa"
   integrity sha512-L580cL9VZCXcjwXMCvIvdFBqdQofVBQcL+jmSis7m8ZxPj5NQ4p7fUhQRTsZMWHkyWINdlZnr7WsHQL0BT7wPQ==
 
-"@bufbuild/protobuf@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@bufbuild/protobuf/-/protobuf-0.1.1.tgz#163dee03af49e82d300dfa2bf60c8c0f04c80b4c"
-  integrity sha512-HAs82bdlN5aUsoTaJNsPd8driezDenOtAh7dVpO5xKEmyB6ibmRIV08MTlIVudnMYbFc1qw7RxhFHoQy0rSvgg==
+"@bufbuild/protobuf@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@bufbuild/protobuf/-/protobuf-0.2.0.tgz#88e6a00f1f7e922b100c720ac8267a57225e2253"
+  integrity sha512-M5FUeiWNlAF/wkyGTDxba1cE0nFIgrtkxmFaqo9rituHp+EyIx+bk5L7BpKcvFljSmxPDCK4BacsXHiMyJhCZQ==
 
 "@chakra-ui/accordion@2.1.2":
   version "2.1.2"
