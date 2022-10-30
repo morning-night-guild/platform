@@ -16,7 +16,9 @@ steps:
       - SERVICE_NAME=$_SERVICE_NAME
       - GCP_REPO=gcr.io/$PROJECT_ID
       - REVISION_SERVICE_ACCOUNT=$_REVISION_SERVICE_ACCOUNT
+      - CORE_SERVICE_URL=$_CORE_SERVICE_URL
       - API_KEY=${_API_KEY}:latest
+      - SLACK_SIGNING_SECRET=${_SLACK_SIGNING_SECRET}:latest
     script: |
       gcloud run deploy $SERVICE_NAME \
         --image $GCP_REPO/$SERVICE_NAME:latest \
@@ -25,5 +27,6 @@ steps:
         --memory 128Mi \
         --max-instances 1 \
         --service-account $REVISION_SERVICE_ACCOUNT \
-        --set-secrets API_KEY=$API_KEY \
+        --set-env-vars CORE_SERVICE_URL=$CORE_SERVICE_URL \
+        --set-secrets API_KEY=$API_KEY,SLACK_SIGNING_SECRET=$SLACK_SIGNING_SECRET \
         --allow-unauthenticated
