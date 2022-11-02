@@ -20,7 +20,7 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_FOR_GCR }}
-          audience: https://github.com/morning-night-dream
+          audience: https://github.com/morning-night-guild
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
