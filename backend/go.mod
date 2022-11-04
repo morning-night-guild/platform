@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.2
-	github.com/slack-go/slack v0.11.3
+	github.com/slack-go/slack v0.11.4
 	go.uber.org/zap v1.23.0
 	golang.org/x/net v0.1.0
 	google.golang.org/protobuf v1.28.1
