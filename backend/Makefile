@@ -1,5 +1,5 @@
 APP_NAME = morning-night-guild-platform
-POSTGRES_VERSION = 14.5
+POSTGRES_VERSION = 14.6
 
 export
 POSTGRES_IMAGE := postgres:$(POSTGRES_VERSION)-alpine
