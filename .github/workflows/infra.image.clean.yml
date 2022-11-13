@@ -23,7 +23,7 @@ jobs:
           audience: https://github.com/morning-night-guild
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v1
 
       - name: Set up docker auth
         run: gcloud auth configure-docker
