@@ -19,7 +19,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_FOR_GCR }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           audience: https://github.com/morning-night-guild
 
       - name: Set up Cloud SDK
