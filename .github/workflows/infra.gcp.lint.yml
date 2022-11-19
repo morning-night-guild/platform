@@ -29,9 +29,7 @@ jobs:
         with:
           project_env: prod
           project_prefix: mngp
-          # この環境へのデプロイが初回の場合は.tfstateファイルが存在せずエラーとなるので、falseにセットする
-          download_tfstate: true
-          # lint のみ実施する
+          download_tfstate: false
           lint: true
           deploy: false
           gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
