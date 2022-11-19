@@ -75,6 +75,7 @@ runs:
         COCKROACH_API_KEY: ${{ inputs.secret_cockroach_api_key }} 
       run: |
         terraform apply \
+          -auto-approve \
           -var='project_prefix=${{ inputs.project_prefix }}' \
           -var='project_env=${{ inputs.project_env }}' \
           -var='sql_user_password=${{ inputs.secret_cockroach_sql_user_password }}'
