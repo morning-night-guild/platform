@@ -37,7 +37,7 @@ jobs:
           service_name: $SERVICE_NAME
 
   deploy:
-    needs: container
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
