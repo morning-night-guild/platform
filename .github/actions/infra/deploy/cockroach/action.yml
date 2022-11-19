@@ -1,0 +1,88 @@
+name: cockroach terraform
+description: cockroach terraform job. you should execute infra/setup action before.
+
+inputs:
+  project_env:
+    description: "project env."
+    required: true
+  project_prefix:
+    description: "service prefix."
+    required: true
+  deploy:
+    description: "whether to deploy. true/false. default true."
+    default: 'true'
+  lint:
+    description: "whether to lint. true/false. default true."
+    default: 'true'
+  download_tfstate:
+    description: "whether download tfstate. true/false. default false."
+    default: 'false'
+  gcp_cloud_storage_terraform_bucket:
+    description: "name of google cloud storage bucket for tfstate"
+    required: true
+  secret_cockroach_api_key:
+    description: "secret of cockroach api key"
+    required: true
+  secret_cockroach_sql_user_password:
+    description: "secret of cockroach sql user password"
+    required: true  
+  working-directory:
+    description: "working directory"
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Download .tfstate file from GCS
+      if: ${{ inputs.download_tfstate == 'true' }}
+      working-directory: ${{ inputs.working-directory }}
+      run: gcloud storage cp gs://${{ inputs.gcp_cloud_storage_terraform_bucket }}/${{ inputs.project_env }}/cockroach/terraform.tfstate terraform.tfstate
+      shell: sh
+
+    - name: Terraform init
+      working-directory: ${{ inputs.working-directory }}
+      run: terraform init
+      shell: sh
+    
+    - name: Terraform format
+      if: ${{ inputs.lint == 'true' }}
+      working-directory: ${{ inputs.working-directory }}
+      run: terraform fmt -recursive -check
+      shell: sh
+
+    - name: Terraform validate
+      if: ${{ inputs.lint == 'true' }}
+      working-directory: ${{ inputs.working-directory }}
+      run: terraform validate
+      shell: sh
+
+    - name: Terraform plan
+      if: ${{ inputs.lint == 'true' }}
+      working-directory: ${{ inputs.working-directory }}
+      env: 
+        COCKROACH_API_KEY: ${{ inputs.secret_cockroach_api_key }} 
+      run: |
+        terraform plan \
+          -var='project_prefix=${{ inputs.project_prefix }}' \
+          -var='project_env=${{ inputs.project_env }}' \
+          -var='sql_user_password=${{ inputs.secret_cockroach_sql_user_password }}'
+      shell: sh
+
+    - name: Terraform apply
+      if: ${{ inputs.deploy == 'true' }}
+      working-directory: ${{ inputs.working-directory }}  
+      env: 
+        COCKROACH_API_KEY: ${{ inputs.secret_cockroach_api_key }} 
+      run: |
+        terraform apply \
+          -auto-approve \
+          -var='project_prefix=${{ inputs.project_prefix }}' \
+          -var='project_env=${{ inputs.project_env }}' \
+          -var='sql_user_password=${{ inputs.secret_cockroach_sql_user_password }}'
+      shell: sh
+
+    - name: Upload .tfstate file to GCS
+      if: ${{ inputs.deploy == 'true' }}
+      working-directory: ${{ inputs.working-directory }}
+      run: gcloud storage cp terraform.tfstate gs://${{ inputs.gcp_cloud_storage_terraform_bucket }}/${{ inputs.project_env }}/cockroach/terraform.tfstate
+      shell: sh
