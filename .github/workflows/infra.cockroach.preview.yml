@@ -7,10 +7,6 @@ on:
       - .github/actions/infra/deploy/cockroach/action.yml
       - infra/cockroach/*
 
-defaults:
-  run:
-    working-directory: ./infra/cockroach
-
 permissions:
   id-token: write
   contents: read
