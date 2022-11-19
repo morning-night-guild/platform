@@ -52,7 +52,7 @@ runs:
       run: |
         go install github.com/google/ko@latest
 
-        IMAGE_NAME=${{ inputs.project_prefix }}-${{ inputs.env_prefix }}-${{ inputs.service_name }}
+        IMAGE_NAME=${{ inputs.project_prefix }}-${{ inputs.project_env }}-${{ inputs.service_name }}
         echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
 
         IMAGE_TAG=v`date +%Y%m%d%H%M%S`
