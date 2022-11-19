@@ -30,7 +30,7 @@ jobs:
           project_env: prod
           project_prefix: mngp
           # この環境へのデプロイが初回の場合は.tfstateファイルが存在せずエラーとなるので、falseにセットする
-          download_tfstate: true
+          download_tfstate: false
           # lint のみ実施する
           lint: true
           deploy: false
