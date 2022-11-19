@@ -40,3 +40,9 @@ variable "secret_core_database_url" {
   description = "Secret: Database URL"
   type        = string
 }
+
+# SlackのSigning Secretのシークレット
+variable "secret_slack_signing_secret" {
+  description = "Secret: Slack Signing Secret"
+  type        = string
+}

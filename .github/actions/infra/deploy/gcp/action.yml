@@ -28,6 +28,9 @@ inputs:
   secret_core_database_url:
     description: "secret of database url"
     required: true
+  secret_slack_signing_secret:
+    description: "secret of slack signing secret"
+    required: true   
   working-directory:
     description: "working directory"
     default: ""
@@ -68,7 +71,8 @@ runs:
           -var='gcp_credentials_file_path=${{ env.GOOGLE_APPLICATION_CREDENTIALS }}' \
           -var='project_id=${{ inputs.gcp_project_id }}' \
           -var='secret_core_api_key=${{ inputs.secret_core_api_key }}' \
-          -var='secret_core_database_url=${{ inputs.secret_core_database_url }}'
+          -var='secret_core_database_url=${{ inputs.secret_core_database_url }}' \
+          -var='secret_slack_signing_secret=${{ inputs.secret_slack_signing_secret }}'
       shell: sh
 
     - name: Terraform apply
@@ -82,7 +86,8 @@ runs:
           -var='gcp_credentials_file_path=${{ env.GOOGLE_APPLICATION_CREDENTIALS }}' \
           -var='project_id=${{ inputs.gcp_project_id }}' \
           -var='secret_core_api_key=${{ inputs.secret_core_api_key }}' \
-          -var='secret_core_database_url=${{ inputs.secret_core_database_url }}'
+          -var='secret_core_database_url=${{ inputs.secret_core_database_url }}' \
+          -var='secret_slack_signing_secret=${{ inputs.secret_slack_signing_secret }}'
       shell: sh
 
     - name: Upload .tfstate file to GCS
