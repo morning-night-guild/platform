@@ -1,20 +1,18 @@
-name: infra cockroach deploy
+name: infra gcp preview
 
 on:
-  push:
-    branches:
-      - "main"
+  pull_request:
     paths:
-      - .github/workflows/infra.cockroach.deploy.yml
-      - .github/actions/infra/deploy/cockroach/action.yml
-      - infra/cockroach/*
+      - .github/workflows/infra.gcp.preview.yml
+      - .github/actions/infra/deploy/gcp/action.yml
+      - infra/gcp/*
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  deploy:
+  preview:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,16 +24,18 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-      - name: Deploy
-        uses: ./.github/actions/infra/deploy/cockroach
+      - name: Preview Deploy
+        uses: ./.github/actions/infra/deploy/gcp
         with:
-          project_env: prod
+          project_env: prev
           project_prefix: mngp
           # この環境へのデプロイが初回の場合は.tfstateファイルが存在せずエラーとなるので、falseにセットする
           download_tfstate: true
-          lint: false
+          lint: true
           deploy: true
+          gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
           gcp_cloud_storage_terraform_bucket: ${{ secrets.GCP_CLOUD_STORAGE_TERRAFORM_BUCKET }}
-          secret_cockroach_api_key: ${{ secrets.COCKROACH_API_KEY }} 
-          secret_cockroach_sql_user_password: ${{ secrets.COCKROACH_PROD_SQL_USER_PASSWORD }}
-          working-directory: ./infra/cockroach
+          secret_core_api_key: ${{ secrets.CORE_API_KEY }}
+          secret_core_database_url: ${{ secrets.CORE_DATABASE_URL }}
+          secret_slack_signing_secret: ${{ secrets.SLACK_SIGNING_SECRET }}
+          working-directory: ./infra/gcp

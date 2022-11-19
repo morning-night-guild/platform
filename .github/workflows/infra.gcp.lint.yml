@@ -1,11 +1,11 @@
-name: infra cockroach lint
+name: infra gcp lint
 
 on:
   pull_request:
     paths:
-      - .github/workflows/infra.cockroach.lint.yml
-      - .github/actions/infra/deploy/cockroach/action.yml
-      - infra/cockroach/*
+      - .github/workflows/infra.gcp.lint.yml
+      - .github/actions/infra/deploy/gcp/action.yml
+      - infra/gcp/*
 
 permissions:
   id-token: write
@@ -25,14 +25,16 @@ jobs:
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Lint
-        uses: ./.github/actions/infra/deploy/cockroach
+        uses: ./.github/actions/infra/deploy/gcp
         with:
           project_env: prod
           project_prefix: mngp
           download_tfstate: false
           lint: true
           deploy: false
+          gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
           gcp_cloud_storage_terraform_bucket: ${{ secrets.GCP_CLOUD_STORAGE_TERRAFORM_BUCKET }}
-          secret_cockroach_api_key: ${{ secrets.COCKROACH_API_KEY }} 
-          secret_cockroach_sql_user_password: ${{ secrets.COCKROACH_PROD_SQL_USER_PASSWORD }}
-          working-directory: ./infra/cockroach
+          secret_core_api_key: ${{ secrets.CORE_API_KEY }}
+          secret_core_database_url: ${{ secrets.CORE_DATABASE_URL }}
+          secret_slack_signing_secret: ${{ secrets.SLACK_SIGNING_SECRET }}
+          working-directory: ./infra/gcp
