@@ -13,6 +13,8 @@ on:
       - .github/workflows/backend.container.deploy.slack.yml
       - api/**/*.proto
       - backend/**/*.go
+      - backend/go.mod
+      - backend/go.sum
 
 permissions:
   id-token: write
