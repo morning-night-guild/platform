@@ -6,9 +6,9 @@ inputs:
     description: "project env."
     required: true
   project_prefix:
-    description: "service prefix."
+    description: "project prefix."
   action:
-    description: "execution action : lint or preview or deploy"
+    description: "execution action : lint or plan or preview or deploy"
     required: true
   gcp_project_id:
     description: "gcp project id"
@@ -33,7 +33,7 @@ runs:
   using: composite
   steps:
     - name: Check action
-      if: ${{ inputs.action != 'lint' && inputs.action != 'preview' && inputs.action != 'deploy' }}
+      if: ${{ inputs.action != 'lint' && inputs.action != 'plan' && inputs.action != 'preview' && inputs.action != 'deploy' }}
       run: echo "invalid action ${{ inputs.action }}." && exit 1
       shell: sh
 
@@ -61,7 +61,7 @@ runs:
       shell: sh
 
     - name: Terraform plan
-      if: ${{ inputs.action == 'lint' || inputs.action == 'preview' }}
+      if: ${{ inputs.action == 'plan' || inputs.action == 'preview' }}
       working-directory: ${{ inputs.working-directory }}
       run: |
         terraform plan \

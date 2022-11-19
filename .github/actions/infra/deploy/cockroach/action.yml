@@ -6,10 +6,10 @@ inputs:
     description: "project env."
     required: true
   project_prefix:
-    description: "service prefix."
+    description: "project prefix."
     required: true
   action:
-    description: "execution action : lint or preview or deploy"
+    description: "execution action : lint or plan or preview or deploy"
     required: true
   gcp_cloud_storage_terraform_bucket:
     description: "name of google cloud storage bucket for tfstate"
@@ -28,7 +28,7 @@ runs:
   using: composite
   steps:
     - name: Check action
-      if: ${{ inputs.action != 'lint' && inputs.action != 'preview' && inputs.action != 'deploy' }}
+      if: ${{ inputs.action != 'lint' && inputs.action != 'plan' && inputs.action != 'preview' && inputs.action != 'deploy' }}
       run: echo "invalid action ${{ inputs.action }}." && exit 1
       shell: sh
 
@@ -56,7 +56,7 @@ runs:
       shell: sh
 
     - name: Terraform plan
-      if: ${{ inputs.action == 'lint' || inputs.action == 'preview' }}
+      if: ${{ inputs.action == 'plan' || inputs.action == 'preview' }}
       working-directory: ${{ inputs.working-directory }}
       env: 
         COCKROACH_API_KEY: ${{ inputs.secret_cockroach_api_key }} 
