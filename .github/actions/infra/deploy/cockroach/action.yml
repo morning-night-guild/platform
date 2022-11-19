@@ -1,12 +1,12 @@
-name: deproy terraform infra
-description: deploy terraform infra. you should execute infra/setup action before.
+name: cockroach terraform
+description: cockroach terraform job. you should execute infra/setup action before.
 
 inputs:
   project_env:
-    description: "project env. ex. prod"
+    description: "project env."
     required: true
   project_prefix:
-    description: "service prefix. ex. mngp"
+    description: "service prefix."
     required: true
   deploy:
     description: "whether to deploy. true/false. default true."
@@ -67,7 +67,6 @@ runs:
           -var='project_env=${{ inputs.project_env }}' \
           -var='sql_user_password=${{ inputs.secret_cockroach_sql_user_password }}'
       shell: sh
-      
 
     - name: Terraform apply
       if: ${{ inputs.deploy == 'true' }}
@@ -80,7 +79,6 @@ runs:
           -var='project_env=${{ inputs.project_env }}' \
           -var='sql_user_password=${{ inputs.secret_cockroach_sql_user_password }}'
       shell: sh
-             
 
     - name: Upload .tfstate file to GCS
       if: ${{ inputs.deploy == 'true' }}
