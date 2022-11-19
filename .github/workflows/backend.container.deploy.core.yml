@@ -32,6 +32,7 @@ jobs:
       - name: Build and Push
         uses: ./.github/actions/backend/container
         with:
+          gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
           project_prefix: $PROJECT_PREFIX
           project_env: $PROJECT_ENV
           service_name: $SERVICE_NAME
