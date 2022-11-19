@@ -1,11 +1,9 @@
-name: infra cockroach deploy
+name: infra cockroach plan
 
 on:
-  push:
-    branches:
-      - "main"
+  pull_request:
     paths:
-      - .github/workflows/infra.cockroach.deploy.yml
+      - .github/workflows/infra.cockroach.plan.yml
       - .github/actions/infra/deploy/cockroach/action.yml
       - infra/cockroach/*
 
@@ -14,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  plan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,12 +24,12 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-      - name: Deploy
+      - name: Plan
         uses: ./.github/actions/infra/deploy/cockroach
         with:
           project_env: prod
           project_prefix: mngp
-          action: deploy
+          action: plan
           gcp_cloud_storage_terraform_bucket: ${{ secrets.GCP_CLOUD_STORAGE_TERRAFORM_BUCKET }}
           secret_cockroach_api_key: ${{ secrets.COCKROACH_API_KEY }} 
           secret_cockroach_sql_user_password: ${{ secrets.COCKROACH_PROD_SQL_USER_PASSWORD }}

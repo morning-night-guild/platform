@@ -1,11 +1,9 @@
-name: infra gcp deploy
+name: infra gcp plan
 
 on:
-  push:
-    branches:
-      - "main"
+  pull_request:
     paths:
-      - .github/workflows/infra.gcp.deploy.yml
+      - .github/workflows/infra.gcp.lint.yml
       - .github/actions/infra/deploy/gcp/action.yml
       - infra/gcp/*
 
@@ -14,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,13 +23,13 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-      
-      - name: Deploy
+
+      - name: Plan
         uses: ./.github/actions/infra/deploy/gcp
         with:
           project_env: prod
           project_prefix: mngp
-          action: deploy
+          action: plan
           gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
           gcp_cloud_storage_terraform_bucket: ${{ secrets.GCP_CLOUD_STORAGE_TERRAFORM_BUCKET }}
           secret_core_api_key: ${{ secrets.CORE_API_KEY }}

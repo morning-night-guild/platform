@@ -29,10 +29,7 @@ jobs:
         with:
           project_env: prev
           project_prefix: mngp
-          # この環境へのデプロイが初回の場合は.tfstateファイルが存在せずエラーとなるので、falseにセットする
-          download_tfstate: true
-          lint: true
-          deploy: true
+          action: preview
           gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
           gcp_cloud_storage_terraform_bucket: ${{ secrets.GCP_CLOUD_STORAGE_TERRAFORM_BUCKET }}
           secret_core_api_key: ${{ secrets.CORE_API_KEY }}

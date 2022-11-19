@@ -6,16 +6,10 @@ inputs:
     description: "project env."
     required: true
   project_prefix:
-    description: "service prefix."
-  deploy:
-    description: "whether to deploy. true/false. default true."
-    default: 'true'
-  lint:
-    description: "whether to lint. true/false. default true."
-    default: 'true'
-  download_tfstate:
-    description: "whether download tfstate. true/false. default false."
-    default: 'false'
+    description: "project prefix."
+  action:
+    description: "execution action : lint or plan or preview or deploy"
+    required: true
   gcp_project_id:
     description: "gcp project id"
     required: true
@@ -38,8 +32,13 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Check action
+      if: ${{ inputs.action != 'lint' && inputs.action != 'plan' && inputs.action != 'preview' && inputs.action != 'deploy' }}
+      run: echo "invalid action ${{ inputs.action }}." && exit 1
+      shell: sh
+
     - name: Download .tfstate file from GCS
-      if: ${{ inputs.download_tfstate == 'true' }}
+      if: ${{ inputs.action == 'plan' || inputs.action == 'preview' || inputs.action == 'deploy' }}
       working-directory: ${{ inputs.working-directory }}
       run: gcloud storage cp gs://${{ inputs.gcp_cloud_storage_terraform_bucket }}/${{ inputs.project_env }}/gcp/terraform.tfstate terraform.tfstate
       shell: sh
@@ -50,19 +49,19 @@ runs:
       shell: sh
     
     - name: Terraform format
-      if: ${{ inputs.lint == 'true' }}
+      if: ${{ inputs.action == 'lint' || inputs.action == 'preview' }}
       working-directory: ${{ inputs.working-directory }}
       run: terraform fmt -recursive -check
       shell: sh
     
     - name: Terraform validate
-      if: ${{ inputs.lint == 'true' }}
+      if: ${{ inputs.action == 'lint' || inputs.action == 'preview' }}
       working-directory: ${{ inputs.working-directory }}
       run: terraform validate
       shell: sh
 
     - name: Terraform plan
-      if: ${{ inputs.lint == 'true' }}
+      if: ${{ inputs.action == 'plan' || inputs.action == 'preview' }}
       working-directory: ${{ inputs.working-directory }}
       run: |
         terraform plan \
@@ -76,7 +75,7 @@ runs:
       shell: sh
 
     - name: Terraform apply
-      if: ${{ inputs.deploy == 'true' }}
+      if: ${{ inputs.action == 'deploy' || inputs.action == 'preview' }}
       working-directory: ${{ inputs.working-directory }}          
       run: |
         terraform apply \
@@ -91,7 +90,7 @@ runs:
       shell: sh
 
     - name: Upload .tfstate file to GCS
-      if: ${{ inputs.deploy == 'true' }}
+      if: ${{ inputs.action == 'deploy' || inputs.action == 'preview' }}
       working-directory: ${{ inputs.working-directory }}
       run: gcloud storage cp terraform.tfstate gs://${{ inputs.gcp_cloud_storage_terraform_bucket }}/${{ inputs.project_env }}/gcp/terraform.tfstate
       shell: sh
