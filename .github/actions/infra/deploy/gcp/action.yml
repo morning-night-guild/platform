@@ -38,7 +38,7 @@ runs:
       shell: sh
 
     - name: Download .tfstate file from GCS
-      if: ${{ inputs.action == 'deploy' || inputs.action == 'preview' }}
+      if: ${{ inputs.action == 'plan' || inputs.action == 'preview' || inputs.action == 'deploy' }}
       working-directory: ${{ inputs.working-directory }}
       run: gcloud storage cp gs://${{ inputs.gcp_cloud_storage_terraform_bucket }}/${{ inputs.project_env }}/gcp/terraform.tfstate terraform.tfstate
       shell: sh
