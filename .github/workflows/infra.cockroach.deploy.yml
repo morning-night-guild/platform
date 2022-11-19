@@ -2,7 +2,6 @@ name: infra cockroach deploy
 
 on:
   push:
-    # 動作確認をしたい場合は以下の条件をコメントアウトする
     branches:
       - "main"
     paths:

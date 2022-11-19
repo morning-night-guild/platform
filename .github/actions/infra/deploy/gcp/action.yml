@@ -1,5 +1,5 @@
-name: deproy terraform infra
-description: deploy terraform infra. you should execute infra/setup action before.
+name: gcp terraform
+description: deploy gcp terraform infra. you should execute infra/setup action before.
 
 inputs:
   project_env:
