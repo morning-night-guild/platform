@@ -33,9 +33,9 @@ jobs:
         uses: ./.github/actions/backend/container
         with:
           gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
-          project_prefix: $PROJECT_PREFIX
-          project_env: $PROJECT_ENV
-          service_name: $SERVICE_NAME
+          project_prefix: ${{ env.PROJECT_PREFIX }}
+          project_env: ${{ env.PROJECT_ENV }}
+          service_name: ${{ env.SERVICE_NAME }}
 
   deploy:
     needs: build
