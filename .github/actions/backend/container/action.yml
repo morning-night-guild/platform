@@ -1,0 +1,61 @@
+name: build and push docker image
+description: build and push docker image
+
+inputs:
+  project_env:
+    description: "project env."
+    required: true
+  project_prefix:
+    description: "project prefix."
+    required: true
+  service_name:
+    description: build target service name
+    required: true
+  
+
+outputs:
+  image_name: 
+    description: image name
+    value: ${{ steps.build-and-push.outputs.image_name }}
+  image_tag:
+    description: image tag
+    value: ${{ steps.build-and-push.outputs.image_tag }}
+
+runs:
+  using: composite
+  steps:      
+    - name: Docker Authentication
+      run: gcloud auth configure-docker
+      shell: sh
+
+    - name: Backend setup
+      uses: ./.github/actions/backend/setup
+
+    - name: Generate connect code
+      working-directory: ./api
+      run: buf generate --template buf.backend.gen.yaml
+      shell: sh
+
+    - name: Generate go code
+      working-directory: ./backend
+      run: |
+        go generate ./...
+        wire gen ./app/${{ input.service_name }}
+      shell: sh
+
+    - name: Container build and push
+      id: build-and-push
+      working-directory: ./backend/app/${{ input.service_name }}
+      run: |
+        go install github.com/google/ko@latest
+
+        IMAGE_NAME=${{ inputs.project_prefix }}-${{ inputs.env_prefix }}-${{ inputs.service_name }}
+        echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+
+        IMAGE_TAG=v`date +%Y%m%d%H%M%S`
+        echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+
+        KO_DOCKER_REPO=gcr.io/${{ secrets.GCP_PROJECT_ID }}/$IMAGE_NAME \
+        SOURCE_DATE_EPOCH=$(date +%s) \
+        ko build --sbom=none --bare --tags=${IMAGE_TAG},latest ./
+      shell: sh

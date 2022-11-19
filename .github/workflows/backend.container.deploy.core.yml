@@ -1,0 +1,65 @@
+name: backend container core
+
+env:
+  PROJECT_PREFIX: mngp
+  PROJECT_ENV: prod
+  SERVICE_NAME: core
+
+on:
+  push:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image_name: ${{ steps.build-and-push.outputs.image_name }}
+      image_tag: ${{ steps.build-and-push.outputs.image_tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up
+        uses: ./.github/actions/common/gcloud
+        with:
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+        
+      - name: Build and Push
+        uses: ./.github/actions/backend/container
+        with:
+          project_prefix: $PROJECT_PREFIX
+          project_env: $PROJECT_ENV
+          service_name: $SERVICE_NAME
+
+  deploy:
+    needs: container
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up
+        uses: ./.github/actions/common/gcloud
+        with:
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+        
+      - name: Deploy
+        run: |
+          export IMAGE_NAME=${{ needs.container.outputs.image_name }}
+          export IMAGE_TAG=${{ needs.container.outputs.image_tag }}
+          gcloud run deploy $PROJECT_PREFIX-$PROJECT_ENV-$SERVICE_NAME \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/$IMAGE_NAME:$IMAGE_TAG \
+            --region asia-northeast1 \
+            --cpu 1 \
+            --memory 128Mi \
+            --max-instances 1 \
+            --service-account ${{ secrets.GCP_PROD_CLOUDRUN_SERVICE_ACCOUNT }} \
+            --set-secrets API_KEY=projects/${{ secrets.GCP_PROJECT_NUMBER }}/secrets/$PROJECT_PREFIX-$PROJECT_ENV-core-api-key:latest \
+            --set-secrets DATABASE_URL=projects/${{ secrets.GCP_PROJECT_NUMBER }}/secrets/$PROJECT_PREFIX-$PROJECT_ENV-core-database-url:latest \
+            --allow-unauthenticated
