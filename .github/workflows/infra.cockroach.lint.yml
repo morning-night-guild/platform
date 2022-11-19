@@ -1,0 +1,44 @@
+name: infra cockroach lint
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/infra.cockroach.lint.yml
+      - .github/actions/infra/deploy/cockroach/action.yml
+      - infra/cockroach/*
+
+defaults:
+  run:
+    working-directory: ./infra/cockroach
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up
+        uses: ./.github/actions/infra/setup
+        with:
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Lint
+        uses: ./.github/actions/infra/deploy/cockroach
+        with:
+          project_env: prod
+          project_prefix: mngp
+          # この環境へのデプロイが初回の場合は.tfstateファイルが存在せずエラーとなるので、falseにセットする
+          download_tfstate: true
+          # lint のみ実施する
+          lint: true
+          deploy: false
+          gcp_cloud_storage_terraform_bucket: ${{ secrets.GCP_CLOUD_STORAGE_TERRAFORM_BUCKET }}
+          secret_cockroach_api_key: ${{ secrets.COCKROACH_API_KEY }} 
+          secret_cockroach_sql_user_password: ${{ secrets.COCKROACH_PROD_SQL_USER_PASSWORD }}
+          working-directory: ./infra/cockroach
