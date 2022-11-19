@@ -29,7 +29,6 @@ jobs:
         with:
           project_env: prod
           project_prefix: mngp
-          download_tfstate: false
           lint: true
           deploy: false
           gcp_cloud_storage_terraform_bucket: ${{ secrets.GCP_CLOUD_STORAGE_TERRAFORM_BUCKET }}

@@ -13,9 +13,6 @@ inputs:
   lint:
     description: "whether to lint. true/false. default true."
     default: 'true'
-  download_tfstate:
-    description: "whether download tfstate. true/false. default false."
-    default: 'false'
   gcp_project_id:
     description: "gcp project id"
     required: true
@@ -39,7 +36,6 @@ runs:
   using: composite
   steps:
     - name: Download .tfstate file from GCS
-      if: ${{ inputs.download_tfstate == 'true' }}
       working-directory: ${{ inputs.working-directory }}
       run: gcloud storage cp gs://${{ inputs.gcp_cloud_storage_terraform_bucket }}/${{ inputs.project_env }}/gcp/terraform.tfstate terraform.tfstate
       shell: sh
