@@ -31,8 +31,7 @@ jobs:
         with:
           project_env: prod
           project_prefix: mngp
-          lint: false
-          deploy: true
+          action: deploy
           gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
           gcp_cloud_storage_terraform_bucket: ${{ secrets.GCP_CLOUD_STORAGE_TERRAFORM_BUCKET }}
           secret_core_api_key: ${{ secrets.CORE_API_KEY }}
