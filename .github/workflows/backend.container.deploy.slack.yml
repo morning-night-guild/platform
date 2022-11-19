@@ -7,6 +7,12 @@ env:
 
 on:
   push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/backend.container.deploy.slack.yml
+      - api/**/*.proto
+      - backend/**/*.go
 
 permissions:
   id-token: write
