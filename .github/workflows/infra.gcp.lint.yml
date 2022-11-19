@@ -34,7 +34,7 @@ jobs:
           deploy: false
           gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
           gcp_cloud_storage_terraform_bucket: ${{ secrets.GCP_CLOUD_STORAGE_TERRAFORM_BUCKET }}
-          secret_core_api_key: ${{ secrets.GCP_CORE_API_KEY }}
-          secret_core_database_url: ${{ secrets.GCP_CORE_DATABASE_URL }}
+          secret_core_api_key: ${{ secrets.CORE_API_KEY }}
+          secret_core_database_url: ${{ secrets.CORE_DATABASE_URL }}
           secret_slack_signing_secret: ${{ secrets.SLACK_SIGNING_SECRET }}
           working-directory: ./infra/gcp
