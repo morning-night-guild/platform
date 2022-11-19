@@ -40,12 +40,12 @@ runs:
       working-directory: ./backend
       run: |
         go generate ./...
-        wire gen ./app/${{ input.service_name }}
+        wire gen ./app/${{ inputs.service_name }}
       shell: sh
 
     - name: Container build and push
       id: build-and-push
-      working-directory: ./backend/app/${{ input.service_name }}
+      working-directory: ./backend/app/${{ inputs.service_name }}
       run: |
         go install github.com/google/ko@latest
 
