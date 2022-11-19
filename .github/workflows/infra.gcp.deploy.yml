@@ -1,0 +1,44 @@
+name: infra gcp deploy
+
+on:
+  push:
+    # 動作確認をしたい場合は以下の条件をコメントアウトする
+    branches:
+      - "main"
+    paths:
+      - .github/workflows/infra.gcp.deploy.yml
+      - .github/actions/infra/deploy/gcp/action.yml
+      - infra/gcp/*
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up
+        uses: ./.github/actions/infra/setup
+        with:
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      
+      - name: Deploy
+        uses: ./.github/actions/infra/deploy/gcp
+        with:
+          project_env: prod
+          project_prefix: mngp
+          # この環境へのデプロイが初回の場合は.tfstateファイルが存在せずエラーとなるので、falseにセットする
+          download_tfstate: false
+          # 運用環境へのデプロイ時はlintは実施しない
+          lint: false
+          deploy: true
+          gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
+          gcp_cloud_storage_terraform_bucket: ${{ secrets.GCP_CLOUD_STORAGE_TERRAFORM_BUCKET }}
+          secret_core_api_key: ${{ secrets.GCP_CORE_API_KEY }}
+          secret_core_database_url: ${{ secrets.GCP_CORE_DATABASE_URL }}
+          working-directory: ./infra/gcp
