@@ -59,8 +59,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up backend
-        uses: ./.github/actions/backend/setup
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: backend/go.mod
 
       - name: Set up tbls
         run: go install github.com/k1LoW/tbls@main

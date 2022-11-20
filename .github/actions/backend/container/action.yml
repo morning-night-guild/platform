@@ -30,8 +30,10 @@ runs:
       run: gcloud auth configure-docker
       shell: sh
 
-    - name: Backend setup
-      uses: ./.github/actions/backend/setup
+    - name: Set up go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: backend/go.mod
 
     - name: Container build and push
       id: build-and-push
