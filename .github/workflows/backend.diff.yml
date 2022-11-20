@@ -1,0 +1,40 @@
+name: backend diff
+
+on:
+  pull_request:
+    paths:
+      - .github/actions/backend/setup/action.yml
+      - .github/workflows/backend.diff.yml
+      - api/**/*.proto
+      - backend/**/*.go
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up
+        uses: ./.github/actions/backend/setup
+
+      - name: Generate connect code
+        working-directory: ./api
+        run: buf generate --template buf.backend.gen.yaml
+
+      - name: Go Generate
+        working-directory: ./backend
+        run: go generate ./...
+
+      - name: Wire core
+        working-directory: ./backend/app/core
+        run: wire
+
+      - name: Check diff
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --porcelain;
+            exit 1;
+          else
+            echo "no changes";
+          fi
