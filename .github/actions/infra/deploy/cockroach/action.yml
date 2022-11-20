@@ -20,9 +20,6 @@ inputs:
   secret_cockroach_sql_user_password:
     description: "secret of cockroach sql user password"
     required: true
-  cockroach_cluster_id:
-    description: "cockroach cluster id"
-    required: true
   working-directory:
     description: "working directory"
     default: ""
@@ -67,8 +64,7 @@ runs:
         terraform plan \
           -var='project_prefix=${{ inputs.project_prefix }}' \
           -var='project_env=${{ inputs.project_env }}' \
-          -var='sql_user_password=${{ inputs.secret_cockroach_sql_user_password }}' \
-          -var='cluster_id=${{ inputs.cockroach_cluster_id }}'
+          -var='sql_user_password=${{ inputs.secret_cockroach_sql_user_password }}'
       shell: sh
 
     - name: Terraform apply
@@ -81,8 +77,7 @@ runs:
           -auto-approve \
           -var='project_prefix=${{ inputs.project_prefix }}' \
           -var='project_env=${{ inputs.project_env }}' \
-          -var='sql_user_password=${{ inputs.secret_cockroach_sql_user_password }}' \
-          -var='cluster_id=${{ inputs.cockroach_cluster_id }}'
+          -var='sql_user_password=${{ inputs.secret_cockroach_sql_user_password }}'
       shell: sh
 
     - name: Upload .tfstate file to GCS
