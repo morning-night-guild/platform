@@ -17,6 +17,11 @@ variable "project_env" {
   type        = string
 }
 
+variable "cluster_id" {
+  type = string
+  nullable  = false
+}
+
 variable "sql_user_password" {
   type      = string
   nullable  = false
@@ -55,7 +60,7 @@ resource "cockroach_cluster" "core_db" {
 }
 
 resource "cockroach_sql_user" "core_db_user" {
-  cluster_id = cockroach_cluster.core_db.id
   name       = "${var.project_prefix}-${var.project_env}-core-db"
   password   = var.sql_user_password
+  cluster_id = var.cluster_id
 }
