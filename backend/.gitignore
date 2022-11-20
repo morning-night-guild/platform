@@ -1,7 +1,1 @@
 doc
-pkg/ent/*/*
-pkg/ent/*.go
-!pkg/ent/schema/*
-!pkg/ent/generate.go
-pkg/connect
-wire_gen.go

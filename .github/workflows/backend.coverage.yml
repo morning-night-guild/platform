@@ -23,20 +23,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up backend
-        uses: ./.github/actions/backend/setup
-
-      - name: Generate connect code
-        working-directory: ./api
-        run: buf generate --template buf.backend.gen.yaml
-
-      - name: Go Generate
-        working-directory: ./backend
-        run: go generate ./...
-
-      - name: Set up wire
-        working-directory: ./backend/app/core
-        run: wire
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: backend/go.mod
 
       - name: Coverage
         working-directory: ./backend

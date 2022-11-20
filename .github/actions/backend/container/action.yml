@@ -30,20 +30,10 @@ runs:
       run: gcloud auth configure-docker
       shell: sh
 
-    - name: Backend setup
-      uses: ./.github/actions/backend/setup
-
-    - name: Generate connect code
-      working-directory: ./api
-      run: buf generate --template buf.backend.gen.yaml
-      shell: sh
-
-    - name: Generate go code
-      working-directory: ./backend
-      run: |
-        go generate ./...
-        wire gen ./app/${{ inputs.service_name }}
-      shell: sh
+    - name: Set up go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: backend/go.mod
 
     - name: Container build and push
       id: build-and-push
