@@ -18,18 +18,6 @@ jobs:
       - name: Set up backend
         uses: ./.github/actions/backend/setup
 
-      - name: Generate connect code
-        working-directory: ./api
-        run: buf generate  --template buf.backend.gen.yaml
-
-      - name: Go Generate
-        working-directory: ./backend
-        run: go generate ./...
-
-      - name: Set up wire
-        working-directory: ./backend/app/core
-        run: wire
-
       - name: Golangci lint
         uses: golangci/golangci-lint-action@v3
         with:

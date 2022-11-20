@@ -65,18 +65,6 @@ jobs:
       - name: Set up tbls
         run: go install github.com/k1LoW/tbls@main
 
-      - name: Generate connect code
-        working-directory: ./api
-        run: buf generate --template buf.backend.gen.yaml
-
-      - name: Go Generate
-        working-directory: ./backend
-        run: go generate ./...
-
-      - name: Set up wire
-        working-directory: ./backend/app/core
-        run: wire
-
       - name: Migrate
         working-directory: ./backend
         env:
