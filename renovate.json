@@ -4,5 +4,13 @@
     "config:base",
     "github>aquaproj/aqua-renovate-config#1.2.6",
     "group:allNonMajor"
+  ],
+  "packageRules": [
+    {
+      "groupName": "definitelyTyped",
+      "matchPackagePrefixes": [
+        "@types/"
+      ]
+    }
   ]
 }
