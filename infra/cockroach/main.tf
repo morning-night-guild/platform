@@ -18,8 +18,8 @@ variable "project_env" {
 }
 
 variable "cluster_id" {
-  type = string
-  nullable  = false
+  type     = string
+  nullable = false
 }
 
 variable "sql_user_password" {
