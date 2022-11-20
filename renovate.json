@@ -2,8 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base",
-    "github>aquaproj/aqua-renovate-config#1.2.6",
-    "group:allNonMajor"
+    "github>aquaproj/aqua-renovate-config#1.2.6"
   ],
   "packageRules": [
     {
@@ -11,6 +10,20 @@
       "matchPackagePrefixes": [
         "@types/"
       ]
+    },
+    {
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchPaths" :[
+        "frontend/package.json"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "all non-major dependencies for frontend",
+      "groupSlug": "all-minor-patch-for-frontend"
     }
   ]
 }
