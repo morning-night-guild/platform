@@ -1,0 +1,39 @@
+name: frontend diff
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/frontend.diff.yml
+      - api/**/*.proto
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up protoc
+        uses: arduino/setup-protoc@v1
+        with:
+          version: "v3.20.2"
+      
+      - name: Set up bufbulid
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: "1.9.0"
+
+      - name: Generate
+        working-directory: ./api
+        run: |
+          npm install
+          buf generate --template buf.frontend.gen.yaml     
+
+      - name: Check diff
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --porcelain;
+            exit 1;
+          else
+            echo "no changes";
+          fi
