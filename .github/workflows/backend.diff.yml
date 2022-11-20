@@ -24,11 +24,17 @@ jobs:
 
       - name: Go Generate
         working-directory: ./backend
-        run: go generate ./...
+        run: |
+          rm -rf app/core/wire_gen.go
+          go generate ./...
 
       - name: Wire core
         working-directory: ./backend/app/core
         run: wire
+
+      - name: Go mod tidy
+        working-directory: ./backend
+        run: go mod tidy
 
       - name: Check diff
         run: |
