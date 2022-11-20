@@ -30,7 +30,7 @@
         "eslint-plugin-react": "7.31.10",
         "eslint-plugin-react-hooks": "4.6.0",
         "typescript": "4.8.4",
-        "vite": "3.2.2",
+        "vite": "3.2.4",
         "xo": "0.52.4"
     },
     "xo": {
