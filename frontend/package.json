@@ -11,7 +11,7 @@
         "deploy": "sh ./deploy.sh"
     },
     "dependencies": {
-        "@bufbuild/connect-web": "0.3.0",
+        "@bufbuild/connect-web": "0.3.1",
         "@bufbuild/protobuf": "0.2.0",
         "@chakra-ui/icons": "2.0.12",
         "@chakra-ui/react": "2.4.1",
