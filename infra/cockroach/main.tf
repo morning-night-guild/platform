@@ -55,7 +55,6 @@ resource "cockroach_cluster" "core_db" {
 }
 
 resource "cockroach_sql_user" "core_db_user" {
-  id         = cockroach_cluster.core_db.id
   cluster_id = cockroach_cluster.core_db.id
   name       = "${var.project_prefix}-${var.project_env}-core-db"
   password   = var.sql_user_password
