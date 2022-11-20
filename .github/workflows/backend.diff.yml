@@ -8,10 +8,6 @@ on:
       - api/**/*.proto
       - backend/**/*.go
 
-defaults:
-  run:
-    working-directory: ./backend
-
 jobs:
   diff:
     runs-on: ubuntu-latest
@@ -22,7 +18,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version-file: go.mod
+          go-version-file: backend/go.mod
 
       - name: Set up aqua
         uses: aquaproj/aqua-installer@v1.1.2
@@ -30,10 +26,11 @@ jobs:
           aqua_version: v1.25.0
 
       - name: Set up api go tool
-        run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua i
         working-directory: ./api
+        run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua i
 
       - name: Set up backend go tool
+        working-directory: ./backend
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua i
 
       - name: Generate connect code
@@ -41,6 +38,7 @@ jobs:
         run: buf generate --template buf.backend.gen.yaml
 
       - name: Go Generate
+        working-directory: ./backend
         run: |
           rm -rf app/core/wire_gen.go
           go generate ./...
@@ -50,6 +48,7 @@ jobs:
         run: wire
 
       - name: Go mod tidy
+        working-directory: ./backend
         run: go mod tidy
 
       - name: Check diff
