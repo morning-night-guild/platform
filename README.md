@@ -13,9 +13,12 @@
 
 ```bash
 ├── README.md
+├── .docker     // ローカル環境構築
+├── .github     // CICD
 ├── api         // API定義
 ├── backend     // バックエンドアプリ
-└── frontend    // フロントエンドアプリ
+├── frontend    // フロントエンドアプリ
+└── infra       // インフラストラクチャー
 ```
 
 ## commit message prefix
