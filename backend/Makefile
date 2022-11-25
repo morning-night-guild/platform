@@ -1,15 +1,5 @@
-APP_NAME = morning-night-guild-platform
-POSTGRES_VERSION = 14.6
-
 export
-POSTGRES_IMAGE := postgres:$(POSTGRES_VERSION)-alpine
-POSTGRES_HOST := localhost
-POSTGRES_DB := postgres
-POSTGRES_USER := postgres
-POSTGRES_PASS := postgres
-POSTGRES_PORT := 5432
-DATABASE_URL := postgres://$(POSTGRES_USER):$(POSTGRES_PASS)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable
-API_KEY := local
+DATABASE_URL := postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
 
 .PHONY: tool
 tool:
@@ -25,17 +15,7 @@ package:
 
 .PHONY: test
 test:
-	@go test \
-	` \
-	go list ./... | \
-	grep -v github.com/morning-night-guild/platform/adapter/gateway/ent | \
-	grep -v github.com/morning-night-guild/platform/cmd/migrate \
-	` \
-	-count=1
-
-.PHONY: core
-core:
-	@go run app/core/main.go app/core/wire_gen.go
+	@go test ./...
 
 .PHONY: gen
 gen:
@@ -43,34 +23,8 @@ gen:
 
 .PHONY: doc
 doc:
-	@rm -rf doc && tbls doc "postgres://$(POSTGRES_USER):$(POSTGRES_PASS)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable" doc/databases
+	@rm -rf doc && tbls doc $(DATABASE_URL) doc/databases
 
 .PHONY: migrate
 migrate:
 	@go run cmd/migrate/main.go
-
-.PHONY: db
-db:
-	@docker run --rm -d \
-		-p $(POSTGRES_PORT):5432 \
-		-e TZ=UTC \
-		-e LANG=ja_JP.UTF-8 \
-		-e POSTGRES_HOST_AUTH_METHOD=trust \
-		-e POSTGRES_DB=$(POSTGRES_DB) \
-		-e POSTGRES_USER=$(POSTGRES_USER) \
-		-e POSTGRES_PASSWORD=$(POSTGRES_PASS) \
-		-e POSTGRES_INITDB_ARGS=--encoding=UTF-8 \
-		--name $(APP_NAME)-db \
-		$(POSTGRES_IMAGE)
-
-.PHONY: psql
-psql:
-	@docker exec -it $(APP_NAME)-db psql -U postgres
-
-.PHONY: dbstop
-dbstop:
-	@docker stop $(APP_NAME)-db
-
-.PHONY: build
-build:
-	@GOOS=linux GOARCH=amd64 go build -o main
