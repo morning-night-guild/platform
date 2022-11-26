@@ -1,0 +1,35 @@
+name: supabase deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/supabase.deploy.yml
+      - supabase/functions/*
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Supabase setup
+        uses: supabase/setup-cli@v1
+
+      - name: Supabase sercets
+        run: |
+          supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase secrets set CORE_API_KEY=${{ secrets.CORE_API_KEY }}
+          supabase secrets set CORE_SERVICE_URL=${{ secrets.CORE_SERVICE_URL }}
+          supabase secrets set SLACK_VERIFICATION_TOKEN=${{ secrets.SLACK_VERIFICATION_TOKEN }}
+
+      - name: Deploy
+        run: supabase functions deploy slack --no-verify-jwt --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
