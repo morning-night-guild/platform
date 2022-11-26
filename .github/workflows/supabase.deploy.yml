@@ -7,7 +7,6 @@ on:
     paths:
       - .github/workflows/supabase.deploy.yml
       - supabase/functions/*
-  pull_request:
 
 jobs:
   deploy:
