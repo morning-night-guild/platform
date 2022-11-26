@@ -33,4 +33,3 @@ jobs:
         with:
           args: >-
             -repo=${{ secrets.GCP_DOCKER_REPO }}/core
-            -repo=${{ secrets.GCP_DOCKER_REPO }}/slack
