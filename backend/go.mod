@@ -11,15 +11,13 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.2
-	github.com/slack-go/slack v0.11.4
 	go.uber.org/zap v1.23.0
 	golang.org/x/net v0.2.0
 	google.golang.org/protobuf v1.28.1
 )
 
-require github.com/gorilla/websocket v1.5.0 // indirect
-
 require (
+	github.com/go-test/deep v1.0.4 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 )
