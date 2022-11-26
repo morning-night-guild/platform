@@ -15,10 +15,11 @@
 ├── README.md
 ├── .docker     // ローカル環境構築
 ├── .github     // CICD
-├── api         // API定義
-├── backend     // バックエンドアプリ
+├── api         // API定義：connectによるinterfaceを管理
+├── backend     // バックエンドアプリ：Go言語によるコアアプリを管理
 ├── frontend    // フロントエンドアプリ
-└── infra       // インフラストラクチャー
+├── infra       // インフラストラクチャー：terraformによるインフラ管理
+└── supabase    // functionアプリ：denoによる軽量アプリを管理
 ```
 
 ## commit message prefix
