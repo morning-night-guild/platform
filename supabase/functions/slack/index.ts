@@ -27,20 +27,19 @@ export type Event = {
   ts: number;
 };
 
-
 /**
  * '|'によって連結されたURL達から、最初のURLを取り出す
- * 
+ *
  *  https://github.com/morning-night-guild/platform/issues/161 の暫定対応
  */
-export const extractFirstUrlFromUrlsConcatByPipe = (url : string) => {
-  if (!url?.includes('|')) {
+export const extractFirstUrlFromUrlsConcatByPipe = (url: string) => {
+  if (!url?.includes("|")) {
     return url;
   }
 
-  const urls = url.split('|');
+  const urls = url.split("|");
   return urls[0];
-}
+};
 
 const env: Env = {
   API_KEY: Deno.env.get("CORE_API_KEY") ?? "",
@@ -65,7 +64,7 @@ export const callback = async (
     const u = event.event.text.match(pattern)?.find((s) => s);
     console.log(u);
 
-    const url = extractFirstUrlFromUrlsConcatByPipe(u ?? '');
+    const url = extractFirstUrlFromUrlsConcatByPipe(u ?? "");
 
     const init = {
       body: JSON.stringify({ url: url }),
@@ -109,7 +108,7 @@ serve(async (request: { json: () => any }) => {
   }
 
   if (event.type === "event_callback") {
-    const url = env.CORE_SERVICE_URL + "/article.v1.ArticleService/Share"
+    const url = env.CORE_SERVICE_URL + "/article.v1.ArticleService/Share";
     callback(event, url, env.API_KEY);
   }
 
