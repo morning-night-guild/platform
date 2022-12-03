@@ -27,6 +27,21 @@ export type Event = {
   ts: number;
 };
 
+
+/**
+ * '|'によって連結されたURL達から、最初のURLを取り出す
+ * 
+ *  https://github.com/morning-night-guild/platform/issues/161 の暫定対応
+ */
+export const extractFirstUrlFromUrlsConcatByPipe = (url : string) => {
+  if (!url?.includes('|')) {
+    return url;
+  }
+
+  const urls = url.split('|');
+  return urls[0];
+}
+
 const env: Env = {
   API_KEY: Deno.env.get("CORE_API_KEY") ?? "",
   CORE_SERVICE_URL: Deno.env.get("CORE_SERVICE_URL") ?? "",
@@ -47,8 +62,10 @@ export const callback = async (
   console.log(event.type);
   const pattern = /http(.*):\/\/([a-zA-Z0-9/\-\_\.]*)/;
   try {
-    const url = event.event.text.match(pattern)?.find((s) => s);
-    console.log(url);
+    const u = event.event.text.match(pattern)?.find((s) => s);
+    console.log(u);
+
+    const url = extractFirstUrlFromUrlsConcatByPipe(u ?? '');
 
     const init = {
       body: JSON.stringify({ url: url }),
