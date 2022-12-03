@@ -33,7 +33,7 @@ export type Event = {
  * 
  *  https://github.com/morning-night-guild/platform/issues/161 の暫定対応
  */
-const extractFirstUrlFromUrlsConcatByPipe = (url : string) => {
+export const extractFirstUrlFromUrlsConcatByPipe = (url : string) => {
   if (!url?.includes('|')) {
     return url;
   }
