@@ -7,7 +7,7 @@ on:
       - supabase/functions/*
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
 
     steps:
