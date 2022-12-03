@@ -10,8 +10,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-guild/platform/app/core/adapter/controller"
-	"github.com/morning-night-guild/platform/app/core/driver/middleware"
+	"github.com/morning-night-guild/platform/app/core/driver/interceptor"
 	"github.com/morning-night-guild/platform/pkg/connect/article/v1/articlev1connect"
 	"github.com/morning-night-guild/platform/pkg/log"
 	"github.com/rs/cors"
@@ -31,9 +32,11 @@ type HTTPServer struct {
 func NewHTTPServer(
 	article *controller.Article,
 ) *HTTPServer {
+	ic := connect.WithInterceptors(interceptor.New())
+
 	mux := http.NewServeMux()
 
-	mux.Handle(middleware.Handle(articlev1connect.NewArticleServiceHandler(article)))
+	mux.Handle(articlev1connect.NewArticleServiceHandler(article, ic))
 
 	port := os.Getenv("PORT")
 
