@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      # - .github/workflows/supabase.deploy.yml
+      - .github/workflows/supabase.deploy.yml
       - supabase/functions/**/*.ts
 
 jobs:
