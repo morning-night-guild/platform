@@ -67,6 +67,7 @@ func TestHealthCheck(t *testing.T) {
 			got, err := h.Check(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Health.Check() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
