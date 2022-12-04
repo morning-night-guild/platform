@@ -34,9 +34,9 @@ func NewHTTPServer(
 ) *HTTPServer {
 	ic := connect.WithInterceptors(interceptor.New())
 
-	mux := http.NewServeMux()
-
-	mux.Handle(articlev1connect.NewArticleServiceHandler(article, ic))
+	mux := NewRouter(
+		NewRoute(articlev1connect.NewArticleServiceHandler(article, ic)),
+	).Mux()
 
 	port := os.Getenv("PORT")
 
