@@ -7,7 +7,7 @@ option go_package = "github.com/morning-night-guild/platform/pkg/connect/proto/a
 // 記事サービス
 service ArticleService {
   // 共有
-  // Need X-API-KEY Header
+  // Need X-Api-Key Header
   rpc Share(ShareRequest) returns (ShareResponse) {}
   // 一覧
   rpc List(ListRequest) returns (ListResponse) {}

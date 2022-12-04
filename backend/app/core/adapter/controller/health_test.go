@@ -46,7 +46,7 @@ func TestHealthCheck(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "X-API-KEYが不正の時に認証エラーになる",
+			name: "X-Api-Keyが不正の時に認証エラーになる",
 			fields: fields{
 				apiKey: "invalid-api-key",
 			},
@@ -63,7 +63,7 @@ func TestHealthCheck(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			h := controller.NewHealth()
-			tt.args.req.Header().Set("X-API-KEY", tt.fields.apiKey)
+			tt.args.req.Header().Set("X-Api-Key", tt.fields.apiKey)
 			got, err := h.Check(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Health.Check() error = %v, wantErr %v", err, tt.wantErr)

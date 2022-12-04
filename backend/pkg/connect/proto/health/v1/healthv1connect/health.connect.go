@@ -28,6 +28,7 @@ const (
 // HealthServiceClient is a client for the proto.health.v1.HealthService service.
 type HealthServiceClient interface {
 	// チェック
+	// Need X-Api-Key Header
 	Check(context.Context, *connect_go.Request[v1.CheckRequest]) (*connect_go.Response[v1.CheckResponse], error)
 }
 
@@ -62,6 +63,7 @@ func (c *healthServiceClient) Check(ctx context.Context, req *connect_go.Request
 // HealthServiceHandler is an implementation of the proto.health.v1.HealthService service.
 type HealthServiceHandler interface {
 	// チェック
+	// Need X-Api-Key Header
 	Check(context.Context, *connect_go.Request[v1.CheckRequest]) (*connect_go.Response[v1.CheckResponse], error)
 }
 

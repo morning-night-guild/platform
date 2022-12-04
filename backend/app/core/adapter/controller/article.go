@@ -33,7 +33,7 @@ func (a Article) Share(
 	ctx context.Context,
 	req *connect.Request[articlev1.ShareRequest],
 ) (*connect.Response[articlev1.ShareResponse], error) {
-	if req.Header().Get("X-API-KEY") != os.Getenv("API_KEY") {
+	if req.Header().Get("X-Api-Key") != os.Getenv("API_KEY") {
 		return nil, ErrUnauthorized
 	}
 

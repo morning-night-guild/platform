@@ -28,7 +28,7 @@ const (
 // ArticleServiceClient is a client for the proto.article.v1.ArticleService service.
 type ArticleServiceClient interface {
 	// 共有
-	// Need X-API-KEY Header
+	// Need X-Api-Key Header
 	Share(context.Context, *connect_go.Request[v1.ShareRequest]) (*connect_go.Response[v1.ShareResponse], error)
 	// 一覧
 	List(context.Context, *connect_go.Request[v1.ListRequest]) (*connect_go.Response[v1.ListResponse], error)
@@ -76,7 +76,7 @@ func (c *articleServiceClient) List(ctx context.Context, req *connect_go.Request
 // ArticleServiceHandler is an implementation of the proto.article.v1.ArticleService service.
 type ArticleServiceHandler interface {
 	// 共有
-	// Need X-API-KEY Header
+	// Need X-Api-Key Header
 	Share(context.Context, *connect_go.Request[v1.ShareRequest]) (*connect_go.Response[v1.ShareResponse], error)
 	// 一覧
 	List(context.Context, *connect_go.Request[v1.ListRequest]) (*connect_go.Response[v1.ListResponse], error)

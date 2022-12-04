@@ -16,6 +16,7 @@ export const HealthService = {
   methods: {
     /**
      * チェック
+     * Need X-Api-Key Header
      *
      * @generated from rpc proto.health.v1.HealthService.Check
      */

@@ -21,7 +21,7 @@ func (h Health) Check(
 	ctx context.Context,
 	req *connect.Request[healthv1.CheckRequest],
 ) (*connect.Response[healthv1.CheckResponse], error) {
-	if req.Header().Get("X-API-KEY") != os.Getenv("API_KEY") {
+	if req.Header().Get("X-Api-Key") != os.Getenv("API_KEY") {
 		return nil, ErrUnauthorized
 	}
 

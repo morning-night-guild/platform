@@ -16,7 +16,7 @@ export const ArticleService = {
   methods: {
     /**
      * 共有
-     * Need X-API-KEY Header
+     * Need X-Api-Key Header
      *
      * @generated from rpc proto.article.v1.ArticleService.Share
      */
