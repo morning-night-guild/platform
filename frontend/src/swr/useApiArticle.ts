@@ -1,8 +1,8 @@
 import useSWR from 'swr';
 
 import { createPromiseClient } from '@bufbuild/connect-web';
-import { ArticleService } from '../api/article/v1/article_connectweb';
-import type { Article } from '../api/article/v1/article_pb';
+import { ArticleService } from '../api/proto/article/v1/article_connectweb';
+import type { Article } from '../api/proto/article/v1/article_pb';
 import { transport } from './transport';
 
 // 1画面に表示する記事の最大数
