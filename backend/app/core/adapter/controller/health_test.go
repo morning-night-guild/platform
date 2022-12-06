@@ -2,7 +2,6 @@ package controller_test
 
 import (
 	"context"
-	"os"
 	"reflect"
 	"testing"
 
@@ -14,12 +13,6 @@ import (
 func TestHealthCheck(t *testing.T) {
 	t.Parallel()
 
-	os.Setenv("API_KEY", "test")
-
-	type fields struct {
-		apiKey string
-	}
-
 	type args struct {
 		ctx context.Context
 		req *connect.Request[healthv1.CheckRequest]
@@ -27,7 +20,6 @@ func TestHealthCheck(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		fields  fields
 		h       controller.Health
 		args    args
 		want    *connect.Response[healthv1.CheckResponse]
@@ -35,9 +27,6 @@ func TestHealthCheck(t *testing.T) {
 	}{
 		{
 			name: "ヘルスチェックができる",
-			fields: fields{
-				apiKey: "test",
-			},
 			args: args{
 				ctx: context.Background(),
 				req: &connect.Request[healthv1.CheckRequest]{},
@@ -45,25 +34,12 @@ func TestHealthCheck(t *testing.T) {
 			want:    connect.NewResponse(&healthv1.CheckResponse{}),
 			wantErr: false,
 		},
-		{
-			name: "X-Api-Keyが不正の時に認証エラーになる",
-			fields: fields{
-				apiKey: "invalid-api-key",
-			},
-			args: args{
-				ctx: context.Background(),
-				req: &connect.Request[healthv1.CheckRequest]{},
-			},
-			want:    nil,
-			wantErr: true,
-		},
 	}
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			h := controller.NewHealth()
-			tt.args.req.Header().Set("X-Api-Key", tt.fields.apiKey)
 			got, err := h.Check(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Health.Check() error = %v, wantErr %v", err, tt.wantErr)
