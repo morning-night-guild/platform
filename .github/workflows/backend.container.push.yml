@@ -44,4 +44,4 @@ jobs:
 
           KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
           SOURCE_DATE_EPOCH=$(date +%s) \
-          ko build --sbom=none --bare --tags=${IMAGE_TAG},latest ./ --platform=all
+          ko build --sbom=none --bare --tags=${IMAGE_TAG},latest ./ --platform=linux/amd64
