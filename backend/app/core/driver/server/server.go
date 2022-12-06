@@ -13,7 +13,7 @@ import (
 	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-guild/platform/app/core/adapter/controller"
 	"github.com/morning-night-guild/platform/app/core/driver/interceptor"
-	"github.com/morning-night-guild/platform/pkg/connect/article/v1/articlev1connect"
+	"github.com/morning-night-guild/platform/pkg/connect/proto/article/v1/articlev1connect"
 	"github.com/morning-night-guild/platform/pkg/log"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
@@ -34,9 +34,9 @@ func NewHTTPServer(
 ) *HTTPServer {
 	ic := connect.WithInterceptors(interceptor.New())
 
-	mux := http.NewServeMux()
-
-	mux.Handle(articlev1connect.NewArticleServiceHandler(article, ic))
+	mux := NewRouter(
+		NewRoute(articlev1connect.NewArticleServiceHandler(article, ic)),
+	).Mux()
 
 	port := os.Getenv("PORT")
 

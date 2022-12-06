@@ -15,7 +15,7 @@ import (
 	me "github.com/morning-night-guild/platform/app/core/model/errors"
 	"github.com/morning-night-guild/platform/app/core/usecase"
 	"github.com/morning-night-guild/platform/app/core/usecase/port"
-	articlev1 "github.com/morning-night-guild/platform/pkg/connect/article/v1"
+	articlev1 "github.com/morning-night-guild/platform/pkg/connect/proto/article/v1"
 )
 
 type ShareMock struct {
@@ -81,7 +81,7 @@ func TestArticleShare(t *testing.T) {
 			wantErr: nil,
 		},
 		{
-			name: "X-API-KEYが不正の時、認証エラーになる",
+			name: "X-Api-Keyが不正の時、認証エラーになる",
 			fields: fields{
 				apiKey: "invalid-api-key",
 				share: ShareMock{
@@ -166,7 +166,7 @@ func TestArticleShare(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			a := controller.NewArticle(tt.fields.share, tt.fields.list)
-			tt.args.req.Header().Set("X-API-KEY", tt.fields.apiKey)
+			tt.args.req.Header().Set("X-Api-Key", tt.fields.apiKey)
 			got, err := a.Share(tt.args.ctx, tt.args.req)
 			if err != nil && err != tt.wantErr {
 				t.Errorf("Article.Share() error = %v, wantErr %v", err, tt.wantErr)
