@@ -9,9 +9,9 @@ tool:
 lint:
 	@golangci-lint run --fix
 
-.PHONY: package
-package:
-	@go get -u
+.PHONY: mod
+mod:
+	@go list -u -m all && go get -u ./...
 
 .PHONY: test
 test:
