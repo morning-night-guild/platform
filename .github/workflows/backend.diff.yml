@@ -7,6 +7,8 @@ on:
       - .github/workflows/backend.diff.yml
       - api/**/*.proto
       - backend/**/*.go
+      - backend/go.mod
+      - backend/go.sum
 
 jobs:
   diff:
