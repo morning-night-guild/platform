@@ -1,0 +1,47 @@
+name: backend container push
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/backend.container.push.yml
+      - backend/**/*.go
+  workflow_dispatch:
+
+jobs:
+  container:
+    runs-on: ubuntu-latest
+
+    outputs:
+      image_name: ${{ steps.build-and-push.outputs.image_name }}
+      image_tag: ${{ steps.build-and-push.outputs.image_tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: backend/go.mod
+
+      - name: Setup ko
+        run: go install github.com/google/ko@latest
+
+      - name: Docker login
+        run: ko login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} index.docker.io
+
+      - name: Container build and push
+        id: build-and-push
+        working-directory: ./backend/app/core
+        run: |
+          IMAGE_NAME=platform
+          echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+
+          IMAGE_TAG=v`date +%Y%m%d%H%M%S`
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
+          SOURCE_DATE_EPOCH=$(date +%s) \
+          ko build --sbom=none --bare --tags=${IMAGE_TAG},latest ./ --platform=linux/amd64
