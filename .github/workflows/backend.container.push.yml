@@ -7,6 +7,8 @@ on:
     paths:
       - .github/workflows/backend.container.push.yml
       - backend/**/*.go
+      - backend/go.mod
+      - backend/go.sum
   workflow_dispatch:
 
 jobs:
