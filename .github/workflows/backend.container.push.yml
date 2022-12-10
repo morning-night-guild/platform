@@ -73,7 +73,7 @@ jobs:
       - name: Install yq
         run: sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && sudo chmod +x /usr/bin/yq
 
-      - name: checkout branch
+      - name: Checkout branch
         run: |
           git branch ${{ env.BRANCH_NAME }}
           git checkout ${{ env.BRANCH_NAME }}
@@ -95,7 +95,7 @@ jobs:
           git push --set-upstream origin ${{ env.BRANCH_NAME }}
         working-directory: ${{ env.MANIFEST_REPO_NAME }}
 
-      - name: Create release pr
+      - name: Create release pull request
         run: |
           export GH_TOKEN=${{ steps.generate_token.outputs.token }}
           gh pr create --base main --title "Release ${{ needs.container.outputs.image_name }} ${{ needs.container.outputs.image_tag }}" --body ""
