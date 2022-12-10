@@ -81,8 +81,8 @@ jobs:
 
       - name: Update image tag
         run: |
-          export image-name=${{ env.DOCKER_REPO_NAME }}/${{ needs.container-push.outputs.image-name }}:${{ needs.container-push.outputs.image-tag }}
-          yq '.spec.template.spec.containers.[0].image=env(image-name)' deployment.yaml > tmp.yml && mv tmp.yml deployment.yaml
+          export IMAGE_NAME=${{ env.DOCKER_REPO_NAME }}/${{ needs.container-push.outputs.image-name }}:${{ needs.container-push.outputs.image-tag }}
+          yq '.spec.template.spec.containers.[0].image=env(IMAGE_NAME)' deployment.yaml > tmp.yml && mv tmp.yml deployment.yaml
         working-directory: ${{ env.MANIFEST_REPO_NAME }}/k8s/templates
 
       - name: Git push
