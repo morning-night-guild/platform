@@ -96,6 +96,6 @@ jobs:
 
       - name: Create release pull request
         run: |
-          export GH_TOKEN=${{ steps.generate_token.outputs.token }}
+          export GH_TOKEN=${{ steps.generate-token.outputs.token }}
           gh pr create --base main --title "Release ${{ needs.container-push.outputs.image-name }} ${{ needs.container-push.outputs.image-tag }}" --body ""
         working-directory: ${{ env.MANIFEST_REPO_NAME }}
