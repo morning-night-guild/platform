@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/bufbuild/connect-go"
-	healthv1 "github.com/morning-night-guild/platform/pkg/connect/proto/health/v1"
+	healthv1 "github.com/morning-night-guild/platform/pkg/connect/health/v1"
 )
 
 // Health.
