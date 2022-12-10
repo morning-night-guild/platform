@@ -2,13 +2,13 @@ name: backend container push
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/backend.container.push.yml
-      - backend/**/*.go
-      - backend/go.mod
-      - backend/go.sum
+    #branches:
+    #  - main
+    #paths:
+    #  - .github/workflows/backend.container.push.yml
+    #  - backend/**/*.go
+    #  - backend/go.mod
+    #  - backend/go.sum
   workflow_dispatch:
 
 jobs:
