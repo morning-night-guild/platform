@@ -2,13 +2,13 @@ name: backend container push
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/backend.container.push.yml
-      - backend/**/*.go
-      - backend/go.mod
-      - backend/go.sum
+    #branches:
+    #  - main
+    #paths:
+    #  - .github/workflows/backend.container.push.yml
+    #  - backend/**/*.go
+    #  - backend/go.mod
+    #  - backend/go.sum
   workflow_dispatch:
 
 jobs:
@@ -47,3 +47,56 @@ jobs:
           KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
           SOURCE_DATE_EPOCH=$(date +%s) \
           ko build --sbom=none --bare --tags=${IMAGE_TAG},latest ./ --platform=linux/amd64
+
+  mr:
+    needs: container
+    runs-on: ubuntu-latest
+    env:
+      MANIFEST_REPO_NAME: platform-manifest
+      DOCKER_REPO_NAME: morningnightguild
+      BRANCH_NAME: release/${{ needs.container.outputs.image_tag }}
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.BOT_GITHUB_APP_ID }}
+          private_key: ${{ secrets.BOT_GITHUB_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.repository_owner }}/${{ env.MANIFEST_REPO_NAME }}
+          token: ${{ steps.generate_token.outputs.token }}
+          path: ${{ env.MANIFEST_REPO_NAME }}
+
+      - name: Install yq
+        run: sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && sudo chmod +x /usr/bin/yq
+
+      - name: checkout branch
+        run: |
+          git branch ${{ env.BRANCH_NAME }}}}
+          git checkout ${{ env.BRANCH_NAME }}}}
+        working-directory: ${{ env.MANIFEST_REPO_NAME }}
+
+      - name: Update image tag
+        run: |
+          export IMAGE_NAME=${{ env.DOCKER_REPO_NAME }}/${{ needs.container.outputs.image_name }}:${{ needs.container.outputs.image_tag }}
+          yq '.spec.template.spec.containers.[0].image=env(IMAGE_NAME)' deployment.yaml > tmp.yml && mv tmp.yml deployment.yaml
+        working-directory: ${{ env.MANIFEST_REPO_NAME }}/k8s/templates
+
+      - name: Git push
+        run: |
+          git config --global credential.helper 'github-apps -privatekey ${{ secrets.MY_GITHUB_APP_PRIVATE_KEY }} -appid ${{ secrets.MY_GITHUB_APP_ID }} -login ${{ github.repository_owner }}'
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "update core manifest"
+          git push --set-upstream origin ${{ env.BRANCH_NAME }}}}
+        working-directory: ${{ env.MANIFEST_REPO_NAME }}
+
+      - name: Create release pr
+        run: |
+          export GH_TOKEN=${{ steps.generate_token.outputs.token }}
+          gh pr create --base main --title "Release ${{ needs.container.outputs.image_name }} ${{ needs.container.outputs.image_tag }}" -b ""
+        working-directory: ${{ env.MANIFEST_REPO_NAME }}
