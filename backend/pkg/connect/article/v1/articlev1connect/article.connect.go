@@ -22,10 +22,10 @@ const _ = connect_go.IsAtLeastVersion0_1_0
 
 const (
 	// ArticleServiceName is the fully-qualified name of the ArticleService service.
-	ArticleServiceName = "article.v1.ArticleService"
+	ArticleServiceName = "connect.article.v1.ArticleService"
 )
 
-// ArticleServiceClient is a client for the article.v1.ArticleService service.
+// ArticleServiceClient is a client for the connect.article.v1.ArticleService service.
 type ArticleServiceClient interface {
 	// 共有
 	// Need X-Api-Key Header
@@ -34,7 +34,7 @@ type ArticleServiceClient interface {
 	List(context.Context, *connect_go.Request[v1.ListRequest]) (*connect_go.Response[v1.ListResponse], error)
 }
 
-// NewArticleServiceClient constructs a client for the article.v1.ArticleService service. By
+// NewArticleServiceClient constructs a client for the connect.article.v1.ArticleService service. By
 // default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
 // and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
 // connect.WithGRPC() or connect.WithGRPCWeb() options.
@@ -46,12 +46,12 @@ func NewArticleServiceClient(httpClient connect_go.HTTPClient, baseURL string, o
 	return &articleServiceClient{
 		share: connect_go.NewClient[v1.ShareRequest, v1.ShareResponse](
 			httpClient,
-			baseURL+"/article.v1.ArticleService/Share",
+			baseURL+"/connect.article.v1.ArticleService/Share",
 			opts...,
 		),
 		list: connect_go.NewClient[v1.ListRequest, v1.ListResponse](
 			httpClient,
-			baseURL+"/article.v1.ArticleService/List",
+			baseURL+"/connect.article.v1.ArticleService/List",
 			opts...,
 		),
 	}
@@ -63,17 +63,17 @@ type articleServiceClient struct {
 	list  *connect_go.Client[v1.ListRequest, v1.ListResponse]
 }
 
-// Share calls article.v1.ArticleService.Share.
+// Share calls connect.article.v1.ArticleService.Share.
 func (c *articleServiceClient) Share(ctx context.Context, req *connect_go.Request[v1.ShareRequest]) (*connect_go.Response[v1.ShareResponse], error) {
 	return c.share.CallUnary(ctx, req)
 }
 
-// List calls article.v1.ArticleService.List.
+// List calls connect.article.v1.ArticleService.List.
 func (c *articleServiceClient) List(ctx context.Context, req *connect_go.Request[v1.ListRequest]) (*connect_go.Response[v1.ListResponse], error) {
 	return c.list.CallUnary(ctx, req)
 }
 
-// ArticleServiceHandler is an implementation of the article.v1.ArticleService service.
+// ArticleServiceHandler is an implementation of the connect.article.v1.ArticleService service.
 type ArticleServiceHandler interface {
 	// 共有
 	// Need X-Api-Key Header
@@ -89,26 +89,26 @@ type ArticleServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/article.v1.ArticleService/Share", connect_go.NewUnaryHandler(
-		"/article.v1.ArticleService/Share",
+	mux.Handle("/connect.article.v1.ArticleService/Share", connect_go.NewUnaryHandler(
+		"/connect.article.v1.ArticleService/Share",
 		svc.Share,
 		opts...,
 	))
-	mux.Handle("/article.v1.ArticleService/List", connect_go.NewUnaryHandler(
-		"/article.v1.ArticleService/List",
+	mux.Handle("/connect.article.v1.ArticleService/List", connect_go.NewUnaryHandler(
+		"/connect.article.v1.ArticleService/List",
 		svc.List,
 		opts...,
 	))
-	return "/article.v1.ArticleService/", mux
+	return "/connect.article.v1.ArticleService/", mux
 }
 
 // UnimplementedArticleServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedArticleServiceHandler struct{}
 
 func (UnimplementedArticleServiceHandler) Share(context.Context, *connect_go.Request[v1.ShareRequest]) (*connect_go.Response[v1.ShareResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("article.v1.ArticleService.Share is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("connect.article.v1.ArticleService.Share is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) List(context.Context, *connect_go.Request[v1.ListRequest]) (*connect_go.Response[v1.ListResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("article.v1.ArticleService.List is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("connect.article.v1.ArticleService.List is not implemented"))
 }
