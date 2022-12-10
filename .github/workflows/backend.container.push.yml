@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  container:
+  container-push:
     runs-on: ubuntu-latest
 
     outputs:
@@ -48,13 +48,13 @@ jobs:
           SOURCE_DATE_EPOCH=$(date +%s) \
           ko build --sbom=none --bare --tags=${image-tag},latest ./ --platform=linux/amd64
 
-  mr:
-    needs: container
+  release-pull-request:
+    needs: container-push
     runs-on: ubuntu-latest
     env:
       MANIFEST_REPO_NAME: platform-manifest
       DOCKER_REPO_NAME: morningnightguild
-      BRANCH_NAME: release/${{ needs.container.outputs.image_tag }}
+      BRANCH_NAME: release/${{ needs.container-push.outputs.image-tag }}
     steps:
       - name: Generate token
         id: generate-token
@@ -81,7 +81,7 @@ jobs:
 
       - name: Update image tag
         run: |
-          export IMAGE_NAME=${{ env.DOCKER_REPO_NAME }}/${{ needs.container.outputs.image_name }}:${{ needs.container.outputs.image_tag }}
+          export image-name=${{ env.DOCKER_REPO_NAME }}/${{ needs.container-push.outputs.image-name }}:${{ needs.container-push.outputs.image-tag }}
           yq '.spec.template.spec.containers.[0].image=env(image-name)' deployment.yaml > tmp.yml && mv tmp.yml deployment.yaml
         working-directory: ${{ env.MANIFEST_REPO_NAME }}/k8s/templates
 
