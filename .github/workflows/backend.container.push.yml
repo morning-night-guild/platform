@@ -38,15 +38,15 @@ jobs:
         id: build-and-push
         working-directory: ./backend/app/core
         run: |
-          image-name=platform
-          echo "image-name=${image-name}" >> $GITHUB_OUTPUT
+          IMAGE_NAME=platform
+          echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
 
-          image-tag=v`date +%Y%m%d%H%M%S`
-          echo "image-tag=${image-tag}" >> $GITHUB_OUTPUT
+          IMAGE_TAG=v`date +%Y%m%d%H%M%S`
+          echo "image-tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
-          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${image-name} \
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
           SOURCE_DATE_EPOCH=$(date +%s) \
-          ko build --sbom=none --bare --tags=${image-tag},latest ./ --platform=linux/amd64
+          ko build --sbom=none --bare --tags=${IMAGE_TAG},latest ./ --platform=linux/amd64
 
   release-pull-request:
     needs: container-push
