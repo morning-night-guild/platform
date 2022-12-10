@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      image_name: ${{ steps.build-and-push.outputs.image_name }}
-      image_tag: ${{ steps.build-and-push.outputs.image_tag }}
+      image-name: ${{ steps.build-and-push.outputs.image-name }}
+      image-tag: ${{ steps.build-and-push.outputs.image-tag }}
 
     steps:
       - name: Checkout
@@ -38,15 +38,15 @@ jobs:
         id: build-and-push
         working-directory: ./backend/app/core
         run: |
-          IMAGE_NAME=platform
-          echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+          image-name=platform
+          echo "image-name=${image-name}" >> $GITHUB_OUTPUT
 
-          IMAGE_TAG=v`date +%Y%m%d%H%M%S`
-          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          image-tag=v`date +%Y%m%d%H%M%S`
+          echo "image-tag=${image-tag}" >> $GITHUB_OUTPUT
 
-          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${image-name} \
           SOURCE_DATE_EPOCH=$(date +%s) \
-          ko build --sbom=none --bare --tags=${IMAGE_TAG},latest ./ --platform=linux/amd64
+          ko build --sbom=none --bare --tags=${image-tag},latest ./ --platform=linux/amd64
 
   mr:
     needs: container
@@ -57,7 +57,7 @@ jobs:
       BRANCH_NAME: release/${{ needs.container.outputs.image_tag }}
     steps:
       - name: Generate token
-        id: generate_token
+        id: generate-token
         uses: tibdex/github-app-token@v1
         with:
           app_id: ${{ secrets.BOT_GITHUB_APP_ID }}
@@ -67,7 +67,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ${{ github.repository_owner }}/${{ env.MANIFEST_REPO_NAME }}
-          token: ${{ steps.generate_token.outputs.token }}
+          token: ${{ steps.generate-token.outputs.token }}
           path: ${{ env.MANIFEST_REPO_NAME }}
 
       - name: Install yq
@@ -82,7 +82,7 @@ jobs:
       - name: Update image tag
         run: |
           export IMAGE_NAME=${{ env.DOCKER_REPO_NAME }}/${{ needs.container.outputs.image_name }}:${{ needs.container.outputs.image_tag }}
-          yq '.spec.template.spec.containers.[0].image=env(IMAGE_NAME)' deployment.yaml > tmp.yml && mv tmp.yml deployment.yaml
+          yq '.spec.template.spec.containers.[0].image=env(image-name)' deployment.yaml > tmp.yml && mv tmp.yml deployment.yaml
         working-directory: ${{ env.MANIFEST_REPO_NAME }}/k8s/templates
 
       - name: Git push
@@ -97,5 +97,5 @@ jobs:
       - name: Create release pull request
         run: |
           export GH_TOKEN=${{ steps.generate_token.outputs.token }}
-          gh pr create --base main --title "Release ${{ needs.container.outputs.image_name }} ${{ needs.container.outputs.image_tag }}" --body ""
+          gh pr create --base main --title "Release ${{ needs.container-push.outputs.image-name }} ${{ needs.container-push.outputs.image-tag }}" --body ""
         working-directory: ${{ env.MANIFEST_REPO_NAME }}
