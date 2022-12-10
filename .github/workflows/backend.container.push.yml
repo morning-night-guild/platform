@@ -75,8 +75,8 @@ jobs:
 
       - name: checkout branch
         run: |
-          git branch ${{ env.BRANCH_NAME }}}}
-          git checkout ${{ env.BRANCH_NAME }}}}
+          git branch ${{ env.BRANCH_NAME }}
+          git checkout ${{ env.BRANCH_NAME }}
         working-directory: ${{ env.MANIFEST_REPO_NAME }}
 
       - name: Update image tag
@@ -92,7 +92,7 @@ jobs:
           git config user.email github-actions@github.com
           git add .
           git commit -m "update core manifest"
-          git push --set-upstream origin ${{ env.BRANCH_NAME }}}}
+          git push --set-upstream origin ${{ env.BRANCH_NAME }}
         working-directory: ${{ env.MANIFEST_REPO_NAME }}
 
       - name: Create release pr
