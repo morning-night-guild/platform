@@ -3,33 +3,33 @@
 
 ## Table of Contents
 
-- [api/proto/health/v1/health.proto](#api_proto_health_v1_health-proto)
-    - [CheckRequest](#proto-health-v1-CheckRequest)
-    - [CheckResponse](#proto-health-v1-CheckResponse)
+- [api/connect/health/v1/health.proto](#api_connect_health_v1_health-proto)
+    - [CheckRequest](#connect-health-v1-CheckRequest)
+    - [CheckResponse](#connect-health-v1-CheckResponse)
   
-    - [HealthService](#proto-health-v1-HealthService)
+    - [HealthService](#connect-health-v1-HealthService)
   
-- [api/proto/article/v1/article.proto](#api_proto_article_v1_article-proto)
-    - [Article](#proto-article-v1-Article)
-    - [ListRequest](#proto-article-v1-ListRequest)
-    - [ListResponse](#proto-article-v1-ListResponse)
-    - [ShareRequest](#proto-article-v1-ShareRequest)
-    - [ShareResponse](#proto-article-v1-ShareResponse)
+- [api/connect/article/v1/article.proto](#api_connect_article_v1_article-proto)
+    - [Article](#connect-article-v1-Article)
+    - [ListRequest](#connect-article-v1-ListRequest)
+    - [ListResponse](#connect-article-v1-ListResponse)
+    - [ShareRequest](#connect-article-v1-ShareRequest)
+    - [ShareResponse](#connect-article-v1-ShareResponse)
   
-    - [ArticleService](#proto-article-v1-ArticleService)
+    - [ArticleService](#connect-article-v1-ArticleService)
   
 - [Scalar Value Types](#scalar-value-types)
 
 
 
-<a name="api_proto_health_v1_health-proto"></a>
+<a name="api_connect_health_v1_health-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## api/proto/health/v1/health.proto
+## api/connect/health/v1/health.proto
 
 
 
-<a name="proto-health-v1-CheckRequest"></a>
+<a name="connect-health-v1-CheckRequest"></a>
 
 ### CheckRequest
 チェックリクエスト
@@ -39,7 +39,7 @@
 
 
 
-<a name="proto-health-v1-CheckResponse"></a>
+<a name="connect-health-v1-CheckResponse"></a>
 
 ### CheckResponse
 チェックレスポンス
@@ -55,27 +55,27 @@
  
 
 
-<a name="proto-health-v1-HealthService"></a>
+<a name="connect-health-v1-HealthService"></a>
 
 ### HealthService
 ヘルスサービス
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Check | [CheckRequest](#proto-health-v1-CheckRequest) | [CheckResponse](#proto-health-v1-CheckResponse) | チェック Need X-Api-Key Header |
+| Check | [CheckRequest](#connect-health-v1-CheckRequest) | [CheckResponse](#connect-health-v1-CheckResponse) | チェック Need X-Api-Key Header |
 
  
 
 
 
-<a name="api_proto_article_v1_article-proto"></a>
+<a name="api_connect_article_v1_article-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## api/proto/article/v1/article.proto
+## api/connect/article/v1/article.proto
 
 
 
-<a name="proto-article-v1-Article"></a>
+<a name="connect-article-v1-Article"></a>
 
 ### Article
 記事モデル
@@ -95,7 +95,7 @@
 
 
 
-<a name="proto-article-v1-ListRequest"></a>
+<a name="connect-article-v1-ListRequest"></a>
 
 ### ListRequest
 一覧リクエスト
@@ -111,7 +111,7 @@
 
 
 
-<a name="proto-article-v1-ListResponse"></a>
+<a name="connect-article-v1-ListResponse"></a>
 
 ### ListResponse
 一覧レスポンス
@@ -119,7 +119,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| articles | [Article](#proto-article-v1-Article) | repeated |  |
+| articles | [Article](#connect-article-v1-Article) | repeated |  |
 | next_page_token | [string](#string) |  |  |
 
 
@@ -127,7 +127,7 @@
 
 
 
-<a name="proto-article-v1-ShareRequest"></a>
+<a name="connect-article-v1-ShareRequest"></a>
 
 ### ShareRequest
 共有リクエスト
@@ -142,7 +142,7 @@
 
 
 
-<a name="proto-article-v1-ShareResponse"></a>
+<a name="connect-article-v1-ShareResponse"></a>
 
 ### ShareResponse
 共有レスポンス
@@ -158,15 +158,15 @@
  
 
 
-<a name="proto-article-v1-ArticleService"></a>
+<a name="connect-article-v1-ArticleService"></a>
 
 ### ArticleService
 記事サービス
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Share | [ShareRequest](#proto-article-v1-ShareRequest) | [ShareResponse](#proto-article-v1-ShareResponse) | 共有 Need X-Api-Key Header |
-| List | [ListRequest](#proto-article-v1-ListRequest) | [ListResponse](#proto-article-v1-ListResponse) | 一覧 |
+| Share | [ShareRequest](#connect-article-v1-ShareRequest) | [ShareResponse](#connect-article-v1-ShareResponse) | 共有 Need X-Api-Key Header |
+| List | [ListRequest](#connect-article-v1-ListRequest) | [ListResponse](#connect-article-v1-ListResponse) | 一覧 |
 
  
 
