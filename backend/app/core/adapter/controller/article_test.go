@@ -15,7 +15,7 @@ import (
 	me "github.com/morning-night-guild/platform/app/core/model/errors"
 	"github.com/morning-night-guild/platform/app/core/usecase"
 	"github.com/morning-night-guild/platform/app/core/usecase/port"
-	articlev1 "github.com/morning-night-guild/platform/pkg/connect/proto/article/v1"
+	articlev1 "github.com/morning-night-guild/platform/pkg/connect/article/v1"
 )
 
 type ShareMock struct {

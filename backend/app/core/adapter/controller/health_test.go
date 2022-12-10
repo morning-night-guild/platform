@@ -7,7 +7,7 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-guild/platform/app/core/adapter/controller"
-	healthv1 "github.com/morning-night-guild/platform/pkg/connect/proto/health/v1"
+	healthv1 "github.com/morning-night-guild/platform/pkg/connect/health/v1"
 )
 
 func TestHealthCheck(t *testing.T) {
