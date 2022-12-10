@@ -14,6 +14,7 @@ import (
 	"github.com/morning-night-guild/platform/app/core/adapter/controller"
 	"github.com/morning-night-guild/platform/app/core/driver/interceptor"
 	"github.com/morning-night-guild/platform/pkg/connect/proto/article/v1/articlev1connect"
+	"github.com/morning-night-guild/platform/pkg/connect/proto/health/v1/healthv1connect"
 	"github.com/morning-night-guild/platform/pkg/log"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
@@ -31,11 +32,13 @@ type HTTPServer struct {
 
 func NewHTTPServer(
 	article *controller.Article,
+	health *controller.Health,
 ) *HTTPServer {
 	ic := connect.WithInterceptors(interceptor.New())
 
 	mux := NewRouter(
 		NewRoute(articlev1connect.NewArticleServiceHandler(article, ic)),
+		NewRoute(healthv1connect.NewHealthServiceHandler(health, ic)),
 	).Mux()
 
 	port := os.Getenv("PORT")

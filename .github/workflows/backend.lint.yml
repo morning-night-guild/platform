@@ -20,6 +20,10 @@ jobs:
         with:
           go-version-file: backend/go.mod
 
+      - name: Go build
+        working-directory: ./backend
+        run: go build ./...
+
       - name: Set up aqua
         uses: aquaproj/aqua-installer@v1.1.2
         with:

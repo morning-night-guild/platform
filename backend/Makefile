@@ -17,13 +17,17 @@ modules:
 renovate:
 	@go get -u -t ./...
 
+.PHONY: compile
+compile:
+	@go build -v ./... && go clean
+
 .PHONY: test
 test:
 	@go test ./...
 
 .PHONY: gen
 gen:
-	@rm -rf app/core/wire_gen.go && go generate ./... && (cd app/core && wire) && go mod tidy
+	@go generate ./... && go mod tidy
 
 .PHONY: doc
 doc:
