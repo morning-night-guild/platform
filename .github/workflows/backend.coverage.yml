@@ -1,5 +1,4 @@
 name: backend coverage
-
 on:
   push:
     branches:
@@ -15,26 +14,22 @@ on:
       - backend/**/*.go
       - backend/go.mod
       - backend/go.sum
-
 jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
           go-version-file: backend/go.mod
-
       - name: Coverage
         working-directory: ./backend
         run: |
           go test ./...  -coverpkg=./... -coverprofile ./coverage_temp.txt
           cat coverage_temp.txt | grep -v "/ent/" | grep -v "/driver/" | grep -v "/cmd/" > coverage.txt
           rm coverage_temp.txt
-
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:

@@ -1,24 +1,19 @@
 name: supabase test
-
 on:
   pull_request:
     paths:
       - .github/workflows/supabase.test.yml
       - supabase/functions/**/*.ts
-
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Setup deno
         uses: denoland/setup-deno@v1
         with:
           deno-version: "1.28.2"
-
       - name: Test
         # --allow-env: index.ts内で環境変数にアクセスする処理があるため許可しておく必要あり
         # --allow-net: index.ts内でポートをリッスンする処理があるため許可しておく必要あり

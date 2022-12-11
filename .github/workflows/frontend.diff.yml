@@ -1,38 +1,29 @@
 name: frontend diff
-
 on:
   pull_request:
     paths:
       - .github/workflows/frontend.diff.yml
       - api/**/*.proto
-
 jobs:
   diff:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
           go-version-file: backend/go.mod
-
       - name: Set up aqua
         uses: aquaproj/aqua-installer@v1.1.2
         with:
           aqua_version: v1.25.0
-
       - name: Set up api go tool
         working-directory: ./api
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua i
-
       - name: Generate
         working-directory: ./api
-        run: |
-          npm install
-          buf generate --template buf.frontend.gen.yaml     
-
+        run: "npm install\nbuf generate --template buf.frontend.gen.yaml     \n"
       - name: Check diff
         run: |
           if [ -n "$(git status --porcelain)" ]; then
