@@ -2,7 +2,7 @@ name: supabase test
 on:
   pull_request:
     paths:
-      - .github/workflows/supabase.test.yml
+      - .github/workflows/supabase.test.yaml
       - supabase/functions/**/*.ts
 jobs:
   test:

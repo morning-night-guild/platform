@@ -8,8 +8,7 @@ on:
       - backend/pkg/ent/schema/*.go
   pull_request:
     paths:
-      - .github/actions/backend/setup/action.yml
-      - .github/workflows/document.yml
+      - .github/workflows/document.yaml
       - api/**/*.proto
       - backend/pkg/ent/schema/*.go
 jobs:

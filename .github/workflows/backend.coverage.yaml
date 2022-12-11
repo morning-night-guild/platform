@@ -9,8 +9,7 @@ on:
       - backend/go.sum
   pull_request:
     paths:
-      - .github/actions/backend/setup/action.yml
-      - .github/workflows/backend.coverage.yml
+      - .github/workflows/backend.coverage.yaml
       - backend/**/*.go
       - backend/go.mod
       - backend/go.sum

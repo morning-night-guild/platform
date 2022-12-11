@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/backend.container.deploy.core.yml
+      - .github/workflows/backend.container.deploy.core.yaml
       - api/**/*.proto
       - backend/**/*.go
       - backend/go.mod

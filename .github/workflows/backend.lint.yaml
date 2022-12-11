@@ -1,9 +1,10 @@
-name: api lint
+name: backend lint
 on:
   pull_request:
     paths:
-      - .github/workflows/api.lint.yml
-      - api/**/*.proto
+      - .github/workflows/backend.lint.yaml
+      - backend/**/*.go
+      - backend/.golangci.yml
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -14,16 +15,16 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: backend/go.mod
+      - name: Go build
+        working-directory: ./backend
+        run: go build ./...
       - name: Set up aqua
         uses: aquaproj/aqua-installer@v1.1.2
         with:
           aqua_version: v1.25.0
-      - name: Set up api go tool
-        working-directory: ./api
+      - name: Set up backend go tool
+        working-directory: ./backend
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua i
-      - name: Buf lint
-        working-directory: ./api
-        run: buf lint
-      - name: Buf format
-        working-directory: ./api
-        run: buf format -d --exit-code
+      - name: Golangci lint
+        working-directory: ./backend
+        run: golangci-lint run --fix

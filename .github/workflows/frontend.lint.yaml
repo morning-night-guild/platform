@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - .github/actions/frontend/setup/action.yml
-      - .github/workflows/frontend.lint.yml
+      - .github/workflows/frontend.lint.yaml
       - frontend/*
 jobs:
   lint:

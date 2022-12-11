@@ -2,8 +2,7 @@ name: backend test
 on:
   pull_request:
     paths:
-      - .github/actions/backend/setup/action.yml
-      - .github/workflows/backend.test.yml
+      - .github/workflows/backend.test.yaml
       - backend/**/*.go
       - backend/go.mod
       - backend/go.sum
