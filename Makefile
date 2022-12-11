@@ -9,3 +9,7 @@ tool:
 .PHONY: fmt
 fmt:
 	@yamlfmt
+
+.PHONY: lint
+lint:
+	@yamlfmt -lint
