@@ -1,19 +1,16 @@
-name: set up node and yarn
+name: Setup node and yarn
 description: use yarn
-
 runs:
   using: composite
   steps:
-    - name: Set up node
+    - name: Setup node
       uses: actions/setup-node@v3
       with:
         node-version: 16
-
-    - name: Set up yarn
+    - name: Setup yarn
       run: npm install -g yarn
       shell: bash
-
-    - name: Set up Buf
+    - name: Setup Buf
       uses: bufbuild/buf-setup-action@v1
       with:
-        version : 'latest'
+        version: 'latest'

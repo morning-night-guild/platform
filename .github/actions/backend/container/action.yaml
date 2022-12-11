@@ -1,6 +1,5 @@
 name: build and push docker image
 description: build and push docker image
-
 inputs:
   gcp_project_id:
     description: "gcp project id"
@@ -14,27 +13,23 @@ inputs:
   service_name:
     description: build target service name
     required: true
-
 outputs:
-  image_name: 
+  image_name:
     description: image name
     value: ${{ steps.build-and-push.outputs.image_name }}
   image_tag:
     description: image tag
     value: ${{ steps.build-and-push.outputs.image_tag }}
-
 runs:
   using: composite
-  steps:      
+  steps:
     - name: Docker Authentication
       run: gcloud auth configure-docker
       shell: sh
-
-    - name: Set up go
+    - name: Setup go
       uses: actions/setup-go@v3
       with:
         go-version-file: backend/go.mod
-
     - name: Container build and push
       id: build-and-push
       working-directory: ./backend/app/${{ inputs.service_name }}

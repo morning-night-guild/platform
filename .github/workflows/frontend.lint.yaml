@@ -1,36 +1,29 @@
 name: frontend lint
-
 on:
   pull_request:
     paths:
-      - .github/actions/frontend/setup/action.yml
-      - .github/workflows/frontend.lint.yml
+      - .github/actions/frontend/setup/action.yaml
+      - .github/workflows/frontend.lint.yaml
       - frontend/*
-
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Set up frontend
+      - name: Setup frontend
         uses: ./.github/actions/frontend/setup
-
       - name: Install
         working-directory: ./frontend
         run: yarn install
-
       - name: Generate connect code
         working-directory: ./api
         run: |
           npm install
           buf generate --template buf.frontend.gen.yaml
-
       - name: Build
         working-directory: ./frontend
         run: yarn build
-
       - name: Lint
         working-directory: ./frontend
         run: yarn xo
