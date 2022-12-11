@@ -4,7 +4,7 @@ on:
     paths:
       - .github/workflows/backend.lint.yaml
       - backend/**/*.go
-      - backend/.golangci.yml
+      - backend/.golangci.yaml
 jobs:
   lint:
     runs-on: ubuntu-latest
