@@ -108,7 +108,7 @@ serve(async (request: { json: () => any }) => {
   }
 
   if (event.type === "event_callback") {
-    const url = env.CORE_SERVICE_URL + "/article.v1.ArticleService/Share";
+    const url = env.CORE_SERVICE_URL + "/connect.article.v1.ArticleService/Share";
     callback(event, url, env.API_KEY);
   }
 
