@@ -2,7 +2,7 @@ name: yaml lint
 on:
   pull_request:
     paths:
-      - ./**/*.yaml
+      - "**/*.yaml"
 jobs:
   lint:
     runs-on: ubuntu-latest
