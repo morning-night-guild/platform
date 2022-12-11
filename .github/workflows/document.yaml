@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Set up protoc
+      - name: Setup protoc
         uses: arduino/setup-protoc@v1
       - name: Generate grpc document
         run: |
@@ -45,11 +45,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Set up Go
+      - name: Setup Go
         uses: actions/setup-go@v3
         with:
           go-version-file: backend/go.mod
-      - name: Set up tbls
+      - name: Setup tbls
         run: go install github.com/k1LoW/tbls@main
       - name: Migrate
         working-directory: ./backend

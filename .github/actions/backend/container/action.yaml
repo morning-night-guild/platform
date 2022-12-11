@@ -26,7 +26,7 @@ runs:
     - name: Docker Authentication
       run: gcloud auth configure-docker
       shell: sh
-    - name: Set up go
+    - name: Setup go
       uses: actions/setup-go@v3
       with:
         go-version-file: backend/go.mod
