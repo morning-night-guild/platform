@@ -32,12 +32,7 @@ jobs:
         run: buf generate --template buf.backend.gen.yaml
       - name: Go Generate
         working-directory: ./backend
-        run: |
-          rm -rf app/core/wire_gen.go
-          go generate ./...
-      - name: Wire core
-        working-directory: ./backend/app/core
-        run: wire
+        run: go generate ./...
       - name: Go mod tidy
         working-directory: ./backend
         run: go mod tidy

@@ -4,5 +4,4 @@ registries:
   - type: standard
     ref: v3.103.0 # renovate: depName=aquaproj/aqua-registry
 packages:
-  - name: google/wire@v0.5.0
   - name: golangci/golangci-lint@v1.50.1
