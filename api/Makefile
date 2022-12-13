@@ -4,7 +4,7 @@ tool:
 
 .PHONY: lint
 lint:
-	@buf lint
+	@(cd proto && buf lint)
 
 .PHONY: format
 format:
