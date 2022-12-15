@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package connect.health.v1;
+package health.v1;
 
-option go_package = "github.com/morning-night-guild/platform/pkg/connect/health/v1;healthv1";
+option go_package = "github.com/morning-night-guild/platform/pkg/connect/proto/health/v1;healthv1";
 
 // ヘルスサービス
 service HealthService {
