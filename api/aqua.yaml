@@ -7,7 +7,7 @@ registries:
     type: local
     path: registry.yaml
 packages:
-  - name: bufbuild/buf@v1.10.0
+  - name: bufbuild/buf@v1.11.0
   - name: fullstorydev/grpcurl@v1.8.7
   - name: google.golang.org/protobuf/cmd/protoc-gen-go
     registry: local
