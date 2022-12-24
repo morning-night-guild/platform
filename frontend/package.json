@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@bufbuild/connect-web": "0.5.0",
-        "@bufbuild/protobuf": "0.5.0",
+        "@bufbuild/protobuf": "1.0.0",
         "@chakra-ui/icons": "2.0.14",
         "@chakra-ui/react": "2.4.4",
         "@emotion/react": "11.10.5",
