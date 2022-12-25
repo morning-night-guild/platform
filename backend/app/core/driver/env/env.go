@@ -1,6 +1,10 @@
 package env
 
-import "os"
+import (
+	"os"
+
+	"github.com/morning-night-guild/platform/pkg/log"
+)
 
 type Env string
 
@@ -15,7 +19,11 @@ const (
 var env Env //nolint:gochecknoglobals
 
 func Init() {
-	env = Env(os.Getenv("ENV"))
+	e := Env(os.Getenv("ENV"))
+
+	log.Log().Sugar().Infof("environment: %s", e)
+
+	env = e
 }
 
 func Get() Env {
