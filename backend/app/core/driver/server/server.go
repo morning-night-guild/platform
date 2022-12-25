@@ -13,6 +13,7 @@ import (
 	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-guild/platform/app/core/adapter/controller"
 	"github.com/morning-night-guild/platform/app/core/driver/interceptor"
+	"github.com/morning-night-guild/platform/app/core/driver/newrelic"
 	"github.com/morning-night-guild/platform/pkg/connect/proto/article/v1/articlev1connect"
 	"github.com/morning-night-guild/platform/pkg/connect/proto/health/v1/healthv1connect"
 	"github.com/morning-night-guild/platform/pkg/log"
@@ -30,7 +31,10 @@ type HTTPServer struct {
 	*http.Server
 }
 
+// NewHTTPServer
+// 引数nrはnilでも動作可能（NewRelicへレポートが送信されない）.
 func NewHTTPServer(
+	nr *newrelic.NewRelic,
 	article *controller.Article,
 	health *controller.Health,
 ) *HTTPServer {
@@ -39,7 +43,7 @@ func NewHTTPServer(
 	mux := NewRouter(
 		NewRoute(articlev1connect.NewArticleServiceHandler(article, ic)),
 		NewRoute(healthv1connect.NewHealthServiceHandler(health, ic)),
-	).Mux()
+	).Mux(nr)
 
 	port := os.Getenv("PORT")
 
@@ -65,7 +69,7 @@ func (s *HTTPServer) Run() {
 		if err := s.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			log.Log().Sugar().Errorf("server closed with error: %s", err.Error())
 
-			log.Log().Fatal("server shutdown")
+			log.Log().Panic("server shutdown")
 		}
 	}()
 

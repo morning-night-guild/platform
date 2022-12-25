@@ -7,16 +7,20 @@ import (
 )
 
 type Config struct {
-	DSN    string
-	APIKey string
+	DSN             string
+	APIKey          string
+	NewRelicAppName string
+	NewRelicLicense string
 }
 
 var config Config //nolint:gochecknoglobals
 
 func Init() {
 	c := Config{
-		DSN:    os.Getenv("DATABASE_URL"),
-		APIKey: os.Getenv("API_KEY"),
+		DSN:             os.Getenv("DATABASE_URL"),
+		APIKey:          os.Getenv("API_KEY"),
+		NewRelicAppName: os.Getenv("NEWRELIC_APP_NAME"),
+		NewRelicLicense: os.Getenv("NEWRELIC_LICENSE"),
 	}
 
 	log.Log().Sugar().Infof("config: %+v", c)

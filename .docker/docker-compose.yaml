@@ -26,6 +26,8 @@ services:
       DATABASE_URL: postgres://postgres:postgres@db:5432/postgres?sslmode=disable
       API_KEY: local
       ENV: ${ENV}
+      NEWRELIC_APP_NAME: ${NEWRELIC_APP_NAME}
+      NEWRELIC_LICENSE: ${NEWRELIC_LICENSE}
     volumes:
       - ../backend:/app
     restart: always
