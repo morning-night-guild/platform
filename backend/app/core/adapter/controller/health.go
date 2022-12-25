@@ -16,7 +16,7 @@ func NewHealth() *Health {
 }
 
 // Check ヘルスチェックするコントローラメソッド.
-func (h Health) Check(
+func (h *Health) Check(
 	ctx context.Context,
 	req *connect.Request[healthv1.CheckRequest],
 ) (*connect.Response[healthv1.CheckResponse], error) {

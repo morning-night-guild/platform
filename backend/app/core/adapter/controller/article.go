@@ -24,13 +24,14 @@ func NewArticle(
 	list port.ListArticle,
 ) *Article {
 	return &Article{
+		key:   key,
 		share: share,
 		list:  list,
 	}
 }
 
 // Share 記事を共有するコントローラメソッド.
-func (a Article) Share(
+func (a *Article) Share(
 	ctx context.Context,
 	req *connect.Request[articlev1.ShareRequest],
 ) (*connect.Response[articlev1.ShareResponse], error) {
@@ -55,7 +56,7 @@ func (a Article) Share(
 }
 
 // List 記事を取得するコントローラメソッド.
-func (a Article) List(
+func (a *Article) List(
 	ctx context.Context,
 	req *connect.Request[articlev1.ListRequest],
 ) (*connect.Response[articlev1.ListResponse], error) {
