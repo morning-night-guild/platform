@@ -3,7 +3,6 @@ package controller_test
 import (
 	"context"
 	"errors"
-	"os"
 	"reflect"
 	"testing"
 
@@ -39,8 +38,6 @@ func (l ListMock) Execute(ctx context.Context, input port.ListArticleInput) (por
 
 func TestArticleShare(t *testing.T) {
 	t.Parallel()
-
-	os.Setenv("API_KEY", "test")
 
 	type fields struct {
 		apiKey string
@@ -165,7 +162,7 @@ func TestArticleShare(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			a := controller.NewArticle(tt.fields.share, tt.fields.list)
+			a := controller.NewArticle("test", tt.fields.share, tt.fields.list)
 			tt.args.req.Header().Set("X-Api-Key", tt.fields.apiKey)
 			got, err := a.Share(tt.args.ctx, tt.args.req)
 			if err != nil && err != tt.wantErr {
@@ -308,7 +305,7 @@ func TestArticleList(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			a := controller.NewArticle(tt.fields.share, tt.fields.list)
+			a := controller.NewArticle("test", tt.fields.share, tt.fields.list)
 			got, err := a.List(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Article.List() error = %v, wantErr %v", err, tt.wantErr)

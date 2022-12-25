@@ -59,13 +59,13 @@ func NewHTTPServer(
 }
 
 func (s *HTTPServer) Run() {
-	log.Log().Sugar().Infof("Server running on %s", s.Addr)
+	log.Log().Sugar().Infof("server running on %s", s.Addr)
 
 	go func() {
 		if err := s.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-			log.Log().Sugar().Errorf("Server closed with error: %s", err.Error())
+			log.Log().Sugar().Errorf("server closed with error: %s", err.Error())
 
-			os.Exit(1)
+			log.Log().Fatal("server shutdown")
 		}
 	}()
 
@@ -80,7 +80,7 @@ func (s *HTTPServer) Run() {
 	defer cancel()
 
 	if err := s.Shutdown(ctx); err != nil {
-		log.Log().Sugar().Infof("Failed to gracefully shutdown:", err)
+		log.Log().Sugar().Infof("failed to gracefully shutdown:", err)
 	}
 
 	log.Log().Info("HTTPServer shutdown")
