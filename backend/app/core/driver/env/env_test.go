@@ -47,6 +47,8 @@ func TestInit(t *testing.T) { //nolint:tparallel
 			want: "",
 		},
 	}
+
+	// 環境変数を操作するため直列でテスト
 	for _, tt := range tests { //nolint:paralleltest
 		t.Run(tt.name, func(t *testing.T) {
 			os.Setenv("ENV", "")
