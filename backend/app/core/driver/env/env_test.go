@@ -8,7 +8,7 @@ import (
 	"github.com/morning-night-guild/platform/app/core/driver/env"
 )
 
-func TestInit(t *testing.T) {
+func TestInit(t *testing.T) { //nolint:tparallel
 	t.Parallel()
 
 	tests := []struct {
@@ -47,7 +47,7 @@ func TestInit(t *testing.T) {
 			want: "",
 		},
 	}
-	for _, tt := range tests {
+	for _, tt := range tests { //nolint:paralleltest
 		t.Run(tt.name, func(t *testing.T) {
 			os.Setenv("ENV", "")
 			env.Init()
