@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/morning-night-guild/platform/pkg/log"
 )
@@ -9,6 +10,7 @@ import (
 type Config struct {
 	DSN             string
 	APIKey          string
+	Port            string
 	NewRelicAppName string
 	NewRelicLicense string
 }
@@ -16,9 +18,16 @@ type Config struct {
 var config Config //nolint:gochecknoglobals
 
 func Init() {
+	port := os.Getenv("PORT")
+
+	if _, err := strconv.Atoi(port); err != nil {
+		port = "8080"
+	}
+
 	c := Config{
 		DSN:             os.Getenv("DATABASE_URL"),
 		APIKey:          os.Getenv("API_KEY"),
+		Port:            port,
 		NewRelicAppName: os.Getenv("NEWRELIC_APP_NAME"),
 		NewRelicLicense: os.Getenv("NEWRELIC_LICENSE"),
 	}

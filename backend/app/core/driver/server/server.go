@@ -12,6 +12,7 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-guild/platform/app/core/adapter/controller"
+	"github.com/morning-night-guild/platform/app/core/driver/config"
 	"github.com/morning-night-guild/platform/app/core/driver/interceptor"
 	"github.com/morning-night-guild/platform/app/core/driver/newrelic"
 	"github.com/morning-night-guild/platform/pkg/connect/proto/article/v1/articlev1connect"
@@ -53,14 +54,8 @@ func NewHTTPServer(
 
 	mux := NewRouter(routes...).Mux()
 
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		port = "8080"
-	}
-
 	s := &http.Server{
-		Addr:              fmt.Sprintf(":%s", port),
+		Addr:              fmt.Sprintf(":%s", config.Get().Port),
 		Handler:           cors.Default().Handler(h2c.NewHandler(mux, &http2.Server{})),
 		ReadHeaderTimeout: readHeaderTimeout,
 	}

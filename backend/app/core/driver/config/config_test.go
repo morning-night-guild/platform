@@ -14,6 +14,7 @@ func TestInit(t *testing.T) { //nolint:tparallel
 	type args struct {
 		dsn             string
 		apiKey          string
+		port            string
 		newRelicAppName string
 		newRelicLicense string
 	}
@@ -28,12 +29,48 @@ func TestInit(t *testing.T) { //nolint:tparallel
 			args: args{
 				dsn:             "dsn",
 				apiKey:          "api_key",
+				port:            "8080",
 				newRelicAppName: "new_relic_app_name",
 				newRelicLicense: "new_relic_license",
 			},
 			want: config.Config{
 				DSN:             "dsn",
 				APIKey:          "api_key",
+				Port:            "8080",
+				NewRelicAppName: "new_relic_app_name",
+				NewRelicLicense: "new_relic_license",
+			},
+		},
+		{
+			name: "PORTの指定がなくてもconfigを作成できる",
+			args: args{
+				dsn:             "dsn",
+				apiKey:          "api_key",
+				port:            "",
+				newRelicAppName: "new_relic_app_name",
+				newRelicLicense: "new_relic_license",
+			},
+			want: config.Config{
+				DSN:             "dsn",
+				APIKey:          "api_key",
+				Port:            "8080",
+				NewRelicAppName: "new_relic_app_name",
+				NewRelicLicense: "new_relic_license",
+			},
+		},
+		{
+			name: "PORTに数値に変換できない文字列が指定されてもconfigを作成できる",
+			args: args{
+				dsn:             "dsn",
+				apiKey:          "api_key",
+				port:            "port",
+				newRelicAppName: "new_relic_app_name",
+				newRelicLicense: "new_relic_license",
+			},
+			want: config.Config{
+				DSN:             "dsn",
+				APIKey:          "api_key",
+				Port:            "8080",
 				NewRelicAppName: "new_relic_app_name",
 				NewRelicLicense: "new_relic_license",
 			},
