@@ -40,10 +40,18 @@ func NewHTTPServer(
 ) *HTTPServer {
 	ic := connect.WithInterceptors(interceptor.New())
 
-	mux := NewRouter(
+	routes := []Route{
 		NewRoute(articlev1connect.NewArticleServiceHandler(article, ic)),
 		NewRoute(healthv1connect.NewHealthServiceHandler(health, ic)),
-	).Mux(nr)
+	}
+
+	if nr != nil {
+		for i, route := range routes {
+			routes[i] = NewRoute(nr.Handle(route.path, route.handler))
+		}
+	}
+
+	mux := NewRouter(routes...).Mux()
 
 	port := os.Getenv("PORT")
 
