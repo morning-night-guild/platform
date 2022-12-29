@@ -19,7 +19,7 @@ jobs:
         working-directory: ./backend
         run: go build ./...
       - name: Setup aqua
-        uses: aquaproj/aqua-installer@v1.2.0
+        uses: aquaproj/aqua-installer@v2.0.2
         with:
           aqua_version: v1.25.0
       - name: Setup backend go tool
