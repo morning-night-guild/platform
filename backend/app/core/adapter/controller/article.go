@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"os"
 
 	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-guild/platform/app/core/model/article"
@@ -13,27 +12,30 @@ import (
 
 // Article.
 type Article struct {
+	key   string
 	share port.ShareArticle
 	list  port.ListArticle
 }
 
 // NewArticle 記事のコントローラを新規作成する関数.
 func NewArticle(
+	key string,
 	share port.ShareArticle,
 	list port.ListArticle,
 ) *Article {
 	return &Article{
+		key:   key,
 		share: share,
 		list:  list,
 	}
 }
 
 // Share 記事を共有するコントローラメソッド.
-func (a Article) Share(
+func (a *Article) Share(
 	ctx context.Context,
 	req *connect.Request[articlev1.ShareRequest],
 ) (*connect.Response[articlev1.ShareResponse], error) {
-	if req.Header().Get("X-Api-Key") != os.Getenv("API_KEY") {
+	if req.Header().Get("X-Api-Key") != a.key {
 		return nil, ErrUnauthorized
 	}
 
@@ -54,7 +56,7 @@ func (a Article) Share(
 }
 
 // List 記事を取得するコントローラメソッド.
-func (a Article) List(
+func (a *Article) List(
 	ctx context.Context,
 	req *connect.Request[articlev1.ListRequest],
 ) (*connect.Response[articlev1.ListResponse], error) {

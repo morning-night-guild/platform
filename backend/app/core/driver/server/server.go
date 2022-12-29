@@ -12,7 +12,9 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-guild/platform/app/core/adapter/controller"
+	"github.com/morning-night-guild/platform/app/core/driver/config"
 	"github.com/morning-night-guild/platform/app/core/driver/interceptor"
+	"github.com/morning-night-guild/platform/app/core/driver/newrelic"
 	"github.com/morning-night-guild/platform/pkg/connect/proto/article/v1/articlev1connect"
 	"github.com/morning-night-guild/platform/pkg/connect/proto/health/v1/healthv1connect"
 	"github.com/morning-night-guild/platform/pkg/log"
@@ -30,25 +32,30 @@ type HTTPServer struct {
 	*http.Server
 }
 
+// NewHTTPServer
+// 引数nrはnilでも動作可能（NewRelicへレポートが送信されない）.
 func NewHTTPServer(
+	nr *newrelic.NewRelic,
 	article *controller.Article,
 	health *controller.Health,
 ) *HTTPServer {
 	ic := connect.WithInterceptors(interceptor.New())
 
-	mux := NewRouter(
+	routes := []Route{
 		NewRoute(articlev1connect.NewArticleServiceHandler(article, ic)),
 		NewRoute(healthv1connect.NewHealthServiceHandler(health, ic)),
-	).Mux()
-
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		port = "8080"
 	}
 
+	if nr != nil {
+		for i, route := range routes {
+			routes[i] = NewRoute(nr.Handle(route.path, route.handler))
+		}
+	}
+
+	mux := NewRouter(routes...).Mux()
+
 	s := &http.Server{
-		Addr:              fmt.Sprintf(":%s", port),
+		Addr:              fmt.Sprintf(":%s", config.Get().Port),
 		Handler:           cors.Default().Handler(h2c.NewHandler(mux, &http2.Server{})),
 		ReadHeaderTimeout: readHeaderTimeout,
 	}
@@ -59,13 +66,13 @@ func NewHTTPServer(
 }
 
 func (s *HTTPServer) Run() {
-	log.Log().Sugar().Infof("Server running on %s", s.Addr)
+	log.Log().Sugar().Infof("server running on %s", s.Addr)
 
 	go func() {
 		if err := s.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-			log.Log().Sugar().Errorf("Server closed with error: %s", err.Error())
+			log.Log().Sugar().Errorf("server closed with error: %s", err.Error())
 
-			os.Exit(1)
+			log.Log().Panic("server shutdown")
 		}
 	}()
 
@@ -80,7 +87,7 @@ func (s *HTTPServer) Run() {
 	defer cancel()
 
 	if err := s.Shutdown(ctx); err != nil {
-		log.Log().Sugar().Infof("Failed to gracefully shutdown:", err)
+		log.Log().Sugar().Infof("failed to gracefully shutdown:", err)
 	}
 
 	log.Log().Info("HTTPServer shutdown")
