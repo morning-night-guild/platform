@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/newrelic/go-agent/v3 v3.20.2
 	github.com/pkg/errors v0.9.1
-	github.com/rs/cors v1.8.2
+	github.com/rs/cors v1.8.3
 	go.uber.org/zap v1.24.0
 	golang.org/x/net v0.4.0
 	google.golang.org/grpc v1.51.0
