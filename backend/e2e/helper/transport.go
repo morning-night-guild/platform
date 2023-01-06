@@ -15,6 +15,8 @@ func NewAPIKeyTransport(
 	t *testing.T,
 	key string,
 ) *APIKeyTransport {
+	t.Helper()
+
 	return &APIKeyTransport{
 		t:         t,
 		APIKey:    key,
