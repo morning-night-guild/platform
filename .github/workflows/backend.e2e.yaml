@@ -33,7 +33,7 @@ jobs:
           go-version-file: backend/go.mod
           cache: true
           cache-dependency-path: backend/go.sum
-      - name: Go mod tidy
+      - name: Go mod tidy # バックグラウンドでサーバーを起動するため事前にモジュールをダウンロードしておく
         working-directory: ./backend
         run: go mod tidy
       - name: Migrate postgresql
@@ -49,6 +49,7 @@ jobs:
         run: |
           go run app/core/main.go &
           echo PID=$! >> $GITHUB_ENV
+          sleep 5
       - name: Go test e2e
         working-directory: ./backend
         env:
