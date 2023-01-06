@@ -46,10 +46,10 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
           API_KEY: e2e
-        run: |
+        run: | # サーバー起動待機のためにsleepを導入 TODO health check 待機でも良いかも
           go run app/core/main.go &
           echo PID=$! >> $GITHUB_ENV
-          sleep 15
+          sleep 20
       - name: Go test e2e
         working-directory: ./backend
         env:
