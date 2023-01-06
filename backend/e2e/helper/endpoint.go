@@ -11,7 +11,7 @@ func GetEndpoint(t *testing.T) string {
 	ep := os.Getenv("ENDPOINT")
 
 	if ep == "" {
-		ep = "http://localhost:8081"
+		ep = "http://localhost:8080"
 	}
 
 	return ep

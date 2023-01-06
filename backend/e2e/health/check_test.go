@@ -28,7 +28,7 @@ func TestE2EHealthCheck(t *testing.T) {
 
 		_, err := client.Health.Check(context.Background(), connect.NewRequest(req))
 		if err != nil {
-			t.Errorf("faile to health check: %s", err)
+			t.Errorf("failed to health check: %s", err)
 		}
 	})
 }
