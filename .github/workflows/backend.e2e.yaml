@@ -41,7 +41,7 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
         run: go run cmd/migrate/main.go
-      - name: Go run core
+      - name: Run server
         working-directory: ./backend
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
@@ -49,7 +49,7 @@ jobs:
         run: |
           go run app/core/main.go &
           echo PID=$! >> $GITHUB_ENV
-          sleep 5
+          sleep 15
       - name: Go test e2e
         working-directory: ./backend
         env:
