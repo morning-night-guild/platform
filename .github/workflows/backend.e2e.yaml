@@ -33,6 +33,9 @@ jobs:
           go-version-file: backend/go.mod
           cache: true
           cache-dependency-path: backend/go.sum
+      - name: Go mod tidy
+        working-directory: ./backend
+        run: go mod tidy
       - name: Migrate postgresql
         working-directory: ./backend
         env:
