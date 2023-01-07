@@ -1,0 +1,61 @@
+name: backend e2e
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    paths:
+      - .github/workflows/backend.e2e.yaml
+      - api/**/*.proto
+      - backend/**/*.go
+      - backend/go.mod
+      - backend/go.sum
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14.6
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: backend/go.mod
+          cache: true
+          cache-dependency-path: backend/go.sum
+      - name: Go mod tidy # バックグラウンドでサーバーを起動するため事前にモジュールをダウンロードしておく
+        working-directory: ./backend
+        run: go mod tidy
+      - name: Migrate postgresql
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+        run: go run cmd/migrate/main.go
+      - name: Run server
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+          API_KEY: e2e
+        run: | # サーバー起動待機のためにsleepを導入 TODO health check 待機でも良いかも
+          go run app/core/main.go &
+          echo PID=$! >> $GITHUB_ENV
+          sleep 20
+      - name: Go test e2e
+        working-directory: ./backend
+        env:
+          ENDPOINT: http://localhost:8080
+          API_KEY: e2e
+        run: go test ./e2e/... -tags e2e
+      - name: Shutdown
+        if: always()
+        run: kill ${{ env.PID }}

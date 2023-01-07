@@ -1,5 +1,7 @@
 export
 DATABASE_URL := postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+ENDPOINT := http://localhost:8080
+API_KEY := local
 
 .PHONY: tool
 tool:
@@ -24,6 +26,10 @@ compile:
 .PHONY: test
 test:
 	@go test ./...
+
+.PHONY: e2e
+e2e:
+	@go test ./e2e/... -tags e2e
 
 .PHONY: gen
 gen:
