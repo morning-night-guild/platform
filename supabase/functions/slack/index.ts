@@ -1,4 +1,11 @@
+import { JSDOM } from "jsdom";
 import { serve } from "https://deno.land/std@0.131.0/http/server.ts";
+
+type OGP = {
+  title: string;
+  description: string;
+  thumbnail: string;
+};
 
 export type Env = {
   API_KEY: string;
@@ -66,8 +73,18 @@ export const callback = async (
 
     const url = extractFirstUrlFromUrlsConcatByPipe(u ?? "");
 
+    const ogp = await createOGP(
+      "https://qiita.com/kt3k/items/4bc0af4ccf595739fc08",
+    );
+    console.info(ogp);
+
     const init = {
-      body: JSON.stringify({ url: url }),
+      body: JSON.stringify({
+        url: url,
+        title: ogp.title,
+        description: ogp.description,
+        thumbnail: ogp.thumbnail,
+      }),
       method: "POST",
       headers: {
         "X-API-KEY": key,
@@ -117,3 +134,36 @@ serve(async (request: { json: () => any }) => {
     { headers: { "Content-Type": "application/json" } },
   );
 });
+
+/**
+ * OGPタグを取得して、そのcontentをJSON形式で返す.
+ *
+ * @param url URL
+ */
+const createOGP = async (url: string): Promise<OGP> => {
+  try {
+    const response = await fetch(url);
+
+    const data = await response.text();
+    const dom = new JSDOM(data);
+    const meta = dom.window.document.querySelectorAll("head > meta");
+
+    // metaからOGPを抽出し、JSON形式に変換する
+    const ogp = Array.from(meta)
+      .filter((element) => element.hasAttribute("property"))
+      .reduce((pre, ogp) => {
+        const property = ogp.getAttribute("property").trim().replace("og:", "");
+        const content = ogp.getAttribute("content");
+        pre[property] = content;
+        return pre;
+      }, {});
+
+    return {
+      title: ogp.title,
+      description: ogp.description,
+      thumbnail: ogp.image,
+    };
+  } catch (e) {
+    console.warn(e);
+  }
+};
