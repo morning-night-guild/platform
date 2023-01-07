@@ -66,11 +66,22 @@ func (a *Article) Share(
 		Thumbnail:   thumbnail,
 	}
 
-	if _, err := a.share.Execute(ctx, input); err != nil {
+	output, err := a.share.Execute(ctx, input)
+
+	if err != nil {
 		return nil, handleError(ctx, err)
 	}
 
-	return connect.NewResponse(&articlev1.ShareResponse{}), nil
+	return connect.NewResponse(&articlev1.ShareResponse{
+		Article: &articlev1.Article{
+			Id:          output.Article.ID.String(),
+			Title:       output.Article.Title.String(),
+			Url:         output.Article.URL.String(),
+			Description: output.Article.Description.String(),
+			Thumbnail:   output.Article.Thumbnail.String(),
+			Tags:        output.Article.TagList.StringSlice(),
+		},
+	}), nil
 }
 
 // List 記事を取得するコントローラメソッド.

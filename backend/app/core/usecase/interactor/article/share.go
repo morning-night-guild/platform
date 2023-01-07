@@ -33,5 +33,7 @@ func (s *ShareInteractor) Execute(ctx context.Context, input port.ShareArticleIn
 		return port.ShareArticleOutput{}, err
 	}
 
-	return port.ShareArticleOutput{}, nil
+	return port.ShareArticleOutput{
+		Article: art,
+	}, nil
 }

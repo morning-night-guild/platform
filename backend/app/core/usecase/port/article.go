@@ -19,6 +19,7 @@ type ShareArticleInput struct {
 // ShareArticleOutput.
 type ShareArticleOutput struct {
 	usecase.Output
+	Article model.Article
 }
 
 // ShareArticle.
