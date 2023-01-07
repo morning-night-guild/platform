@@ -18,3 +18,4 @@ jobs:
         # --allow-env: index.ts内で環境変数にアクセスする処理があるため許可しておく必要あり
         # --allow-net: index.ts内でポートをリッスンする処理があるため許可しておく必要あり
         run: deno test --allow-env --allow-net --import-map import_map.json
+        working-directory: supabase
