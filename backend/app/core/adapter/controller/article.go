@@ -67,7 +67,6 @@ func (a *Article) Share(
 	}
 
 	output, err := a.share.Execute(ctx, input)
-
 	if err != nil {
 		return nil, handleError(ctx, err)
 	}
