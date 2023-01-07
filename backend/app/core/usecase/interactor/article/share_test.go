@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/morning-night-guild/platform/app/core/model"
 	"github.com/morning-night-guild/platform/app/core/model/article"
 	interactor "github.com/morning-night-guild/platform/app/core/usecase/interactor/article"
 	"github.com/morning-night-guild/platform/app/core/usecase/mock"
@@ -19,7 +18,6 @@ func TestShareInteractorExecute(t *testing.T) {
 
 	type fields struct {
 		articleRepository repository.Article
-		ogpRepository     repository.OGP
 	}
 
 	type args struct {
@@ -40,21 +38,14 @@ func TestShareInteractorExecute(t *testing.T) {
 				articleRepository: &mock.Article{
 					Err: nil,
 				},
-				ogpRepository: &mock.OGP{
-					Article: model.CreateArticle(
-						article.URL("https://example.com"),
-						article.Title("title"),
-						article.Description("description"),
-						article.Thumbnail("https://example.com/image"),
-						article.TagList{},
-					),
-					Err: nil,
-				},
 			},
 			args: args{
 				ctx: context.Background(),
 				input: port.ShareArticleInput{
-					URL: article.URL("https://example.com"),
+					URL:         article.URL("https://example.com"),
+					Title:       article.Title("title"),
+					Description: article.Description("description"),
+					Thumbnail:   article.Thumbnail("https://example.com"),
 				},
 			},
 			wantErr: false,
@@ -65,40 +56,14 @@ func TestShareInteractorExecute(t *testing.T) {
 				articleRepository: &mock.Article{
 					Err: errors.New("article repository error"),
 				},
-				ogpRepository: &mock.OGP{
-					Article: model.CreateArticle(
-						article.URL("https://example.com"),
-						article.Title("title"),
-						article.Description("description"),
-						article.Thumbnail("https://example.com/image"),
-						article.TagList{},
-					),
-					Err: nil,
-				},
 			},
 			args: args{
 				ctx: context.Background(),
 				input: port.ShareArticleInput{
-					URL: article.URL("https://example.com"),
-				},
-			},
-			wantErr: true,
-		},
-		{
-			name: "OGPRepositoryのerrorを握りつぶさない",
-			fields: fields{
-				articleRepository: &mock.Article{
-					Err: nil,
-				},
-				ogpRepository: &mock.OGP{
-					Article: model.Article{},
-					Err:     errors.New("ogp repository error"),
-				},
-			},
-			args: args{
-				ctx: context.Background(),
-				input: port.ShareArticleInput{
-					URL: article.URL("https://example.com"),
+					URL:         article.URL("https://example.com"),
+					Title:       article.Title("title"),
+					Description: article.Description("description"),
+					Thumbnail:   article.Thumbnail("https://example.com"),
 				},
 			},
 			wantErr: true,
@@ -109,7 +74,7 @@ func TestShareInteractorExecute(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			s := interactor.NewShareInteractor(tt.fields.articleRepository, tt.fields.ogpRepository)
+			s := interactor.NewShareInteractor(tt.fields.articleRepository)
 			got, err := s.Execute(tt.args.ctx, tt.args.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ShareInteractor.Execute() error = %v, wantErr %v", err, tt.wantErr)

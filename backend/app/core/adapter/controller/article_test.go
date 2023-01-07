@@ -70,7 +70,10 @@ func TestArticleShare(t *testing.T) {
 				ctx: context.Background(),
 				req: &connect.Request[articlev1.ShareRequest]{
 					Msg: &articlev1.ShareRequest{
-						Url: "https://example.com",
+						Url:         "https://example.com",
+						Title:       "title",
+						Description: "description",
+						Thumbnail:   "https://example.com",
 					},
 				},
 			},
@@ -90,7 +93,10 @@ func TestArticleShare(t *testing.T) {
 				ctx: context.Background(),
 				req: &connect.Request[articlev1.ShareRequest]{
 					Msg: &articlev1.ShareRequest{
-						Url: "https://example.com",
+						Url:         "https://example.com",
+						Title:       "title",
+						Description: "description",
+						Thumbnail:   "https://example.com",
 					},
 				},
 			},
@@ -110,7 +116,33 @@ func TestArticleShare(t *testing.T) {
 				ctx: context.Background(),
 				req: &connect.Request[articlev1.ShareRequest]{
 					Msg: &articlev1.ShareRequest{
-						Url: "http://example.com",
+						Url:         "http://example.com",
+						Title:       "title",
+						Description: "description",
+						Thumbnail:   "https://example.com",
+					},
+				},
+			},
+			want:    nil,
+			wantErr: controller.ErrInvalidArgument,
+		},
+		{
+			name: "Thumbnailが不正の時、バッドリクエストエラーになる",
+			fields: fields{
+				apiKey: "test",
+				share: ShareMock{
+					Err: nil,
+				},
+				list: ListMock{},
+			},
+			args: args{
+				ctx: context.Background(),
+				req: &connect.Request[articlev1.ShareRequest]{
+					Msg: &articlev1.ShareRequest{
+						Url:         "https://example.com",
+						Title:       "title",
+						Description: "description",
+						Thumbnail:   "http://example.com",
 					},
 				},
 			},
@@ -130,7 +162,10 @@ func TestArticleShare(t *testing.T) {
 				ctx: context.Background(),
 				req: &connect.Request[articlev1.ShareRequest]{
 					Msg: &articlev1.ShareRequest{
-						Url: "https://example.com",
+						Url:         "https://example.com",
+						Title:       "title",
+						Description: "description",
+						Thumbnail:   "https://example.com",
 					},
 				},
 			},

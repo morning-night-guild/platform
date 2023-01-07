@@ -44,8 +44,26 @@ func (a *Article) Share(
 		return nil, handleError(ctx, err)
 	}
 
+	title, err := article.NewTitle(req.Msg.Title)
+	if err != nil {
+		return nil, handleError(ctx, err)
+	}
+
+	description, err := article.NewDescription(req.Msg.Description)
+	if err != nil {
+		return nil, handleError(ctx, err)
+	}
+
+	thumbnail, err := article.NewThumbnail(req.Msg.Thumbnail)
+	if err != nil {
+		return nil, handleError(ctx, err)
+	}
+
 	input := port.ShareArticleInput{
-		URL: url,
+		URL:         url,
+		Title:       title,
+		Description: description,
+		Thumbnail:   thumbnail,
 	}
 
 	if _, err := a.share.Execute(ctx, input); err != nil {
