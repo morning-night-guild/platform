@@ -86,6 +86,21 @@ export class ShareRequest extends Message<ShareRequest> {
    */
   url = "";
 
+  /**
+   * @generated from field: string title = 2;
+   */
+  title = "";
+
+  /**
+   * @generated from field: string description = 3;
+   */
+  description = "";
+
+  /**
+   * @generated from field: string thumbnail = 4;
+   */
+  thumbnail = "";
+
   constructor(data?: PartialMessage<ShareRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -95,6 +110,9 @@ export class ShareRequest extends Message<ShareRequest> {
   static readonly typeName = "article.v1.ShareRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "thumbnail", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ShareRequest {
@@ -120,6 +138,11 @@ export class ShareRequest extends Message<ShareRequest> {
  * @generated from message article.v1.ShareResponse
  */
 export class ShareResponse extends Message<ShareResponse> {
+  /**
+   * @generated from field: article.v1.Article article = 1;
+   */
+  article?: Article;
+
   constructor(data?: PartialMessage<ShareResponse>) {
     super();
     proto3.util.initPartial(data, this);
@@ -128,6 +151,7 @@ export class ShareResponse extends Message<ShareResponse> {
   static readonly runtime = proto3;
   static readonly typeName = "article.v1.ShareResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "article", kind: "message", T: Article },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ShareResponse {
