@@ -21,8 +21,18 @@ type ShareMock struct {
 	Err error
 }
 
+const id = "12345678-1234-1234-1234-1234567890ab"
+
 func (s ShareMock) Execute(ctx context.Context, input port.ShareArticleInput) (port.ShareArticleOutput, error) {
-	return port.ShareArticleOutput{}, s.Err
+	return port.ShareArticleOutput{
+		Article: model.Article{
+			ID:          article.ID(uuid.MustParse(id)),
+			URL:         input.URL,
+			Title:       input.Title,
+			Description: input.Description,
+			Thumbnail:   input.Thumbnail,
+		},
+	}, s.Err
 }
 
 type ListMock struct {
@@ -77,7 +87,15 @@ func TestArticleShare(t *testing.T) {
 					},
 				},
 			},
-			want:    connect.NewResponse(&articlev1.ShareResponse{}),
+			want: connect.NewResponse(&articlev1.ShareResponse{
+				Article: &articlev1.Article{
+					Id:          id,
+					Url:         "https://example.com",
+					Title:       "title",
+					Description: "description",
+					Thumbnail:   "https://example.com",
+				},
+			}),
 			wantErr: nil,
 		},
 		{
@@ -184,7 +202,10 @@ func TestArticleShare(t *testing.T) {
 				ctx: context.Background(),
 				req: &connect.Request[articlev1.ShareRequest]{
 					Msg: &articlev1.ShareRequest{
-						Url: "https://example.com",
+						Url:         "https://example.com",
+						Title:       "title",
+						Description: "description",
+						Thumbnail:   "https://example.com",
 					},
 				},
 			},
@@ -205,8 +226,23 @@ func TestArticleShare(t *testing.T) {
 
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Article.Share() = %v, want %v", got, tt.want)
+			if tt.want == nil {
+				return
+			}
+			if !reflect.DeepEqual(got.Msg.Article.Id, tt.want.Msg.Article.Id) {
+				t.Errorf("Article.Share() Msg Article Id = %v, want %v", got.Msg.Article.Id, tt.want.Msg.Article.Id)
+			}
+			if !reflect.DeepEqual(got.Msg.Article.Url, tt.want.Msg.Article.Url) {
+				t.Errorf("Article.Share() Msg Article Url = %v, want %v", got.Msg.Article.Url, tt.want.Msg.Article.Url)
+			}
+			if !reflect.DeepEqual(got.Msg.Article.Title, tt.want.Msg.Article.Title) {
+				t.Errorf("Article.Share() Msg Article Title = %v, want %v", got.Msg.Article.Title, tt.want.Msg.Article.Title)
+			}
+			if !reflect.DeepEqual(got.Msg.Article.Description, tt.want.Msg.Article.Description) {
+				t.Errorf("Article.Share() Msg Article Description = %v, want %v", got.Msg.Article.Description, tt.want.Msg.Article.Description)
+			}
+			if !reflect.DeepEqual(got.Msg.Article.Thumbnail, tt.want.Msg.Article.Thumbnail) {
+				t.Errorf("Article.Share() Msg Article Thumbnail = %v, want %v", got.Msg.Article.Thumbnail, tt.want.Msg.Article.Thumbnail)
 			}
 		})
 	}
