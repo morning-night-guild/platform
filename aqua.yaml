@@ -4,4 +4,4 @@ registries:
   - type: standard
     ref: v3.117.0 # renovate: depName=aquaproj/aqua-registry
 packages:
-  - name: google/yamlfmt@v0.6.0
+  - name: google/yamlfmt@v0.7.0
