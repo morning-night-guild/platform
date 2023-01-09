@@ -1,4 +1,4 @@
-import { JSDOM } from "jsdom";
+import { DOMParser, Element, NodeType } from "deno-dom";
 import { serve } from "https://deno.land/std@0.131.0/http/server.ts";
 
 type OGP = {
@@ -73,11 +73,10 @@ export const callback = async (
 
     const url = extractFirstUrlFromUrlsConcatByPipe(u ?? "");
 
-    const ogp = await createOGP(
-      "https://qiita.com/kt3k/items/4bc0af4ccf595739fc08",
-    );
-    console.info(ogp);
-
+    const ogp = await createOGP(url);
+    if (!ogp) {
+      return;
+    }
     const init = {
       body: JSON.stringify({
         url: url,
@@ -140,28 +139,46 @@ serve(async (request: { json: () => any }) => {
  *
  * @param url URL
  */
-const createOGP = async (url: string): Promise<OGP> => {
+const createOGP = async (url: string): Promise<OGP | undefined> => {
   try {
     const response = await fetch(url);
 
     const data = await response.text();
-    const dom = new JSDOM(data);
-    const meta = dom.window.document.querySelectorAll("head > meta");
+    const document = new DOMParser().parseFromString(data, "text/html")!;
+
+    const meta = document?.querySelectorAll("head > meta")!;
+
+    const ogp: { [key: string]: string } = {};
 
     // metaからOGPを抽出し、JSON形式に変換する
-    const ogp = Array.from(meta)
-      .filter((element) => element.hasAttribute("property"))
-      .reduce((pre, ogp) => {
-        const property = ogp.getAttribute("property").trim().replace("og:", "");
-        const content = ogp.getAttribute("content");
-        pre[property] = content;
-        return pre;
-      }, {});
+    Array.from(meta)
+      .filter((node) => {
+        return node.nodeType === NodeType.ELEMENT_NODE;
+      })
+      .map((node) => node as Element)
+      .filter((element) => {
+        return element.hasAttribute("property");
+      })
+      .forEach((element: Element) => {
+        const property = element.getAttribute(
+          "property",
+        )?.trim().replace("og:", "");
+        if (!property) {
+          return;
+        }
+        const content = element.getAttribute(
+          "content",
+        );
+        if (!content) {
+          return content;
+        }
+        ogp[property] = content;
+      });
 
     return {
-      title: ogp.title,
-      description: ogp.description,
-      thumbnail: ogp.image,
+      title: ogp["title"],
+      description: ogp["description"],
+      thumbnail: ogp["image"],
     };
   } catch (e) {
     console.warn(e);

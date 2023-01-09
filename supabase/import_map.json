@@ -1,5 +1,5 @@
 {
   "imports": {
-    "jsdom": "https://jspm.dev/npm:jsdom-deno@19.0.2"
+    "deno-dom": "https://deno.land/x/deno_dom/deno-dom-wasm.ts"
   }
 }
