@@ -38,7 +38,7 @@ func TestE2EArticleShare(t *testing.T) {
 
 		got, err := client.Article.Share(context.Background(), connect.NewRequest(req))
 		if err != nil {
-			t.Fatalf("failed to article share: %s", err)
+			t.Fatalf("failed to share article: %s", err)
 		}
 
 		if !reflect.DeepEqual(got.Msg.Article.Url, req.Url) {
