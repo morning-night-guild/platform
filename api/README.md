@@ -136,6 +136,9 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | url | [string](#string) |  |  |
+| title | [string](#string) |  |  |
+| description | [string](#string) |  |  |
+| thumbnail | [string](#string) |  |  |
 
 
 
@@ -146,6 +149,11 @@
 
 ### ShareResponse
 共有レスポンス
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| article | [Article](#article-v1-Article) |  |  |
 
 
 
