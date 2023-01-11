@@ -1,4 +1,11 @@
+import { DOMParser, Element, NodeType } from "deno-dom";
 import { serve } from "https://deno.land/std@0.131.0/http/server.ts";
+
+type OGP = {
+  title: string;
+  description: string;
+  thumbnail: string;
+};
 
 export type Env = {
   API_KEY: string;
@@ -66,8 +73,17 @@ export const callback = async (
 
     const url = extractFirstUrlFromUrlsConcatByPipe(u ?? "");
 
+    const ogp = await createOGP(url);
+    if (!ogp) {
+      return;
+    }
     const init = {
-      body: JSON.stringify({ url: url }),
+      body: JSON.stringify({
+        url: url,
+        title: ogp.title,
+        description: ogp.description,
+        thumbnail: ogp.thumbnail,
+      }),
       method: "POST",
       headers: {
         "X-API-KEY": key,
@@ -117,3 +133,54 @@ serve(async (request: { json: () => any }) => {
     { headers: { "Content-Type": "application/json" } },
   );
 });
+
+/**
+ * OGPタグを取得して、そのcontentをJSON形式で返す.
+ *
+ * @param url URL
+ */
+const createOGP = async (url: string): Promise<OGP | undefined> => {
+  try {
+    const response = await fetch(url);
+
+    const data = await response.text();
+    const document = new DOMParser().parseFromString(data, "text/html")!;
+
+    const meta = document?.querySelectorAll("head > meta")!;
+
+    const ogp: { [key: string]: string } = {};
+
+    // metaからOGPを抽出し、JSON形式に変換する
+    Array.from(meta)
+      .filter((node) => {
+        return node.nodeType === NodeType.ELEMENT_NODE;
+      })
+      .map((node) => node as Element)
+      .filter((element) => {
+        return element.hasAttribute("property");
+      })
+      .forEach((element: Element) => {
+        const property = element.getAttribute(
+          "property",
+        )?.trim().replace("og:", "");
+        if (!property) {
+          return;
+        }
+        const content = element.getAttribute(
+          "content",
+        );
+        if (!content) {
+          return content;
+        }
+        ogp[property] = content;
+      });
+
+    return {
+      title: ogp["title"],
+      description: ogp["description"],
+      thumbnail: ogp["image"],
+    };
+  } catch (e) {
+    console.warn(e);
+  }
+};
