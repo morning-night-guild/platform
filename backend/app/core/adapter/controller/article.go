@@ -44,15 +44,43 @@ func (a *Article) Share(
 		return nil, handleError(ctx, err)
 	}
 
-	input := port.ShareArticleInput{
-		URL: url,
-	}
-
-	if _, err := a.share.Execute(ctx, input); err != nil {
+	title, err := article.NewTitle(req.Msg.Title)
+	if err != nil {
 		return nil, handleError(ctx, err)
 	}
 
-	return connect.NewResponse(&articlev1.ShareResponse{}), nil
+	description, err := article.NewDescription(req.Msg.Description)
+	if err != nil {
+		return nil, handleError(ctx, err)
+	}
+
+	thumbnail, err := article.NewThumbnail(req.Msg.Thumbnail)
+	if err != nil {
+		return nil, handleError(ctx, err)
+	}
+
+	input := port.ShareArticleInput{
+		URL:         url,
+		Title:       title,
+		Description: description,
+		Thumbnail:   thumbnail,
+	}
+
+	output, err := a.share.Execute(ctx, input)
+	if err != nil {
+		return nil, handleError(ctx, err)
+	}
+
+	return connect.NewResponse(&articlev1.ShareResponse{
+		Article: &articlev1.Article{
+			Id:          output.Article.ID.String(),
+			Title:       output.Article.Title.String(),
+			Url:         output.Article.URL.String(),
+			Description: output.Article.Description.String(),
+			Thumbnail:   output.Article.Thumbnail.String(),
+			Tags:        output.Article.TagList.StringSlice(),
+		},
+	}), nil
 }
 
 // List 記事を取得するコントローラメソッド.

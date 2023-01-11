@@ -10,12 +10,16 @@ import (
 // ShareArticleInput.
 type ShareArticleInput struct {
 	usecase.Input
-	URL article.URL
+	URL         article.URL
+	Title       article.Title
+	Description article.Description
+	Thumbnail   article.Thumbnail
 }
 
 // ShareArticleOutput.
 type ShareArticleOutput struct {
 	usecase.Output
+	Article model.Article
 }
 
 // ShareArticle.

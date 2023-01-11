@@ -5,7 +5,6 @@ go 1.19
 require (
 	entgo.io/ent v0.11.4
 	github.com/bufbuild/connect-go v1.4.1
-	github.com/dyatlov/go-opengraph/opengraph v0.0.0-20220524092352-606d7b1e5f8a
 	github.com/google/uuid v1.3.0
 	github.com/lib/pq v1.10.7
 	github.com/mattn/go-sqlite3 v1.14.16

@@ -6,11 +6,11 @@ package article_test
 import (
 	"context"
 	"net/http"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/bufbuild/connect-go"
-	"github.com/morning-night-guild/platform/e2e/article"
 	"github.com/morning-night-guild/platform/e2e/helper"
 	articlev1 "github.com/morning-night-guild/platform/pkg/connect/proto/article/v1"
 )
@@ -27,15 +27,33 @@ func TestE2EArticleShare(t *testing.T) {
 			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
 		}
 
-		client := article.New(t, hc, url)
+		client := helper.NewClient(t, hc, url)
 
 		req := &articlev1.ShareRequest{
-			Url: "https://www.example.com",
+			Url:         "https://www.example.com",
+			Title:       "title",
+			Description: "description",
+			Thumbnail:   "https://www.example.com/thumbnail.jpg",
 		}
 
-		if _, err := client.Article.Share(context.Background(), connect.NewRequest(req)); err != nil {
-			t.Fatalf("failed to article share: %s", err)
+		got, err := client.Article.Share(context.Background(), connect.NewRequest(req))
+		if err != nil {
+			t.Fatalf("failed to share article: %s", err)
 		}
+
+		if !reflect.DeepEqual(got.Msg.Article.Url, req.Url) {
+			t.Errorf("Url = %v, want %v", got.Msg.Article.Url, req.Url)
+		}
+		if !reflect.DeepEqual(got.Msg.Article.Title, req.Title) {
+			t.Errorf("Title = %v, want %v", got.Msg.Article.Title, req.Title)
+		}
+		if !reflect.DeepEqual(got.Msg.Article.Description, req.Description) {
+			t.Errorf("Description = %v, want %v", got.Msg.Article.Description, req.Description)
+		}
+		if !reflect.DeepEqual(got.Msg.Article.Thumbnail, req.Thumbnail) {
+			t.Errorf("Thumbnail = %v, want %v", got.Msg.Article.Thumbnail, req.Thumbnail)
+		}
+
 	})
 
 	t.Run("不正なURLが指定されて記事が共有できない", func(t *testing.T) {
@@ -45,10 +63,38 @@ func TestE2EArticleShare(t *testing.T) {
 			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
 		}
 
-		client := article.New(t, hc, url)
+		client := helper.NewClient(t, hc, url)
 
 		req := &articlev1.ShareRequest{
-			Url: "http://www.example.com",
+			Url:         "http://www.example.com",
+			Title:       "title",
+			Description: "description",
+			Thumbnail:   "https://www.example.com/thumbnail.jpg",
+		}
+
+		_, err := client.Article.Share(context.Background(), connect.NewRequest(req))
+		if !strings.Contains(err.Error(), "invalid_argument") {
+			t.Errorf("err = %v", err)
+		}
+		if !strings.Contains(err.Error(), "bad request") {
+			t.Errorf("err = %v", err)
+		}
+	})
+
+	t.Run("不正なThumbnailが指定されて記事が共有できない", func(t *testing.T) {
+		t.Parallel()
+
+		hc := &http.Client{
+			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
+		}
+
+		client := helper.NewClient(t, hc, url)
+
+		req := &articlev1.ShareRequest{
+			Url:         "https://www.example.com",
+			Title:       "title",
+			Description: "description",
+			Thumbnail:   "http://www.example.com/thumbnail.jpg",
 		}
 
 		_, err := client.Article.Share(context.Background(), connect.NewRequest(req))
@@ -65,7 +111,7 @@ func TestE2EArticleShare(t *testing.T) {
 
 		hc := &http.Client{}
 
-		client := article.New(t, hc, url)
+		client := helper.NewClient(t, hc, url)
 
 		req := &articlev1.ShareRequest{
 			Url: "https://www.example.com",

@@ -26,9 +26,7 @@ func main() {
 
 	articleRepo := gateway.NewArticle(rdb)
 
-	ogpRepo := gateway.NewOGP()
-
-	articleShareItr := article.NewShareInteractor(articleRepo, ogpRepo)
+	articleShareItr := article.NewShareInteractor(articleRepo)
 
 	articleListItr := article.NewListInteractor(articleRepo)
 

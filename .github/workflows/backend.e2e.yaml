@@ -1,8 +1,5 @@
 name: backend e2e
 on:
-  push:
-    branches:
-      - "main"
   pull_request:
     paths:
       - .github/workflows/backend.e2e.yaml
@@ -54,6 +51,7 @@ jobs:
         working-directory: ./backend
         env:
           ENDPOINT: http://localhost:8080
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
           API_KEY: e2e
         run: go test ./e2e/... -tags e2e
       - name: Shutdown

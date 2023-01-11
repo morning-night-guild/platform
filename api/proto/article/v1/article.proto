@@ -26,10 +26,15 @@ message Article {
 // 共有リクエスト
 message ShareRequest {
   string url = 1;
+  string title = 2;
+  string description = 3;
+  string thumbnail = 4;
 }
 
 // 共有レスポンス
-message ShareResponse {}
+message ShareResponse {
+  Article article = 1;
+}
 
 // 一覧リクエスト
 message ListRequest {

@@ -46,3 +46,4 @@ issues:
         - tenv
         - gocognit
         - maintidx
+        - lll

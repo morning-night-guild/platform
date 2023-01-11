@@ -3,7 +3,35 @@ package helper
 import (
 	"net/http"
 	"testing"
+
+	"github.com/bufbuild/connect-go"
+	"github.com/morning-night-guild/platform/pkg/connect/proto/article/v1/articlev1connect"
+	"github.com/morning-night-guild/platform/pkg/connect/proto/health/v1/healthv1connect"
 )
+
+type Client struct {
+	Article articlev1connect.ArticleServiceClient
+	Health  healthv1connect.HealthServiceClient
+}
+
+func NewClient(t *testing.T, client connect.HTTPClient, url string) *Client {
+	t.Helper()
+
+	ac := articlev1connect.NewArticleServiceClient(
+		client,
+		url,
+	)
+
+	hc := healthv1connect.NewHealthServiceClient(
+		client,
+		url,
+	)
+
+	return &Client{
+		Article: ac,
+		Health:  hc,
+	}
+}
 
 type APIKeyTransport struct {
 	t         *testing.T

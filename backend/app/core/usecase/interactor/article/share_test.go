@@ -19,7 +19,6 @@ func TestShareInteractorExecute(t *testing.T) {
 
 	type fields struct {
 		articleRepository repository.Article
-		ogpRepository     repository.OGP
 	}
 
 	type args struct {
@@ -40,21 +39,23 @@ func TestShareInteractorExecute(t *testing.T) {
 				articleRepository: &mock.Article{
 					Err: nil,
 				},
-				ogpRepository: &mock.OGP{
-					Article: model.CreateArticle(
-						article.URL("https://example.com"),
-						article.Title("title"),
-						article.Description("description"),
-						article.Thumbnail("https://example.com/image"),
-						article.TagList{},
-					),
-					Err: nil,
-				},
 			},
 			args: args{
 				ctx: context.Background(),
 				input: port.ShareArticleInput{
-					URL: article.URL("https://example.com"),
+					URL:         article.URL("https://example.com"),
+					Title:       article.Title("title"),
+					Description: article.Description("description"),
+					Thumbnail:   article.Thumbnail("https://example.com"),
+				},
+			},
+			want: port.ShareArticleOutput{
+				Article: model.Article{
+					ID:          article.ID{},
+					URL:         article.URL("https://example.com"),
+					Title:       article.Title("title"),
+					Description: article.Description("description"),
+					Thumbnail:   article.Thumbnail("https://example.com"),
 				},
 			},
 			wantErr: false,
@@ -65,42 +66,17 @@ func TestShareInteractorExecute(t *testing.T) {
 				articleRepository: &mock.Article{
 					Err: errors.New("article repository error"),
 				},
-				ogpRepository: &mock.OGP{
-					Article: model.CreateArticle(
-						article.URL("https://example.com"),
-						article.Title("title"),
-						article.Description("description"),
-						article.Thumbnail("https://example.com/image"),
-						article.TagList{},
-					),
-					Err: nil,
-				},
 			},
 			args: args{
 				ctx: context.Background(),
 				input: port.ShareArticleInput{
-					URL: article.URL("https://example.com"),
+					URL:         article.URL("https://example.com"),
+					Title:       article.Title("title"),
+					Description: article.Description("description"),
+					Thumbnail:   article.Thumbnail("https://example.com"),
 				},
 			},
-			wantErr: true,
-		},
-		{
-			name: "OGPRepositoryのerrorを握りつぶさない",
-			fields: fields{
-				articleRepository: &mock.Article{
-					Err: nil,
-				},
-				ogpRepository: &mock.OGP{
-					Article: model.Article{},
-					Err:     errors.New("ogp repository error"),
-				},
-			},
-			args: args{
-				ctx: context.Background(),
-				input: port.ShareArticleInput{
-					URL: article.URL("https://example.com"),
-				},
-			},
+			want:    port.ShareArticleOutput{},
 			wantErr: true,
 		},
 	}
@@ -109,15 +85,24 @@ func TestShareInteractorExecute(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			s := interactor.NewShareInteractor(tt.fields.articleRepository, tt.fields.ogpRepository)
+			s := interactor.NewShareInteractor(tt.fields.articleRepository)
 			got, err := s.Execute(tt.args.ctx, tt.args.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ShareInteractor.Execute() error = %v, wantErr %v", err, tt.wantErr)
 
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ShareInteractor.Execute() = %v, want %v", got, tt.want)
+			if !reflect.DeepEqual(got.Article.URL, tt.want.Article.URL) {
+				t.Errorf("ShareInteractor.Execute() got Article.URL = %v, want %v", got.Article.URL, tt.want.Article.URL)
+			}
+			if !reflect.DeepEqual(got.Article.Title, tt.want.Article.Title) {
+				t.Errorf("ShareInteractor.Execute() got Article.Title = %v, want %v", got.Article.Title, tt.want.Article.Title)
+			}
+			if !reflect.DeepEqual(got.Article.Description, tt.want.Article.Description) {
+				t.Errorf("ShareInteractor.Execute() got Article.Description = %v, want %v", got.Article.Description, tt.want.Article.Description)
+			}
+			if !reflect.DeepEqual(got.Article.Thumbnail, tt.want.Article.Thumbnail) {
+				t.Errorf("ShareInteractor.Execute() got Article.Thumbnail = %v, want %v", got.Article.Thumbnail, tt.want.Article.Thumbnail)
 			}
 		})
 	}
