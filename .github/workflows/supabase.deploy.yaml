@@ -1,11 +1,11 @@
 name: supabase deploy
 on:
   push:
-    #branches:
-    #  - main
-    #paths:
-    #  - .github/workflows/supabase.deploy.yaml
-    #  - supabase/functions/**/*.ts
+    branches:
+      - main
+    paths:
+      - .github/workflows/supabase.deploy.yaml
+      - supabase/functions/**/*.ts
 jobs:
   deploy:
     runs-on: ubuntu-latest
