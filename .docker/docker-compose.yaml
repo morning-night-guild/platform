@@ -13,8 +13,8 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
       POSTGRES_HOST_AUTH_METHOD: trust
     restart: always
-  app-core:
-    container_name: ${APP_NAME}-app-core
+  core:
+    container_name: ${APP_NAME}-core
     build:
       context: .
       dockerfile: core/Dockerfile
@@ -31,5 +31,18 @@ services:
     volumes:
       - ../backend:/app
     restart: always
+    depends_on:
+      - db
+  db-migrate:
+    container_name: ${APP_NAME}-db-migrate
+    build:
+      context: .
+      dockerfile: migrate/Dockerfile
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/postgres?sslmode=disable
+    volumes:
+      - ../backend:/app
     depends_on:
       - db

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/morning-night-guild/platform/app/core/driver/database"
+	"github.com/morning-night-guild/platform/internal/driver/database"
 	"github.com/morning-night-guild/platform/pkg/ent"
 )
 

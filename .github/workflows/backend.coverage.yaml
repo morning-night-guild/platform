@@ -26,7 +26,7 @@ jobs:
       - name: Coverage
         working-directory: ./backend
         run: |
-          go test ./...  -coverpkg=./... -coverprofile ./coverage_temp.txt
+          go test ./internal/...  -coverpkg=./... -coverprofile ./coverage_temp.txt
           cat coverage_temp.txt | grep -v "/ent/" | grep -v "/driver/" | grep -v "/cmd/" > coverage.txt
           rm coverage_temp.txt
       - name: Upload coverage

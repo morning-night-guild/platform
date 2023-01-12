@@ -25,7 +25,7 @@ compile:
 
 .PHONY: test
 test:
-	@go test ./...
+	@go test ./internal/...
 
 .PHONY: e2e
 e2e:
