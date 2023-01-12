@@ -25,3 +25,4 @@ jobs:
           supabase secrets set SLACK_VERIFICATION_TOKEN=${{ secrets.SLACK_VERIFICATION_TOKEN }}
       - name: Deploy
         run: supabase functions deploy slack --no-verify-jwt --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+        working-directory: supabase
