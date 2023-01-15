@@ -11,222 +11,142 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.ArticleTag(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.ArticleTag(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.ArticleTag(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.ArticleTag(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.ArticleTag(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.ArticleTag(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.ArticleTag(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.ArticleTag(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.ArticleTag(sql.FieldLTE(FieldID, id))
 }
 
 // Tag applies equality check predicate on the "tag" field. It's identical to TagEQ.
 func Tag(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldEQ(FieldTag, v))
 }
 
 // ArticleID applies equality check predicate on the "article_id" field. It's identical to ArticleIDEQ.
 func ArticleID(v uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldArticleID), v))
-	})
+	return predicate.ArticleTag(sql.FieldEQ(FieldArticleID, v))
 }
 
 // TagEQ applies the EQ predicate on the "tag" field.
 func TagEQ(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldEQ(FieldTag, v))
 }
 
 // TagNEQ applies the NEQ predicate on the "tag" field.
 func TagNEQ(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldNEQ(FieldTag, v))
 }
 
 // TagIn applies the In predicate on the "tag" field.
 func TagIn(vs ...string) predicate.ArticleTag {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldTag), v...))
-	})
+	return predicate.ArticleTag(sql.FieldIn(FieldTag, vs...))
 }
 
 // TagNotIn applies the NotIn predicate on the "tag" field.
 func TagNotIn(vs ...string) predicate.ArticleTag {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldTag), v...))
-	})
+	return predicate.ArticleTag(sql.FieldNotIn(FieldTag, vs...))
 }
 
 // TagGT applies the GT predicate on the "tag" field.
 func TagGT(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldGT(FieldTag, v))
 }
 
 // TagGTE applies the GTE predicate on the "tag" field.
 func TagGTE(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldGTE(FieldTag, v))
 }
 
 // TagLT applies the LT predicate on the "tag" field.
 func TagLT(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldLT(FieldTag, v))
 }
 
 // TagLTE applies the LTE predicate on the "tag" field.
 func TagLTE(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldLTE(FieldTag, v))
 }
 
 // TagContains applies the Contains predicate on the "tag" field.
 func TagContains(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldContains(FieldTag, v))
 }
 
 // TagHasPrefix applies the HasPrefix predicate on the "tag" field.
 func TagHasPrefix(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldHasPrefix(FieldTag, v))
 }
 
 // TagHasSuffix applies the HasSuffix predicate on the "tag" field.
 func TagHasSuffix(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldHasSuffix(FieldTag, v))
 }
 
 // TagEqualFold applies the EqualFold predicate on the "tag" field.
 func TagEqualFold(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldEqualFold(FieldTag, v))
 }
 
 // TagContainsFold applies the ContainsFold predicate on the "tag" field.
 func TagContainsFold(v string) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldTag), v))
-	})
+	return predicate.ArticleTag(sql.FieldContainsFold(FieldTag, v))
 }
 
 // ArticleIDEQ applies the EQ predicate on the "article_id" field.
 func ArticleIDEQ(v uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldArticleID), v))
-	})
+	return predicate.ArticleTag(sql.FieldEQ(FieldArticleID, v))
 }
 
 // ArticleIDNEQ applies the NEQ predicate on the "article_id" field.
 func ArticleIDNEQ(v uuid.UUID) predicate.ArticleTag {
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldArticleID), v))
-	})
+	return predicate.ArticleTag(sql.FieldNEQ(FieldArticleID, v))
 }
 
 // ArticleIDIn applies the In predicate on the "article_id" field.
 func ArticleIDIn(vs ...uuid.UUID) predicate.ArticleTag {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldArticleID), v...))
-	})
+	return predicate.ArticleTag(sql.FieldIn(FieldArticleID, vs...))
 }
 
 // ArticleIDNotIn applies the NotIn predicate on the "article_id" field.
 func ArticleIDNotIn(vs ...uuid.UUID) predicate.ArticleTag {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldArticleID), v...))
-	})
+	return predicate.ArticleTag(sql.FieldNotIn(FieldArticleID, vs...))
 }
 
 // HasArticle applies the HasEdge predicate on the "article" edge.
@@ -234,7 +154,6 @@ func HasArticle() predicate.ArticleTag {
 	return predicate.ArticleTag(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ArticleTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, ArticleTable, ArticleColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
