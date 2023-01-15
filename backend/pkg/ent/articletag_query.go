@@ -24,6 +24,7 @@ type ArticleTagQuery struct {
 	unique      *bool
 	order       []OrderFunc
 	fields      []string
+	inters      []Interceptor
 	predicates  []predicate.ArticleTag
 	withArticle *ArticleQuery
 	// intermediate query (i.e. traversal path).
@@ -37,13 +38,13 @@ func (atq *ArticleTagQuery) Where(ps ...predicate.ArticleTag) *ArticleTagQuery {
 	return atq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (atq *ArticleTagQuery) Limit(limit int) *ArticleTagQuery {
 	atq.limit = &limit
 	return atq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (atq *ArticleTagQuery) Offset(offset int) *ArticleTagQuery {
 	atq.offset = &offset
 	return atq
@@ -56,7 +57,7 @@ func (atq *ArticleTagQuery) Unique(unique bool) *ArticleTagQuery {
 	return atq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (atq *ArticleTagQuery) Order(o ...OrderFunc) *ArticleTagQuery {
 	atq.order = append(atq.order, o...)
 	return atq
@@ -64,7 +65,7 @@ func (atq *ArticleTagQuery) Order(o ...OrderFunc) *ArticleTagQuery {
 
 // QueryArticle chains the current query on the "article" edge.
 func (atq *ArticleTagQuery) QueryArticle() *ArticleQuery {
-	query := &ArticleQuery{config: atq.config}
+	query := (&ArticleClient{config: atq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := atq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +88,7 @@ func (atq *ArticleTagQuery) QueryArticle() *ArticleQuery {
 // First returns the first ArticleTag entity from the query.
 // Returns a *NotFoundError when no ArticleTag was found.
 func (atq *ArticleTagQuery) First(ctx context.Context) (*ArticleTag, error) {
-	nodes, err := atq.Limit(1).All(ctx)
+	nodes, err := atq.Limit(1).All(newQueryContext(ctx, TypeArticleTag, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ func (atq *ArticleTagQuery) FirstX(ctx context.Context) *ArticleTag {
 // Returns a *NotFoundError when no ArticleTag ID was found.
 func (atq *ArticleTagQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = atq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = atq.Limit(1).IDs(newQueryContext(ctx, TypeArticleTag, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +134,7 @@ func (atq *ArticleTagQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one ArticleTag entity is found.
 // Returns a *NotFoundError when no ArticleTag entities are found.
 func (atq *ArticleTagQuery) Only(ctx context.Context) (*ArticleTag, error) {
-	nodes, err := atq.Limit(2).All(ctx)
+	nodes, err := atq.Limit(2).All(newQueryContext(ctx, TypeArticleTag, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +162,7 @@ func (atq *ArticleTagQuery) OnlyX(ctx context.Context) *ArticleTag {
 // Returns a *NotFoundError when no entities are found.
 func (atq *ArticleTagQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = atq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = atq.Limit(2).IDs(newQueryContext(ctx, TypeArticleTag, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +187,12 @@ func (atq *ArticleTagQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of ArticleTags.
 func (atq *ArticleTagQuery) All(ctx context.Context) ([]*ArticleTag, error) {
+	ctx = newQueryContext(ctx, TypeArticleTag, "All")
 	if err := atq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return atq.sqlAll(ctx)
+	qr := querierAll[[]*ArticleTag, *ArticleTagQuery]()
+	return withInterceptors[[]*ArticleTag](ctx, atq, qr, atq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -204,6 +207,7 @@ func (atq *ArticleTagQuery) AllX(ctx context.Context) []*ArticleTag {
 // IDs executes the query and returns a list of ArticleTag IDs.
 func (atq *ArticleTagQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
+	ctx = newQueryContext(ctx, TypeArticleTag, "IDs")
 	if err := atq.Select(articletag.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -221,10 +225,11 @@ func (atq *ArticleTagQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (atq *ArticleTagQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeArticleTag, "Count")
 	if err := atq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return atq.sqlCount(ctx)
+	return withInterceptors[int](ctx, atq, querierCount[*ArticleTagQuery](), atq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +243,15 @@ func (atq *ArticleTagQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (atq *ArticleTagQuery) Exist(ctx context.Context) (bool, error) {
-	if err := atq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeArticleTag, "Exist")
+	switch _, err := atq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return atq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -264,6 +274,7 @@ func (atq *ArticleTagQuery) Clone() *ArticleTagQuery {
 		limit:       atq.limit,
 		offset:      atq.offset,
 		order:       append([]OrderFunc{}, atq.order...),
+		inters:      append([]Interceptor{}, atq.inters...),
 		predicates:  append([]predicate.ArticleTag{}, atq.predicates...),
 		withArticle: atq.withArticle.Clone(),
 		// clone intermediate query.
@@ -276,7 +287,7 @@ func (atq *ArticleTagQuery) Clone() *ArticleTagQuery {
 // WithArticle tells the query-builder to eager-load the nodes that are connected to
 // the "article" edge. The optional arguments are used to configure the query builder of the edge.
 func (atq *ArticleTagQuery) WithArticle(opts ...func(*ArticleQuery)) *ArticleTagQuery {
-	query := &ArticleQuery{config: atq.config}
+	query := (&ArticleClient{config: atq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +310,11 @@ func (atq *ArticleTagQuery) WithArticle(opts ...func(*ArticleQuery)) *ArticleTag
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (atq *ArticleTagQuery) GroupBy(field string, fields ...string) *ArticleTagGroupBy {
-	grbuild := &ArticleTagGroupBy{config: atq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := atq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return atq.sqlQuery(ctx), nil
-	}
+	atq.fields = append([]string{field}, fields...)
+	grbuild := &ArticleTagGroupBy{build: atq}
+	grbuild.flds = &atq.fields
 	grbuild.label = articletag.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -326,10 +332,10 @@ func (atq *ArticleTagQuery) GroupBy(field string, fields ...string) *ArticleTagG
 //		Scan(ctx, &v)
 func (atq *ArticleTagQuery) Select(fields ...string) *ArticleTagSelect {
 	atq.fields = append(atq.fields, fields...)
-	selbuild := &ArticleTagSelect{ArticleTagQuery: atq}
-	selbuild.label = articletag.Label
-	selbuild.flds, selbuild.scan = &atq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &ArticleTagSelect{ArticleTagQuery: atq}
+	sbuild.label = articletag.Label
+	sbuild.flds, sbuild.scan = &atq.fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a ArticleTagSelect configured with the given aggregations.
@@ -338,6 +344,16 @@ func (atq *ArticleTagQuery) Aggregate(fns ...AggregateFunc) *ArticleTagSelect {
 }
 
 func (atq *ArticleTagQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range atq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, atq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range atq.fields {
 		if !articletag.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -424,17 +440,6 @@ func (atq *ArticleTagQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, atq.driver, _spec)
 }
 
-func (atq *ArticleTagQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := atq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (atq *ArticleTagQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -517,13 +522,8 @@ func (atq *ArticleTagQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // ArticleTagGroupBy is the group-by builder for ArticleTag entities.
 type ArticleTagGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *ArticleTagQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -532,58 +532,46 @@ func (atgb *ArticleTagGroupBy) Aggregate(fns ...AggregateFunc) *ArticleTagGroupB
 	return atgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (atgb *ArticleTagGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := atgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeArticleTag, "GroupBy")
+	if err := atgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	atgb.sql = query
-	return atgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*ArticleTagQuery, *ArticleTagGroupBy](ctx, atgb.build, atgb, atgb.build.inters, v)
 }
 
-func (atgb *ArticleTagGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range atgb.fields {
-		if !articletag.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (atgb *ArticleTagGroupBy) sqlScan(ctx context.Context, root *ArticleTagQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(atgb.fns))
+	for _, fn := range atgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := atgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*atgb.flds)+len(atgb.fns))
+		for _, f := range *atgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*atgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := atgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := atgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (atgb *ArticleTagGroupBy) sqlQuery() *sql.Selector {
-	selector := atgb.sql.Select()
-	aggregation := make([]string, 0, len(atgb.fns))
-	for _, fn := range atgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(atgb.fields)+len(atgb.fns))
-		for _, f := range atgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(atgb.fields...)...)
-}
-
 // ArticleTagSelect is the builder for selecting fields of ArticleTag entities.
 type ArticleTagSelect struct {
 	*ArticleTagQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -594,26 +582,27 @@ func (ats *ArticleTagSelect) Aggregate(fns ...AggregateFunc) *ArticleTagSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ats *ArticleTagSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeArticleTag, "Select")
 	if err := ats.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ats.sql = ats.ArticleTagQuery.sqlQuery(ctx)
-	return ats.sqlScan(ctx, v)
+	return scanWithInterceptors[*ArticleTagQuery, *ArticleTagSelect](ctx, ats.ArticleTagQuery, ats, ats.inters, v)
 }
 
-func (ats *ArticleTagSelect) sqlScan(ctx context.Context, v any) error {
+func (ats *ArticleTagSelect) sqlScan(ctx context.Context, root *ArticleTagQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(ats.fns))
 	for _, fn := range ats.fns {
-		aggregation = append(aggregation, fn(ats.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*ats.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		ats.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		ats.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := ats.sql.Query()
+	query, args := selector.Query()
 	if err := ats.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

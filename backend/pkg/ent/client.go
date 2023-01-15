@@ -32,7 +32,7 @@ type Client struct {
 
 // NewClient creates a new client configured with the given options.
 func NewClient(opts ...Option) *Client {
-	cfg := config{log: log.Println, hooks: &hooks{}}
+	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
 	cfg.options(opts...)
 	client := &Client{config: cfg}
 	client.init()
@@ -131,6 +131,25 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ArticleTag.Use(hooks...)
 }
 
+// Intercept adds the query interceptors to all the entity clients.
+// In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
+func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.Article.Intercept(interceptors...)
+	c.ArticleTag.Intercept(interceptors...)
+}
+
+// Mutate implements the ent.Mutator interface.
+func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
+	switch m := m.(type) {
+	case *ArticleMutation:
+		return c.Article.mutate(ctx, m)
+	case *ArticleTagMutation:
+		return c.ArticleTag.mutate(ctx, m)
+	default:
+		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
 // ArticleClient is a client for the Article schema.
 type ArticleClient struct {
 	config
@@ -145,6 +164,12 @@ func NewArticleClient(c config) *ArticleClient {
 // A call to `Use(f, g, h)` equals to `article.Hooks(f(g(h())))`.
 func (c *ArticleClient) Use(hooks ...Hook) {
 	c.hooks.Article = append(c.hooks.Article, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `article.Intercept(f(g(h())))`.
+func (c *ArticleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Article = append(c.inters.Article, interceptors...)
 }
 
 // Create returns a builder for creating a Article entity.
@@ -199,6 +224,7 @@ func (c *ArticleClient) DeleteOneID(id uuid.UUID) *ArticleDeleteOne {
 func (c *ArticleClient) Query() *ArticleQuery {
 	return &ArticleQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -218,7 +244,7 @@ func (c *ArticleClient) GetX(ctx context.Context, id uuid.UUID) *Article {
 
 // QueryTags queries the tags edge of a Article.
 func (c *ArticleClient) QueryTags(a *Article) *ArticleTagQuery {
-	query := &ArticleTagQuery{config: c.config}
+	query := (&ArticleTagClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
@@ -237,6 +263,26 @@ func (c *ArticleClient) Hooks() []Hook {
 	return c.hooks.Article
 }
 
+// Interceptors returns the client interceptors.
+func (c *ArticleClient) Interceptors() []Interceptor {
+	return c.inters.Article
+}
+
+func (c *ArticleClient) mutate(ctx context.Context, m *ArticleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ArticleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ArticleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ArticleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ArticleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Article mutation op: %q", m.Op())
+	}
+}
+
 // ArticleTagClient is a client for the ArticleTag schema.
 type ArticleTagClient struct {
 	config
@@ -251,6 +297,12 @@ func NewArticleTagClient(c config) *ArticleTagClient {
 // A call to `Use(f, g, h)` equals to `articletag.Hooks(f(g(h())))`.
 func (c *ArticleTagClient) Use(hooks ...Hook) {
 	c.hooks.ArticleTag = append(c.hooks.ArticleTag, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `articletag.Intercept(f(g(h())))`.
+func (c *ArticleTagClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ArticleTag = append(c.inters.ArticleTag, interceptors...)
 }
 
 // Create returns a builder for creating a ArticleTag entity.
@@ -305,6 +357,7 @@ func (c *ArticleTagClient) DeleteOneID(id uuid.UUID) *ArticleTagDeleteOne {
 func (c *ArticleTagClient) Query() *ArticleTagQuery {
 	return &ArticleTagQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -324,7 +377,7 @@ func (c *ArticleTagClient) GetX(ctx context.Context, id uuid.UUID) *ArticleTag {
 
 // QueryArticle queries the article edge of a ArticleTag.
 func (c *ArticleTagClient) QueryArticle(at *ArticleTag) *ArticleQuery {
-	query := &ArticleQuery{config: c.config}
+	query := (&ArticleClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := at.ID
 		step := sqlgraph.NewStep(
@@ -341,4 +394,24 @@ func (c *ArticleTagClient) QueryArticle(at *ArticleTag) *ArticleQuery {
 // Hooks returns the client hooks.
 func (c *ArticleTagClient) Hooks() []Hook {
 	return c.hooks.ArticleTag
+}
+
+// Interceptors returns the client interceptors.
+func (c *ArticleTagClient) Interceptors() []Interceptor {
+	return c.inters.ArticleTag
+}
+
+func (c *ArticleTagClient) mutate(ctx context.Context, m *ArticleTagMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ArticleTagCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ArticleTagUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ArticleTagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ArticleTagDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ArticleTag mutation op: %q", m.Op())
+	}
 }

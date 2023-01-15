@@ -15,11 +15,10 @@ type ArticleFunc func(context.Context, *ent.ArticleMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
 func (f ArticleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.ArticleMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleMutation", m)
+	if mv, ok := m.(*ent.ArticleMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleMutation", m)
 }
 
 // The ArticleTagFunc type is an adapter to allow the use of ordinary
@@ -28,11 +27,10 @@ type ArticleTagFunc func(context.Context, *ent.ArticleTagMutation) (ent.Value, e
 
 // Mutate calls f(ctx, m).
 func (f ArticleTagFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.ArticleTagMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleTagMutation", m)
+	if mv, ok := m.(*ent.ArticleTagMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleTagMutation", m)
 }
 
 // Condition is a hook condition function.

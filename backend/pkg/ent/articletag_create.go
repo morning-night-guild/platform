@@ -62,50 +62,8 @@ func (atc *ArticleTagCreate) Mutation() *ArticleTagMutation {
 
 // Save creates the ArticleTag in the database.
 func (atc *ArticleTagCreate) Save(ctx context.Context) (*ArticleTag, error) {
-	var (
-		err  error
-		node *ArticleTag
-	)
 	atc.defaults()
-	if len(atc.hooks) == 0 {
-		if err = atc.check(); err != nil {
-			return nil, err
-		}
-		node, err = atc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ArticleTagMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = atc.check(); err != nil {
-				return nil, err
-			}
-			atc.mutation = mutation
-			if node, err = atc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(atc.hooks) - 1; i >= 0; i-- {
-			if atc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = atc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, atc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*ArticleTag)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ArticleTagMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*ArticleTag, ArticleTagMutation](ctx, atc.sqlSave, atc.mutation, atc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -153,6 +111,9 @@ func (atc *ArticleTagCreate) check() error {
 }
 
 func (atc *ArticleTagCreate) sqlSave(ctx context.Context) (*ArticleTag, error) {
+	if err := atc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := atc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, atc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -167,6 +128,8 @@ func (atc *ArticleTagCreate) sqlSave(ctx context.Context) (*ArticleTag, error) {
 			return nil, err
 		}
 	}
+	atc.mutation.id = &_node.ID
+	atc.mutation.done = true
 	return _node, nil
 }
 

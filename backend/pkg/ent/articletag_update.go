@@ -59,40 +59,7 @@ func (atu *ArticleTagUpdate) ClearArticle() *ArticleTagUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (atu *ArticleTagUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(atu.hooks) == 0 {
-		if err = atu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = atu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ArticleTagMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = atu.check(); err != nil {
-				return 0, err
-			}
-			atu.mutation = mutation
-			affected, err = atu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(atu.hooks) - 1; i >= 0; i-- {
-			if atu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = atu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, atu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, ArticleTagMutation](ctx, atu.sqlSave, atu.mutation, atu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -126,6 +93,9 @@ func (atu *ArticleTagUpdate) check() error {
 }
 
 func (atu *ArticleTagUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := atu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   articletag.Table,
@@ -189,6 +159,7 @@ func (atu *ArticleTagUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	atu.mutation.done = true
 	return n, nil
 }
 
@@ -237,46 +208,7 @@ func (atuo *ArticleTagUpdateOne) Select(field string, fields ...string) *Article
 
 // Save executes the query and returns the updated ArticleTag entity.
 func (atuo *ArticleTagUpdateOne) Save(ctx context.Context) (*ArticleTag, error) {
-	var (
-		err  error
-		node *ArticleTag
-	)
-	if len(atuo.hooks) == 0 {
-		if err = atuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = atuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ArticleTagMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = atuo.check(); err != nil {
-				return nil, err
-			}
-			atuo.mutation = mutation
-			node, err = atuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(atuo.hooks) - 1; i >= 0; i-- {
-			if atuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = atuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, atuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*ArticleTag)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ArticleTagMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*ArticleTag, ArticleTagMutation](ctx, atuo.sqlSave, atuo.mutation, atuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -310,6 +242,9 @@ func (atuo *ArticleTagUpdateOne) check() error {
 }
 
 func (atuo *ArticleTagUpdateOne) sqlSave(ctx context.Context) (_node *ArticleTag, err error) {
+	if err := atuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   articletag.Table,
@@ -393,5 +328,6 @@ func (atuo *ArticleTagUpdateOne) sqlSave(ctx context.Context) (_node *ArticleTag
 		}
 		return nil, err
 	}
+	atuo.mutation.done = true
 	return _node, nil
 }

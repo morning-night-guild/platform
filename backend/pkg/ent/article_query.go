@@ -25,6 +25,7 @@ type ArticleQuery struct {
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
+	inters     []Interceptor
 	predicates []predicate.Article
 	withTags   *ArticleTagQuery
 	// intermediate query (i.e. traversal path).
@@ -38,13 +39,13 @@ func (aq *ArticleQuery) Where(ps ...predicate.Article) *ArticleQuery {
 	return aq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (aq *ArticleQuery) Limit(limit int) *ArticleQuery {
 	aq.limit = &limit
 	return aq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (aq *ArticleQuery) Offset(offset int) *ArticleQuery {
 	aq.offset = &offset
 	return aq
@@ -57,7 +58,7 @@ func (aq *ArticleQuery) Unique(unique bool) *ArticleQuery {
 	return aq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (aq *ArticleQuery) Order(o ...OrderFunc) *ArticleQuery {
 	aq.order = append(aq.order, o...)
 	return aq
@@ -65,7 +66,7 @@ func (aq *ArticleQuery) Order(o ...OrderFunc) *ArticleQuery {
 
 // QueryTags chains the current query on the "tags" edge.
 func (aq *ArticleQuery) QueryTags() *ArticleTagQuery {
-	query := &ArticleTagQuery{config: aq.config}
+	query := (&ArticleTagClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -88,7 +89,7 @@ func (aq *ArticleQuery) QueryTags() *ArticleTagQuery {
 // First returns the first Article entity from the query.
 // Returns a *NotFoundError when no Article was found.
 func (aq *ArticleQuery) First(ctx context.Context) (*Article, error) {
-	nodes, err := aq.Limit(1).All(ctx)
+	nodes, err := aq.Limit(1).All(newQueryContext(ctx, TypeArticle, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +112,7 @@ func (aq *ArticleQuery) FirstX(ctx context.Context) *Article {
 // Returns a *NotFoundError when no Article ID was found.
 func (aq *ArticleQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = aq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = aq.Limit(1).IDs(newQueryContext(ctx, TypeArticle, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +135,7 @@ func (aq *ArticleQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one Article entity is found.
 // Returns a *NotFoundError when no Article entities are found.
 func (aq *ArticleQuery) Only(ctx context.Context) (*Article, error) {
-	nodes, err := aq.Limit(2).All(ctx)
+	nodes, err := aq.Limit(2).All(newQueryContext(ctx, TypeArticle, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +163,7 @@ func (aq *ArticleQuery) OnlyX(ctx context.Context) *Article {
 // Returns a *NotFoundError when no entities are found.
 func (aq *ArticleQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = aq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = aq.Limit(2).IDs(newQueryContext(ctx, TypeArticle, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,10 +188,12 @@ func (aq *ArticleQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of Articles.
 func (aq *ArticleQuery) All(ctx context.Context) ([]*Article, error) {
+	ctx = newQueryContext(ctx, TypeArticle, "All")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return aq.sqlAll(ctx)
+	qr := querierAll[[]*Article, *ArticleQuery]()
+	return withInterceptors[[]*Article](ctx, aq, qr, aq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -205,6 +208,7 @@ func (aq *ArticleQuery) AllX(ctx context.Context) []*Article {
 // IDs executes the query and returns a list of Article IDs.
 func (aq *ArticleQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
+	ctx = newQueryContext(ctx, TypeArticle, "IDs")
 	if err := aq.Select(article.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -222,10 +226,11 @@ func (aq *ArticleQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (aq *ArticleQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeArticle, "Count")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return aq.sqlCount(ctx)
+	return withInterceptors[int](ctx, aq, querierCount[*ArticleQuery](), aq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -239,10 +244,15 @@ func (aq *ArticleQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aq *ArticleQuery) Exist(ctx context.Context) (bool, error) {
-	if err := aq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeArticle, "Exist")
+	switch _, err := aq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return aq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -265,6 +275,7 @@ func (aq *ArticleQuery) Clone() *ArticleQuery {
 		limit:      aq.limit,
 		offset:     aq.offset,
 		order:      append([]OrderFunc{}, aq.order...),
+		inters:     append([]Interceptor{}, aq.inters...),
 		predicates: append([]predicate.Article{}, aq.predicates...),
 		withTags:   aq.withTags.Clone(),
 		// clone intermediate query.
@@ -277,7 +288,7 @@ func (aq *ArticleQuery) Clone() *ArticleQuery {
 // WithTags tells the query-builder to eager-load the nodes that are connected to
 // the "tags" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *ArticleQuery) WithTags(opts ...func(*ArticleTagQuery)) *ArticleQuery {
-	query := &ArticleTagQuery{config: aq.config}
+	query := (&ArticleTagClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -300,16 +311,11 @@ func (aq *ArticleQuery) WithTags(opts ...func(*ArticleTagQuery)) *ArticleQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *ArticleQuery) GroupBy(field string, fields ...string) *ArticleGroupBy {
-	grbuild := &ArticleGroupBy{config: aq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return aq.sqlQuery(ctx), nil
-	}
+	aq.fields = append([]string{field}, fields...)
+	grbuild := &ArticleGroupBy{build: aq}
+	grbuild.flds = &aq.fields
 	grbuild.label = article.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -327,10 +333,10 @@ func (aq *ArticleQuery) GroupBy(field string, fields ...string) *ArticleGroupBy 
 //		Scan(ctx, &v)
 func (aq *ArticleQuery) Select(fields ...string) *ArticleSelect {
 	aq.fields = append(aq.fields, fields...)
-	selbuild := &ArticleSelect{ArticleQuery: aq}
-	selbuild.label = article.Label
-	selbuild.flds, selbuild.scan = &aq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &ArticleSelect{ArticleQuery: aq}
+	sbuild.label = article.Label
+	sbuild.flds, sbuild.scan = &aq.fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a ArticleSelect configured with the given aggregations.
@@ -339,6 +345,16 @@ func (aq *ArticleQuery) Aggregate(fns ...AggregateFunc) *ArticleSelect {
 }
 
 func (aq *ArticleQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range aq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, aq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range aq.fields {
 		if !article.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -427,17 +443,6 @@ func (aq *ArticleQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
 
-func (aq *ArticleQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := aq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (aq *ArticleQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -520,13 +525,8 @@ func (aq *ArticleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // ArticleGroupBy is the group-by builder for Article entities.
 type ArticleGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *ArticleQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -535,58 +535,46 @@ func (agb *ArticleGroupBy) Aggregate(fns ...AggregateFunc) *ArticleGroupBy {
 	return agb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (agb *ArticleGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := agb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeArticle, "GroupBy")
+	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	agb.sql = query
-	return agb.sqlScan(ctx, v)
+	return scanWithInterceptors[*ArticleQuery, *ArticleGroupBy](ctx, agb.build, agb, agb.build.inters, v)
 }
 
-func (agb *ArticleGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range agb.fields {
-		if !article.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (agb *ArticleGroupBy) sqlScan(ctx context.Context, root *ArticleQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(agb.fns))
+	for _, fn := range agb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := agb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*agb.flds)+len(agb.fns))
+		for _, f := range *agb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*agb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := agb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := agb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (agb *ArticleGroupBy) sqlQuery() *sql.Selector {
-	selector := agb.sql.Select()
-	aggregation := make([]string, 0, len(agb.fns))
-	for _, fn := range agb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(agb.fields)+len(agb.fns))
-		for _, f := range agb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(agb.fields...)...)
-}
-
 // ArticleSelect is the builder for selecting fields of Article entities.
 type ArticleSelect struct {
 	*ArticleQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -597,26 +585,27 @@ func (as *ArticleSelect) Aggregate(fns ...AggregateFunc) *ArticleSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (as *ArticleSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeArticle, "Select")
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}
-	as.sql = as.ArticleQuery.sqlQuery(ctx)
-	return as.sqlScan(ctx, v)
+	return scanWithInterceptors[*ArticleQuery, *ArticleSelect](ctx, as.ArticleQuery, as, as.inters, v)
 }
 
-func (as *ArticleSelect) sqlScan(ctx context.Context, v any) error {
+func (as *ArticleSelect) sqlScan(ctx context.Context, root *ArticleQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(as.fns))
 	for _, fn := range as.fns {
-		aggregation = append(aggregation, fn(as.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*as.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		as.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		as.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := as.sql.Query()
+	query, args := selector.Query()
 	if err := as.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
