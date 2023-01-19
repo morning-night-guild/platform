@@ -3,7 +3,7 @@ package repository_test
 import (
 	"testing"
 
-	"github.com/morning-night-guild/platform/internal/usecase/repository"
+	"github.com/morning-night-guild/platform/internal/domain/repository"
 )
 
 func TestNewIndex(t *testing.T) {

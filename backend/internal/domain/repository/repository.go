@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 
-	"github.com/morning-night-guild/platform/internal/model/errors"
+	"github.com/morning-night-guild/platform/internal/domain/model/errors"
 )
 
 // Index インデックス.

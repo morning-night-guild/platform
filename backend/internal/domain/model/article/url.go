@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/morning-night-guild/platform/internal/model/errors"
+	"github.com/morning-night-guild/platform/internal/domain/model/errors"
 )
 
 // URL 記事のURL.

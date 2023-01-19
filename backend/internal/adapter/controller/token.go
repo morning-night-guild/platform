@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"strconv"
 
-	"github.com/morning-night-guild/platform/internal/usecase/repository"
+	"github.com/morning-night-guild/platform/internal/domain/repository"
 )
 
 // トークン.

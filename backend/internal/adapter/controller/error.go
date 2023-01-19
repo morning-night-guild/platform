@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/bufbuild/connect-go"
-	me "github.com/morning-night-guild/platform/internal/model/errors"
+	me "github.com/morning-night-guild/platform/internal/domain/model/errors"
 	"github.com/morning-night-guild/platform/pkg/log"
 )
 

@@ -3,7 +3,7 @@ package article_test
 import (
 	"testing"
 
-	"github.com/morning-night-guild/platform/internal/model/article"
+	"github.com/morning-night-guild/platform/internal/domain/model/article"
 )
 
 func TestNewURL(t *testing.T) {

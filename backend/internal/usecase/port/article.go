@@ -1,10 +1,10 @@
 package port
 
 import (
-	"github.com/morning-night-guild/platform/internal/model"
-	"github.com/morning-night-guild/platform/internal/model/article"
+	"github.com/morning-night-guild/platform/internal/domain/model"
+	"github.com/morning-night-guild/platform/internal/domain/model/article"
+	"github.com/morning-night-guild/platform/internal/domain/repository"
 	"github.com/morning-night-guild/platform/internal/usecase"
-	"github.com/morning-night-guild/platform/internal/usecase/repository"
 )
 
 // ShareArticleInput.

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/morning-night-guild/platform/internal/adapter/controller"
-	"github.com/morning-night-guild/platform/internal/usecase/repository"
+	"github.com/morning-night-guild/platform/internal/domain/repository"
 )
 
 func TestTokenToIndex(t *testing.T) {
