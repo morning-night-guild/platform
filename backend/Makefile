@@ -7,6 +7,10 @@ API_KEY := local
 tool:
 	@aqua i
 
+.PHONY: fmt
+fmt:
+	@go fmt ./...
+
 .PHONY: lint
 lint:
 	@golangci-lint run --fix
