@@ -224,6 +224,7 @@ func (c *ArticleClient) DeleteOneID(id uuid.UUID) *ArticleDeleteOne {
 func (c *ArticleClient) Query() *ArticleQuery {
 	return &ArticleQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeArticle},
 		inters: c.Interceptors(),
 	}
 }
@@ -357,6 +358,7 @@ func (c *ArticleTagClient) DeleteOneID(id uuid.UUID) *ArticleTagDeleteOne {
 func (c *ArticleTagClient) Query() *ArticleTagQuery {
 	return &ArticleTagQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeArticleTag},
 		inters: c.Interceptors(),
 	}
 }
