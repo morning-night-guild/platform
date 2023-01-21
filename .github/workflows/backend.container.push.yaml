@@ -60,7 +60,7 @@ jobs:
     needs: container-push
     runs-on: ubuntu-22.04
     env:
-      MANIFEST_REPO_NAME: platform-manifest
+      MANIFEST_REPO_NAME: platform-infra
       DOCKER_REPO_NAME: morningnightguild
       BRANCH_NAME: release/${{ needs.container-push.outputs.image-tag }}
     steps:
