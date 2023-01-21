@@ -127,14 +127,14 @@ func (a *Article) assignValues(columns []string, values []any) error {
 
 // QueryTags queries the "tags" edge of the Article entity.
 func (a *Article) QueryTags() *ArticleTagQuery {
-	return (&ArticleClient{config: a.config}).QueryTags(a)
+	return NewArticleClient(a.config).QueryTags(a)
 }
 
 // Update returns a builder for updating this Article.
 // Note that you need to call Article.Unwrap() before calling this method if this Article
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (a *Article) Update() *ArticleUpdateOne {
-	return (&ArticleClient{config: a.config}).UpdateOne(a)
+	return NewArticleClient(a.config).UpdateOne(a)
 }
 
 // Unwrap unwraps the Article entity that was returned from a transaction after it was closed,

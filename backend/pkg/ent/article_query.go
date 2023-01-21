@@ -20,11 +20,8 @@ import (
 // ArticleQuery is the builder for querying Article entities.
 type ArticleQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.Article
 	withTags   *ArticleTagQuery
@@ -41,20 +38,20 @@ func (aq *ArticleQuery) Where(ps ...predicate.Article) *ArticleQuery {
 
 // Limit the number of records to be returned by this query.
 func (aq *ArticleQuery) Limit(limit int) *ArticleQuery {
-	aq.limit = &limit
+	aq.ctx.Limit = &limit
 	return aq
 }
 
 // Offset to start from.
 func (aq *ArticleQuery) Offset(offset int) *ArticleQuery {
-	aq.offset = &offset
+	aq.ctx.Offset = &offset
 	return aq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (aq *ArticleQuery) Unique(unique bool) *ArticleQuery {
-	aq.unique = &unique
+	aq.ctx.Unique = &unique
 	return aq
 }
 
@@ -89,7 +86,7 @@ func (aq *ArticleQuery) QueryTags() *ArticleTagQuery {
 // First returns the first Article entity from the query.
 // Returns a *NotFoundError when no Article was found.
 func (aq *ArticleQuery) First(ctx context.Context) (*Article, error) {
-	nodes, err := aq.Limit(1).All(newQueryContext(ctx, TypeArticle, "First"))
+	nodes, err := aq.Limit(1).All(setContextOp(ctx, aq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +109,7 @@ func (aq *ArticleQuery) FirstX(ctx context.Context) *Article {
 // Returns a *NotFoundError when no Article ID was found.
 func (aq *ArticleQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = aq.Limit(1).IDs(newQueryContext(ctx, TypeArticle, "FirstID")); err != nil {
+	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -135,7 +132,7 @@ func (aq *ArticleQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one Article entity is found.
 // Returns a *NotFoundError when no Article entities are found.
 func (aq *ArticleQuery) Only(ctx context.Context) (*Article, error) {
-	nodes, err := aq.Limit(2).All(newQueryContext(ctx, TypeArticle, "Only"))
+	nodes, err := aq.Limit(2).All(setContextOp(ctx, aq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +160,7 @@ func (aq *ArticleQuery) OnlyX(ctx context.Context) *Article {
 // Returns a *NotFoundError when no entities are found.
 func (aq *ArticleQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = aq.Limit(2).IDs(newQueryContext(ctx, TypeArticle, "OnlyID")); err != nil {
+	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -188,7 +185,7 @@ func (aq *ArticleQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of Articles.
 func (aq *ArticleQuery) All(ctx context.Context) ([]*Article, error) {
-	ctx = newQueryContext(ctx, TypeArticle, "All")
+	ctx = setContextOp(ctx, aq.ctx, "All")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -208,7 +205,7 @@ func (aq *ArticleQuery) AllX(ctx context.Context) []*Article {
 // IDs executes the query and returns a list of Article IDs.
 func (aq *ArticleQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
-	ctx = newQueryContext(ctx, TypeArticle, "IDs")
+	ctx = setContextOp(ctx, aq.ctx, "IDs")
 	if err := aq.Select(article.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -226,7 +223,7 @@ func (aq *ArticleQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (aq *ArticleQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeArticle, "Count")
+	ctx = setContextOp(ctx, aq.ctx, "Count")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -244,7 +241,7 @@ func (aq *ArticleQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aq *ArticleQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeArticle, "Exist")
+	ctx = setContextOp(ctx, aq.ctx, "Exist")
 	switch _, err := aq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -272,16 +269,14 @@ func (aq *ArticleQuery) Clone() *ArticleQuery {
 	}
 	return &ArticleQuery{
 		config:     aq.config,
-		limit:      aq.limit,
-		offset:     aq.offset,
+		ctx:        aq.ctx.Clone(),
 		order:      append([]OrderFunc{}, aq.order...),
 		inters:     append([]Interceptor{}, aq.inters...),
 		predicates: append([]predicate.Article{}, aq.predicates...),
 		withTags:   aq.withTags.Clone(),
 		// clone intermediate query.
-		sql:    aq.sql.Clone(),
-		path:   aq.path,
-		unique: aq.unique,
+		sql:  aq.sql.Clone(),
+		path: aq.path,
 	}
 }
 
@@ -311,9 +306,9 @@ func (aq *ArticleQuery) WithTags(opts ...func(*ArticleTagQuery)) *ArticleQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *ArticleQuery) GroupBy(field string, fields ...string) *ArticleGroupBy {
-	aq.fields = append([]string{field}, fields...)
+	aq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &ArticleGroupBy{build: aq}
-	grbuild.flds = &aq.fields
+	grbuild.flds = &aq.ctx.Fields
 	grbuild.label = article.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -332,10 +327,10 @@ func (aq *ArticleQuery) GroupBy(field string, fields ...string) *ArticleGroupBy 
 //		Select(article.FieldTitle).
 //		Scan(ctx, &v)
 func (aq *ArticleQuery) Select(fields ...string) *ArticleSelect {
-	aq.fields = append(aq.fields, fields...)
+	aq.ctx.Fields = append(aq.ctx.Fields, fields...)
 	sbuild := &ArticleSelect{ArticleQuery: aq}
 	sbuild.label = article.Label
-	sbuild.flds, sbuild.scan = &aq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &aq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -355,7 +350,7 @@ func (aq *ArticleQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range aq.fields {
+	for _, f := range aq.ctx.Fields {
 		if !article.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -436,9 +431,9 @@ func (aq *ArticleQuery) loadTags(ctx context.Context, query *ArticleTagQuery, no
 
 func (aq *ArticleQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
-	_spec.Node.Columns = aq.fields
-	if len(aq.fields) > 0 {
-		_spec.Unique = aq.unique != nil && *aq.unique
+	_spec.Node.Columns = aq.ctx.Fields
+	if len(aq.ctx.Fields) > 0 {
+		_spec.Unique = aq.ctx.Unique != nil && *aq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
@@ -456,10 +451,10 @@ func (aq *ArticleQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   aq.sql,
 		Unique: true,
 	}
-	if unique := aq.unique; unique != nil {
+	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := aq.fields; len(fields) > 0 {
+	if fields := aq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, article.FieldID)
 		for i := range fields {
@@ -475,10 +470,10 @@ func (aq *ArticleQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := aq.limit; limit != nil {
+	if limit := aq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := aq.offset; offset != nil {
+	if offset := aq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := aq.order; len(ps) > 0 {
@@ -494,7 +489,7 @@ func (aq *ArticleQuery) querySpec() *sqlgraph.QuerySpec {
 func (aq *ArticleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(aq.driver.Dialect())
 	t1 := builder.Table(article.Table)
-	columns := aq.fields
+	columns := aq.ctx.Fields
 	if len(columns) == 0 {
 		columns = article.Columns
 	}
@@ -503,7 +498,7 @@ func (aq *ArticleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = aq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if aq.unique != nil && *aq.unique {
+	if aq.ctx.Unique != nil && *aq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range aq.predicates {
@@ -512,12 +507,12 @@ func (aq *ArticleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range aq.order {
 		p(selector)
 	}
-	if offset := aq.offset; offset != nil {
+	if offset := aq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := aq.limit; limit != nil {
+	if limit := aq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -537,7 +532,7 @@ func (agb *ArticleGroupBy) Aggregate(fns ...AggregateFunc) *ArticleGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (agb *ArticleGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeArticle, "GroupBy")
+	ctx = setContextOp(ctx, agb.build.ctx, "GroupBy")
 	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -585,7 +580,7 @@ func (as *ArticleSelect) Aggregate(fns ...AggregateFunc) *ArticleSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (as *ArticleSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeArticle, "Select")
+	ctx = setContextOp(ctx, as.ctx, "Select")
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}
