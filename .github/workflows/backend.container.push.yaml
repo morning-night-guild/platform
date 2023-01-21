@@ -43,15 +43,15 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Generate token
-        id: generate_token
+        id: generate-token
         uses: tibdex/github-app-token@v1
         with:
-          app_id: ${{ secrets.MY_GITHUB_APP_ID }}
-          private_key: ${{ secrets.MY_GITHUB_APP_PRIVATE_KEY }}
+          app_id: ${{ secrets.BOT_GITHUB_APP_ID }}
+          private_key: ${{ secrets.BOT_GITHUB_APP_PRIVATE_KEY }}
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          token: ${{ steps.generate_token.outputs.token }}
+          token: ${{ steps.generate-token.outputs.token }}
       - name: Tag
         run: |
           git tag ${{ needs.container-push.outputs.image_tag }}
