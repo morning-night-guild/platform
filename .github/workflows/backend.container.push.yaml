@@ -1,5 +1,8 @@
 name: backend container push
 on:
+  pull_request:
+    paths:
+      - .github/workflows/backend.container.push.yaml
   schedule:
     # 金曜24時(JST)
     - cron: '0 15 * * 5'
@@ -28,12 +31,30 @@ jobs:
           IMAGE_NAME=platform
           echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
 
-          IMAGE_TAG=v`date +%Y%m%d%H%M%S`
+          IMAGE_TAG=`date +%Y-%m-%d-%H-%M-%S`
           echo "image-tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
           KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
           SOURCE_DATE_EPOCH=$(date +%s) \
           ko build --sbom=none --bare --tags=${IMAGE_TAG},latest ./ --platform=linux/amd64
+  create-tag:
+    needs: container-push
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.MY_GITHUB_APP_ID }}
+          private_key: ${{ secrets.MY_GITHUB_APP_PRIVATE_KEY }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+      - name: Tag
+        run: |
+          git tag ${{ needs.container-push.outputs.image_tag }}
+          git push origin ${{ needs.container-push.outputs.image_tag }}
   release-pull-request:
     needs: container-push
     runs-on: ubuntu-22.04
@@ -77,5 +98,5 @@ jobs:
       - name: Create release pull request
         run: |
           export GH_TOKEN=${{ steps.generate-token.outputs.token }}
-          gh pr create --base main --title "Release ${{ needs.container-push.outputs.image-name }} ${{ needs.container-push.outputs.image-tag }}" --body ""
+          gh pr create --base main --title "Release ${{ needs.container-push.outputs.image-name }} ${{ needs.container-push.outputs.image-tag }}" --body "" --label release
         working-directory: ${{ env.MANIFEST_REPO_NAME }}
