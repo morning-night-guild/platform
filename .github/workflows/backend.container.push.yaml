@@ -54,8 +54,8 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
       - name: Tag
         run: |
-          git tag ${{ needs.container-push.outputs.image_tag }}
-          git push origin ${{ needs.container-push.outputs.image_tag }}
+          git tag ${{ needs.container-push.outputs.image-tag }}
+          git push origin ${{ needs.container-push.outputs.image-tag }}
   release-pull-request:
     needs: container-push
     runs-on: ubuntu-22.04
