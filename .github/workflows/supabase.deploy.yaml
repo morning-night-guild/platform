@@ -1,5 +1,5 @@
 name: supabase deploy
-run-name: ${{ github.ref_name }} by @${{ github.actor }} [ ${{ github.workflow }} ]
+run-name: ${{ github.ref_name }} by @${{ github.actor }} ${{ github.workflow }}
 on:
   push:
     branches:
