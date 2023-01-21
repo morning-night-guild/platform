@@ -93,7 +93,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git commit -m "update core manifest"
+          git commit -m "update image tag ${{ needs.container-push.outputs.image-name }} ${{ needs.container-push.outputs.image-tag }}"
           git push --set-upstream origin ${{ env.BRANCH_NAME }}
         working-directory: ${{ env.MANIFEST_REPO_NAME }}
       - name: Create release pull request
