@@ -1,4 +1,5 @@
 name: api lint
+run-name: ${{ github.ref_name }} by @${{ github.actor }} ${{ github.workflow }}
 on:
   pull_request:
     paths:
@@ -6,7 +7,7 @@ on:
       - api/**/*.proto
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3

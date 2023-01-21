@@ -1,4 +1,5 @@
 name: backend coverage
+run-name: ${{ github.ref_name }} by @${{ github.actor }} ${{ github.workflow }}
 on:
   push:
     branches:
@@ -15,7 +16,7 @@ on:
       - backend/go.sum
 jobs:
   coverage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
