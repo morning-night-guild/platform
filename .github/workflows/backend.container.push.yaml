@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 jobs:
   container-push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       image-name: ${{ steps.build-and-push.outputs.image-name }}
       image-tag: ${{ steps.build-and-push.outputs.image-tag }}
@@ -41,7 +41,7 @@ jobs:
           ko build --sbom=none --bare --tags=${IMAGE_TAG},latest ./ --platform=linux/amd64
   release-pull-request:
     needs: container-push
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       MANIFEST_REPO_NAME: platform-manifest
       DOCKER_REPO_NAME: morningnightguild
