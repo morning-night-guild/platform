@@ -6,12 +6,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/morning-night-guild/platform/internal/model"
-	"github.com/morning-night-guild/platform/internal/model/article"
+	"github.com/morning-night-guild/platform/internal/domain/model"
+	"github.com/morning-night-guild/platform/internal/domain/model/article"
+	"github.com/morning-night-guild/platform/internal/domain/repository"
 	interactor "github.com/morning-night-guild/platform/internal/usecase/interactor/article"
 	"github.com/morning-night-guild/platform/internal/usecase/mock"
 	"github.com/morning-night-guild/platform/internal/usecase/port"
-	"github.com/morning-night-guild/platform/internal/usecase/repository"
 )
 
 func TestShareInteractorExecute(t *testing.T) {

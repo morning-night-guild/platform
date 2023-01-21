@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/bufbuild/connect-go"
-	"github.com/morning-night-guild/platform/internal/model/article"
+	"github.com/morning-night-guild/platform/internal/domain/model/article"
+	"github.com/morning-night-guild/platform/internal/domain/repository"
 	"github.com/morning-night-guild/platform/internal/usecase/port"
-	"github.com/morning-night-guild/platform/internal/usecase/repository"
 	articlev1 "github.com/morning-night-guild/platform/pkg/connect/proto/article/v1"
 )
 

@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/google/uuid"
-	"github.com/morning-night-guild/platform/internal/model/article"
+	"github.com/morning-night-guild/platform/internal/domain/model/article"
 )
 
 // Article 記事モデル.

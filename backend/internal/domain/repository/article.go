@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/morning-night-guild/platform/internal/model"
+	"github.com/morning-night-guild/platform/internal/domain/model"
 )
 
 type Article interface {

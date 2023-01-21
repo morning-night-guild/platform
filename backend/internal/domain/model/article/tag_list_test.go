@@ -5,7 +5,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/morning-night-guild/platform/internal/model/article"
+	"github.com/morning-night-guild/platform/internal/domain/model/article"
 )
 
 func TestNewTagList(t *testing.T) {

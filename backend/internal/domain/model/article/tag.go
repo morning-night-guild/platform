@@ -1,7 +1,7 @@
 package article
 
 import (
-	"github.com/morning-night-guild/platform/internal/model/errors"
+	"github.com/morning-night-guild/platform/internal/domain/model/errors"
 )
 
 // Tag 記事のタグ.

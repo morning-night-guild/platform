@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/morning-night-guild/platform/internal/model"
-	"github.com/morning-night-guild/platform/internal/usecase/repository"
+	"github.com/morning-night-guild/platform/internal/domain/model"
+	"github.com/morning-night-guild/platform/internal/domain/repository"
 	"github.com/morning-night-guild/platform/pkg/ent"
 	"github.com/morning-night-guild/platform/pkg/ent/article"
 	"github.com/pkg/errors"
