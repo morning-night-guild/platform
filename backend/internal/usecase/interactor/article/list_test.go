@@ -39,6 +39,7 @@ func TestListInteractorExecute(t *testing.T) {
 			name: "記事一覧を取得できる",
 			fields: fields{
 				articleRepository: &mock.Article{
+					T: t,
 					Articles: []model.Article{
 						{
 							ID:          article.ID(id),

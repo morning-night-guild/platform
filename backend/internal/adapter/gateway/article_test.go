@@ -31,14 +31,16 @@ func NewRDBClientMock(t *testing.T) *RDBClientMock {
 	}
 }
 
-func (r *RDBClientMock) Of(dsn string) (*gateway.RDB, error) {
+func (rm *RDBClientMock) Of(dsn string) (*gateway.RDB, error) {
+	rm.t.Helper()
+
 	opts := []enttest.Option{
-		enttest.WithOptions(ent.Log(r.t.Log)),
+		enttest.WithOptions(ent.Log(rm.t.Log)),
 	}
 
 	dataSourceName := fmt.Sprintf("file:%s?mode=memory&cache=shared&_fk=1", dsn)
 
-	db := enttest.Open(r.t, "sqlite3", dataSourceName, opts...)
+	db := enttest.Open(rm.t, "sqlite3", dataSourceName, opts...)
 
 	return &gateway.RDB{
 		Client: db,

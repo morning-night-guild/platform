@@ -9,42 +9,14 @@ import (
 	"github.com/bufbuild/connect-go"
 	"github.com/google/uuid"
 	"github.com/morning-night-guild/platform/internal/adapter/controller"
+	"github.com/morning-night-guild/platform/internal/adapter/mock"
 	"github.com/morning-night-guild/platform/internal/domain/model"
 	"github.com/morning-night-guild/platform/internal/domain/model/article"
-	me "github.com/morning-night-guild/platform/internal/domain/model/errors"
+	dme "github.com/morning-night-guild/platform/internal/domain/model/errors"
 	"github.com/morning-night-guild/platform/internal/usecase"
 	"github.com/morning-night-guild/platform/internal/usecase/port"
 	articlev1 "github.com/morning-night-guild/platform/pkg/connect/proto/article/v1"
 )
-
-type ShareMock struct {
-	Err error
-}
-
-const id = "12345678-1234-1234-1234-1234567890ab"
-
-func (s ShareMock) Execute(ctx context.Context, input port.ShareArticleInput) (port.ShareArticleOutput, error) {
-	return port.ShareArticleOutput{
-		Article: model.Article{
-			ID:          article.ID(uuid.MustParse(id)),
-			URL:         input.URL,
-			Title:       input.Title,
-			Description: input.Description,
-			Thumbnail:   input.Thumbnail,
-		},
-	}, s.Err
-}
-
-type ListMock struct {
-	Articles []model.Article
-	Err      error
-}
-
-func (l ListMock) Execute(ctx context.Context, input port.ListArticleInput) (port.ListArticleOutput, error) {
-	return port.ListArticleOutput{
-		Articles: l.Articles,
-	}, l.Err
-}
 
 func TestArticleShare(t *testing.T) {
 	t.Parallel()
@@ -71,10 +43,11 @@ func TestArticleShare(t *testing.T) {
 			name: "記事の共有ができる",
 			fields: fields{
 				apiKey: "test",
-				share: ShareMock{
+				share: mock.ShareUsecase{
+					T:   t,
 					Err: nil,
 				},
-				list: ListMock{},
+				list: mock.ListUsecase{},
 			},
 			args: args{
 				ctx: context.Background(),
@@ -89,7 +62,7 @@ func TestArticleShare(t *testing.T) {
 			},
 			want: connect.NewResponse(&articlev1.ShareResponse{
 				Article: &articlev1.Article{
-					Id:          id,
+					Id:          mock.ID,
 					Url:         "https://example.com",
 					Title:       "title",
 					Description: "description",
@@ -102,10 +75,11 @@ func TestArticleShare(t *testing.T) {
 			name: "X-Api-Keyが不正の時、認証エラーになる",
 			fields: fields{
 				apiKey: "invalid-api-key",
-				share: ShareMock{
+				share: mock.ShareUsecase{
+					T:   t,
 					Err: nil,
 				},
-				list: ListMock{},
+				list: mock.ListUsecase{},
 			},
 			args: args{
 				ctx: context.Background(),
@@ -125,10 +99,11 @@ func TestArticleShare(t *testing.T) {
 			name: "URLが不正の時、バッドリクエストエラーになる",
 			fields: fields{
 				apiKey: "test",
-				share: ShareMock{
+				share: mock.ShareUsecase{
+					T:   t,
 					Err: nil,
 				},
-				list: ListMock{},
+				list: mock.ListUsecase{},
 			},
 			args: args{
 				ctx: context.Background(),
@@ -148,10 +123,11 @@ func TestArticleShare(t *testing.T) {
 			name: "Thumbnailが不正の時、バッドリクエストエラーになる",
 			fields: fields{
 				apiKey: "test",
-				share: ShareMock{
+				share: mock.ShareUsecase{
+					T:   t,
 					Err: nil,
 				},
-				list: ListMock{},
+				list: mock.ListUsecase{},
 			},
 			args: args{
 				ctx: context.Background(),
@@ -171,10 +147,11 @@ func TestArticleShare(t *testing.T) {
 			name: "ユースケースでバリデーションエラーが発生した際、バッドリクエストエラーになる",
 			fields: fields{
 				apiKey: "test",
-				share: ShareMock{
-					Err: me.NewValidationError("validation error"),
+				share: mock.ShareUsecase{
+					T:   t,
+					Err: dme.NewValidationError("validation error"),
 				},
-				list: ListMock{},
+				list: mock.ListUsecase{},
 			},
 			args: args{
 				ctx: context.Background(),
@@ -194,7 +171,8 @@ func TestArticleShare(t *testing.T) {
 			name: "ユースケースでバリデーションエラー以外のエラーが発生した際、サーバーエラーになる",
 			fields: fields{
 				apiKey: "test",
-				share: ShareMock{
+				share: mock.ShareUsecase{
+					T:   t,
 					Err: errors.New("unknown error"),
 				},
 			},
@@ -273,8 +251,9 @@ func TestArticleList(t *testing.T) {
 		{
 			name: "記事の一覧が取得できる（ネクストトークンあり）",
 			fields: fields{
-				share: ShareMock{},
-				list: ListMock{
+				share: mock.ShareUsecase{},
+				list: mock.ListUsecase{
+					T: t,
 					Articles: []model.Article{
 						{
 							ID:          article.ID(id),
@@ -314,8 +293,9 @@ func TestArticleList(t *testing.T) {
 		{
 			name: "記事の一覧が取得できる（ネクストトークンなし）",
 			fields: fields{
-				share: ShareMock{},
-				list: ListMock{
+				share: mock.ShareUsecase{},
+				list: mock.ListUsecase{
+					T: t,
 					Articles: []model.Article{
 						{
 							ID:          article.ID(id),
@@ -355,8 +335,8 @@ func TestArticleList(t *testing.T) {
 		{
 			name: "不正なサイズを指定して記事の一覧が取得できない",
 			fields: fields{
-				share: ShareMock{},
-				list:  ListMock{},
+				share: mock.ShareUsecase{},
+				list:  mock.ListUsecase{},
 			},
 			args: args{
 				ctx: context.Background(),

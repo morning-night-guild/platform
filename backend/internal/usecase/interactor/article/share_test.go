@@ -37,6 +37,7 @@ func TestShareInteractorExecute(t *testing.T) {
 			name: "記事を共有できる",
 			fields: fields{
 				articleRepository: &mock.Article{
+					T:   t,
 					Err: nil,
 				},
 			},
@@ -64,6 +65,7 @@ func TestShareInteractorExecute(t *testing.T) {
 			name: "記事Repositoryのerrorを握りつぶさない",
 			fields: fields{
 				articleRepository: &mock.Article{
+					T:   t,
 					Err: errors.New("article repository error"),
 				},
 			},
