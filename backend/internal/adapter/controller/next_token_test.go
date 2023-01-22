@@ -8,17 +8,17 @@ import (
 	"github.com/morning-night-guild/platform/internal/domain/repository"
 )
 
-func TestTokenToIndex(t *testing.T) {
+func TestNextTokenToIndex(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name string
-		tr   controller.Token
+		tr   controller.NextToken
 		want repository.Index
 	}{
 		{
 			name: "トークンからインデックスを生成できる",
-			tr:   controller.CreateTokenFromIndex(repository.Index(0)),
+			tr:   controller.CreateNextTokenFromIndex(repository.Index(0)),
 			want: repository.Index(0),
 		},
 	}
@@ -28,13 +28,13 @@ func TestTokenToIndex(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			if got := tt.tr.ToIndex(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Token.ToIndex() = %v, want %v", got, tt.want)
+				t.Errorf("NextToken.ToIndex() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestTokenCreateNextToken(t *testing.T) {
+func TestNextTokenCreateNextNextToken(t *testing.T) {
 	t.Parallel()
 
 	type args struct {
@@ -43,17 +43,17 @@ func TestTokenCreateNextToken(t *testing.T) {
 
 	tests := []struct {
 		name string
-		tr   controller.Token
+		tr   controller.NextToken
 		args args
-		want controller.Token
+		want controller.NextToken
 	}{
 		{
 			name: "ネクストトークンが作成できる",
-			tr:   controller.CreateTokenFromIndex(repository.Index(0)),
+			tr:   controller.CreateNextTokenFromIndex(repository.Index(0)),
 			args: args{
 				size: repository.Size(1),
 			},
-			want: controller.CreateTokenFromIndex(repository.Index(1)),
+			want: controller.CreateNextTokenFromIndex(repository.Index(1)),
 		},
 	}
 
@@ -62,7 +62,7 @@ func TestTokenCreateNextToken(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			if got := tt.tr.CreateNextToken(tt.args.size); got != tt.want {
-				t.Errorf("Token.CreateNextToken() = %v, want %v", got, tt.want)
+				t.Errorf("NextToken.CreateNextNextToken() = %v, want %v", got, tt.want)
 			}
 		})
 	}
