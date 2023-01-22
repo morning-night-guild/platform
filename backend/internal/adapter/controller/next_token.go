@@ -40,7 +40,7 @@ func (t NextToken) ToIndex() repository.Index {
 	return repository.Index(index)
 }
 
-// CreateNextNextToken ネクストトークンを作成する.
+// CreateNextToken ネクストトークンを作成する.
 func (t NextToken) CreateNextToken(size repository.Size) NextToken {
 	return NextToken(base64.StdEncoding.EncodeToString([]byte(strconv.Itoa(t.ToIndex().Int() + size.Int()))))
 }
