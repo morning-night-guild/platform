@@ -69,6 +69,12 @@ type ArticleTagDeleteOne struct {
 	atd *ArticleTagDelete
 }
 
+// Where appends a list predicates to the ArticleTagDelete builder.
+func (atdo *ArticleTagDeleteOne) Where(ps ...predicate.ArticleTag) *ArticleTagDeleteOne {
+	atdo.atd.mutation.Where(ps...)
+	return atdo
+}
+
 // Exec executes the deletion query.
 func (atdo *ArticleTagDeleteOne) Exec(ctx context.Context) error {
 	n, err := atdo.atd.Exec(ctx)
@@ -84,5 +90,7 @@ func (atdo *ArticleTagDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (atdo *ArticleTagDeleteOne) ExecX(ctx context.Context) {
-	atdo.atd.ExecX(ctx)
+	if err := atdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

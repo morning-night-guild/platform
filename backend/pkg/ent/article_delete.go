@@ -69,6 +69,12 @@ type ArticleDeleteOne struct {
 	ad *ArticleDelete
 }
 
+// Where appends a list predicates to the ArticleDelete builder.
+func (ado *ArticleDeleteOne) Where(ps ...predicate.Article) *ArticleDeleteOne {
+	ado.ad.mutation.Where(ps...)
+	return ado
+}
+
 // Exec executes the deletion query.
 func (ado *ArticleDeleteOne) Exec(ctx context.Context) error {
 	n, err := ado.ad.Exec(ctx)
@@ -84,5 +90,7 @@ func (ado *ArticleDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ado *ArticleDeleteOne) ExecX(ctx context.Context) {
-	ado.ad.ExecX(ctx)
+	if err := ado.Exec(ctx); err != nil {
+		panic(err)
+	}
 }
