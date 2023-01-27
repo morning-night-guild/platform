@@ -3,7 +3,7 @@ module github.com/morning-night-guild/platform
 go 1.19
 
 require (
-	entgo.io/ent v0.11.6
+	entgo.io/ent v0.11.7
 	github.com/bufbuild/connect-go v1.5.0
 	github.com/google/uuid v1.3.0
 	github.com/lib/pq v1.10.7
@@ -18,7 +18,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.9.1-0.20230119123307-a3ab6808892b // indirect
+	ariga.io/atlas v0.9.1-0.20230119145809-92243f7c55cb // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
