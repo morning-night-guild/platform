@@ -2,6 +2,7 @@ package mock
 
 import (
 	"context"
+	"testing"
 
 	"github.com/morning-night-guild/platform/internal/domain/model"
 	"github.com/morning-night-guild/platform/internal/domain/repository"
@@ -11,12 +12,15 @@ var _ repository.Article = (*Article)(nil)
 
 // Article 記事リポジトリのモック.
 type Article struct {
+	T        *testing.T
 	Articles []model.Article
 	Err      error
 }
 
 // Save 記事を保存するモックメソッド.
 func (a *Article) Save(ctx context.Context, article model.Article) error {
+	a.T.Helper()
+
 	return a.Err
 }
 
@@ -26,5 +30,7 @@ func (a *Article) FindAll(
 	index repository.Index,
 	size repository.Size,
 ) ([]model.Article, error) {
+	a.T.Helper()
+
 	return a.Articles, a.Err
 }
