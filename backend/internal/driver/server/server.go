@@ -54,9 +54,19 @@ func NewHTTPServer(
 
 	mux := NewRouter(routes...).Mux()
 
+	corsEnv := os.Getenv("CORS")
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{corsEnv},
+		AllowedHeaders:   []string{"Origin", "Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "Authorization", "Connect-Protocol-Version"},
+		AllowedMethods:   []string{"POST", "OPTIONS"},
+		AllowCredentials: true,
+		Debug:            true,
+	})
+
 	s := &http.Server{
 		Addr:              fmt.Sprintf(":%s", config.Get().Port),
-		Handler:           cors.Default().Handler(h2c.NewHandler(mux, &http2.Server{})),
+		Handler:           c.Handler(h2c.NewHandler(mux, &http2.Server{})),
 		ReadHeaderTimeout: readHeaderTimeout,
 	}
 
