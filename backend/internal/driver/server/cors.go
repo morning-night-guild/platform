@@ -29,9 +29,5 @@ func ConvertAllowOrigins(allowOrigins string) []string {
 }
 
 func ConvertDebugEnable(debug string) bool {
-	if debug == "true" {
-		return true
-	}
-
-	return false
+	return debug == "true"
 }
