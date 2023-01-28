@@ -18,7 +18,6 @@ import (
 	"github.com/morning-night-guild/platform/pkg/connect/proto/article/v1/articlev1connect"
 	"github.com/morning-night-guild/platform/pkg/connect/proto/health/v1/healthv1connect"
 	"github.com/morning-night-guild/platform/pkg/log"
-	"github.com/rs/cors"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
@@ -38,7 +37,7 @@ func NewHTTPServer(
 	nr *newrelic.NewRelic,
 	article *controller.Article,
 	health *controller.Health,
-) *HTTPServer {
+) (*HTTPServer, error) {
 	ic := connect.WithInterceptors(interceptor.New())
 
 	routes := []Route{
@@ -54,15 +53,29 @@ func NewHTTPServer(
 
 	mux := NewRouter(routes...).Mux()
 
+	allowOrigins, err := ConvertAllowOrigins(config.Get().CORSAllowOrigins)
+	if err != nil {
+		log.Log().Warn("failed to convert allow origins", log.ErrorField(err))
+
+		return nil, err
+	}
+
+	cors, err := NewCORS(allowOrigins, ConvertDebugEnable(config.Get().CORSDebugEnable))
+	if err != nil {
+		log.Log().Warn("failed to create CORS config", log.ErrorField(err))
+
+		return nil, err
+	}
+
 	s := &http.Server{
 		Addr:              fmt.Sprintf(":%s", config.Get().Port),
-		Handler:           cors.Default().Handler(h2c.NewHandler(mux, &http2.Server{})),
+		Handler:           cors.Handler(h2c.NewHandler(mux, &http2.Server{})),
 		ReadHeaderTimeout: readHeaderTimeout,
 	}
 
 	return &HTTPServer{
 		Server: s,
-	}
+	}, nil
 }
 
 func (s *HTTPServer) Run() {

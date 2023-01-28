@@ -1,12 +1,9 @@
 name: backend container push
 run-name: ${{ github.ref_name }} by @${{ github.actor }} ${{ github.workflow }}
 on:
-  pull_request:
-    paths:
-      - .github/workflows/backend.container.push.yaml
   schedule:
-    # 金曜24時(JST)
-    - cron: '0 15 * * 5'
+    # 日曜24時(JST)
+    - cron: '0 15 * * 6'
   workflow_dispatch:
 jobs:
   container-push:
