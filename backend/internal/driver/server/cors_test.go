@@ -85,9 +85,9 @@ func TestConvertAllowOrigins(t *testing.T) {
 		{
 			name: ",以外の文字で区切られた文字列の場合、1つのオリジンとして作成される",
 			args: args{
-				allowOrigins: "http://example.com http://example.com",
+				allowOrigins: "http://example.com https://example.com",
 			},
-			want:    []string{"http://example.com http://example.com"},
+			want:    []string{"http://example.com https://example.com"},
 			wantErr: false,
 		},
 		{
