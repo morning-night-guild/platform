@@ -53,6 +53,8 @@ func TestNewCORS(t *testing.T) {
 }
 
 func TestConvertAllowOrigins(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		allowOrigins string
 	}
@@ -98,7 +100,9 @@ func TestConvertAllowOrigins(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			got, err := server.ConvertAllowOrigins(tt.args.allowOrigins)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ConvertAllowOrigins() error = %v, wantErr %v", err, tt.wantErr)
