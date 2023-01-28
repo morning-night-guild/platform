@@ -10,3 +10,7 @@ func Log() *zap.Logger {
 
 	return logger
 }
+
+func ErrorField(err error) zap.Field {
+	return zap.String("error", err.Error())
+}

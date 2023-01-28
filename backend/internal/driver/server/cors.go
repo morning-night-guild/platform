@@ -1,12 +1,22 @@
 package server
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/rs/cors"
 )
 
-func NewCORS(allowOrigins []string, debug bool) *cors.Cors {
+var (
+	errEmptyArray  = errors.New("empty array")
+	errEmptyString = errors.New("empty string")
+)
+
+func NewCORS(allowOrigins []string, debug bool) (*cors.Cors, error) {
+	if len(allowOrigins) == 0 {
+		return nil, errEmptyArray
+	}
+
 	return cors.New(cors.Options{
 		AllowedOrigins: allowOrigins,
 		AllowedHeaders: []string{
@@ -21,11 +31,15 @@ func NewCORS(allowOrigins []string, debug bool) *cors.Cors {
 		AllowedMethods:   []string{"POST", "OPTIONS"},
 		AllowCredentials: true,
 		Debug:            debug,
-	})
+	}), nil
 }
 
-func ConvertAllowOrigins(allowOrigins string) []string {
-	return strings.Split(allowOrigins, ",")
+func ConvertAllowOrigins(allowOrigins string) ([]string, error) {
+	if allowOrigins == "" {
+		return nil, errEmptyString
+	}
+
+	return strings.Split(allowOrigins, ","), nil
 }
 
 func ConvertDebugEnable(debug string) bool {

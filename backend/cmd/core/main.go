@@ -43,7 +43,10 @@ func main() {
 		}
 	}
 
-	server := server.NewHTTPServer(nr, articleCtr, healthCtr)
+	server, err := server.NewHTTPServer(nr, articleCtr, healthCtr)
+	if err != nil {
+		log.Log().Fatal(err.Error())
+	}
 
 	server.Run()
 }

@@ -37,7 +37,7 @@ func NewHTTPServer(
 	nr *newrelic.NewRelic,
 	article *controller.Article,
 	health *controller.Health,
-) *HTTPServer {
+) (*HTTPServer, error) {
 	ic := connect.WithInterceptors(interceptor.New())
 
 	routes := []Route{
@@ -53,7 +53,19 @@ func NewHTTPServer(
 
 	mux := NewRouter(routes...).Mux()
 
-	cors := NewCORS(ConvertAllowOrigins(config.Get().CORSAllowOrigins), ConvertDebugEnable(config.Get().CORSDebugEnable))
+	allowOrigins, err := ConvertAllowOrigins(config.Get().CORSAllowOrigins)
+	if err != nil {
+		log.Log().Warn("failed to convert allow origins", log.ErrorField(err))
+
+		return nil, err
+	}
+
+	cors, err := NewCORS(allowOrigins, ConvertDebugEnable(config.Get().CORSDebugEnable))
+	if err != nil {
+		log.Log().Warn("failed to create CORS config", log.ErrorField(err))
+
+		return nil, err
+	}
 
 	s := &http.Server{
 		Addr:              fmt.Sprintf(":%s", config.Get().Port),
@@ -63,7 +75,7 @@ func NewHTTPServer(
 
 	return &HTTPServer{
 		Server: s,
-	}
+	}, nil
 }
 
 func (s *HTTPServer) Run() {
