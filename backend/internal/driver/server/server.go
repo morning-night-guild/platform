@@ -54,10 +54,8 @@ func NewHTTPServer(
 
 	mux := NewRouter(routes...).Mux()
 
-	corsAllowOrigins := os.Getenv("CORS_ALLOW_ORIGINS")
-
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{corsAllowOrigins},
+		AllowedOrigins: config.Get().CorsAllowOrigins,
 		AllowedHeaders: []string{
 			"Origin",
 			"Content-Length",
@@ -69,7 +67,7 @@ func NewHTTPServer(
 		},
 		AllowedMethods:   []string{"POST", "OPTIONS"},
 		AllowCredentials: true,
-		Debug:            true,
+		Debug:            config.Get().CorsDebugEnable,
 	})
 
 	s := &http.Server{
