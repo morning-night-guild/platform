@@ -58,7 +58,15 @@ func NewHTTPServer(
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{corsAllowOrigins},
-		AllowedHeaders:   []string{"Origin", "Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "Authorization", "Connect-Protocol-Version"},
+		AllowedHeaders: []string{
+			"Origin",
+			"Content-Length",
+			"Access-Control-Allow-Origin",
+			"Access-Control-Allow-Headers",
+			"Content-Type",
+			"Authorization",
+			"Connect-Protocol-Version",
+		},
 		AllowedMethods:   []string{"POST", "OPTIONS"},
 		AllowCredentials: true,
 		Debug:            true,
