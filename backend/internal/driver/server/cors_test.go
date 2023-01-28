@@ -1,6 +1,7 @@
 package server_test
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -106,10 +107,107 @@ func TestConvertAllowOrigins(t *testing.T) {
 			got, err := server.ConvertAllowOrigins(tt.args.allowOrigins)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ConvertAllowOrigins() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ConvertAllowOrigins() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertDebugEnable(t *testing.T) {
+	t.Parallel()
+
+	type args struct {
+		debug string
+	}
+
+	tests := []struct {
+		args args
+		want bool
+	}{
+		{
+			args: args{
+				debug: "true",
+			},
+			want: true,
+		},
+		{
+			args: args{
+				debug: "false",
+			},
+			want: false,
+		},
+		{
+			args: args{
+				debug: "",
+			},
+			want: false,
+		},
+		{
+			args: args{
+				debug: "hoge",
+			},
+			want: false,
+		},
+		{
+			args: args{
+				debug: "TRUE",
+			},
+			want: false,
+		},
+		{
+			args: args{
+				debug: "FALSE",
+			},
+			want: false,
+		},
+		{
+			args: args{
+				debug: "0",
+			},
+			want: false,
+		},
+		{
+			args: args{
+				debug: "1",
+			},
+			want: false,
+		},
+		{
+			args: args{
+				debug: "t",
+			},
+			want: false,
+		},
+		{
+			args: args{
+				debug: "f",
+			},
+			want: false,
+		},
+		{
+			args: args{
+				debug: "T",
+			},
+			want: false,
+		},
+		{
+			args: args{
+				debug: "F",
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(fmt.Sprintf("%sを与えられた場合、%vが返る", tt.args.debug, tt.want), func(t *testing.T) {
+			t.Parallel()
+			if got := server.ConvertDebugEnable(tt.args.debug); got != tt.want {
+				t.Errorf("ConvertDebugEnable() = %v, want %v", got, tt.want)
 			}
 		})
 	}
