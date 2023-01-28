@@ -44,6 +44,7 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
           API_KEY: e2e
+          CORS_ALLOW_ORIGINS: http://localhost:5173
         run: | # サーバー起動待機のためにsleepを導入 TODO health check 待機でも良いかも
           go run cmd/core/main.go &
           echo PID=$! >> $GITHUB_ENV
