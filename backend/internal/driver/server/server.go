@@ -18,7 +18,6 @@ import (
 	"github.com/morning-night-guild/platform/pkg/connect/proto/article/v1/articlev1connect"
 	"github.com/morning-night-guild/platform/pkg/connect/proto/health/v1/healthv1connect"
 	"github.com/morning-night-guild/platform/pkg/log"
-	"github.com/rs/cors"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
@@ -54,25 +53,11 @@ func NewHTTPServer(
 
 	mux := NewRouter(routes...).Mux()
 
-	c := cors.New(cors.Options{
-		AllowedOrigins: config.Get().CorsAllowOrigins,
-		AllowedHeaders: []string{
-			"Origin",
-			"Content-Length",
-			"Access-Control-Allow-Origin",
-			"Access-Control-Allow-Headers",
-			"Content-Type",
-			"Authorization",
-			"Connect-Protocol-Version",
-		},
-		AllowedMethods:   []string{"POST", "OPTIONS"},
-		AllowCredentials: true,
-		Debug:            config.Get().CorsDebugEnable,
-	})
+	cors := NewCORS(ConvertAllowOrigins(config.Get().CORSAllowOrigins), ConvertDebugEnable(config.Get().CORSDebugEnable))
 
 	s := &http.Server{
 		Addr:              fmt.Sprintf(":%s", config.Get().Port),
-		Handler:           c.Handler(h2c.NewHandler(mux, &http2.Server{})),
+		Handler:           cors.Handler(h2c.NewHandler(mux, &http2.Server{})),
 		ReadHeaderTimeout: readHeaderTimeout,
 	}
 
