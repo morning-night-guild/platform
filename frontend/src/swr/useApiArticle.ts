@@ -1,4 +1,4 @@
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 
 import { createPromiseClient } from '@bufbuild/connect-web';
 import { ArticleService } from '../api/connect/proto/article/v1/article_connectweb';
@@ -6,7 +6,7 @@ import type { Article } from '../api/connect/proto/article/v1/article_pb';
 import { transport } from './transport';
 
 // 1画面に表示する記事の最大数
-const maxPageSize = 100;
+const maxPageSize = 20;
 
 // クライアント作成
 const client = createPromiseClient(ArticleService, transport);
@@ -22,6 +22,8 @@ const articlesState: ArticlesState = {
 };
 
 export const useListArticles = () => {
+    const key = `/api/v1/articles`;
+
     const request = {
         maxPageSize,
         pageToken: articlesState.currentIndex,
@@ -29,9 +31,24 @@ export const useListArticles = () => {
 
     const fetcher = async () => client.list(request);
 
-    const { data } = useSWR('/api/v1/articles', fetcher);
-    articlesState.data = data?.articles ?? [];
-    articlesState.currentIndex = data?.nextPageToken;
+    const { data } = useSWR(key, fetcher);
 
-    return data;
+    const fetchedArticles = data?.articles ?? [];
+    const existIds = articlesState.data.map(d => d.id);
+    const additionalArticles = fetchedArticles.filter(d => existIds.indexOf(d.id) < 0);
+    articlesState.data.push(...additionalArticles);
+
+    // NextPageTokenが空の場合、もうこれ以上データがないのでcurrentIndexを更新しない
+    if (!(data?.nextPageToken === '')) {
+        articlesState.currentIndex = data?.nextPageToken;
+    }
+
+    const { mutate } = useSWRConfig();
+
+    return {
+        data: articlesState.data,
+        async mutate() {
+            await mutate(key);
+        },
+    };
 };
