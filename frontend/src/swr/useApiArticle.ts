@@ -5,7 +5,7 @@ import { ArticleService } from '../api/connect/proto/article/v1/article_connectw
 import type { Article } from '../api/connect/proto/article/v1/article_pb';
 import { transport } from './transport';
 
-// 1画面に表示する記事の数
+// 1回に取得する記事の数
 const articlesPerPage = 20;
 
 // クライアント作成
