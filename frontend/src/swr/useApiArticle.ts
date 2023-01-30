@@ -5,8 +5,8 @@ import { ArticleService } from '../api/connect/proto/article/v1/article_connectw
 import type { Article } from '../api/connect/proto/article/v1/article_pb';
 import { transport } from './transport';
 
-// 1画面に表示する記事の最大数
-const maxPageSize = 20;
+// 1画面に表示する記事の数
+const articlesPerPage = 20;
 
 // クライアント作成
 const client = createPromiseClient(ArticleService, transport);
@@ -25,7 +25,7 @@ export const useListArticles = () => {
     const key = `/api/v1/articles`;
 
     const request = {
-        maxPageSize,
+        articlesPerPage,
         pageToken: articlesState.currentIndex,
     };
 
