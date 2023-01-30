@@ -25,7 +25,7 @@ export const useListArticles = () => {
     const key = `/api/v1/articles`;
 
     const request = {
-        articlesPerPage,
+        maxPageSize: articlesPerPage,
         pageToken: articlesState.currentIndex,
     };
 
