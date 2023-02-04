@@ -27,6 +27,10 @@ renovate:
 compile:
 	@go build -v ./... && go clean
 
+.PHONY: update
+update:
+	@go mod tidy -go=${version}
+
 .PHONY: test
 test:
 	@go test ./internal/...
