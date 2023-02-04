@@ -11,13 +11,19 @@ Top Package
 
 # getting start
 
+install yarn
+
 ```
 npm install -g yarn
 ```
 
+install dependency
+
 ```
 yarn
 ```
+
+run frontend
 
 ```
 yarn dev
