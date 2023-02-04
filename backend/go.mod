@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	entgo.io/ent v0.11.7
-	github.com/bufbuild/connect-go v1.5.0
+	github.com/bufbuild/connect-go v1.5.1
 	github.com/google/uuid v1.3.0
 	github.com/lib/pq v1.10.7
 	github.com/mattn/go-sqlite3 v1.14.16
