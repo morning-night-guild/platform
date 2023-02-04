@@ -12,13 +12,13 @@ Top Package
 # getting start
 
 ```
-make setup
+npm install -g yarn
 ```
 
 ```
-make install
+yarn
 ```
 
 ```
-make run
+yarn dev
 ```
