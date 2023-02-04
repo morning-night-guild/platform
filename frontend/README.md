@@ -23,6 +23,12 @@ install dependency
 yarn
 ```
 
+setup
+
+```
+yarn setup
+```
+
 run frontend
 
 ```

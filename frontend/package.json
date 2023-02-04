@@ -8,7 +8,7 @@
         "build": "tsc && vite build",
         "preview": "vite preview",
         "xo": "xo --fix",
-        "deploy": "sh ./deploy.sh"
+        "setup": "echo VITE_SERVICE_ENDPOINT=http://localhost:8080 > .env.local"
     },
     "dependencies": {
         "@bufbuild/connect-web": "0.6.0",
