@@ -13,7 +13,7 @@ jobs:
       - name: Setup aqua
         uses: aquaproj/aqua-installer@v2.0.2
         with:
-          aqua_version: v1.32.1
+          aqua_version: v1.32.3
       - name: Setup tool
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua i
       - name: Yaml format lint
