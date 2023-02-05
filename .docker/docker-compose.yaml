@@ -13,17 +13,17 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
       POSTGRES_HOST_AUTH_METHOD: trust
     restart: always
-  dbmigrate:
-    container_name: ${APP_NAME}-db-migrate
+  migrate:
+    container_name: ${APP_NAME}-migrate
     build:
       context: .
-      dockerfile: dbmigrate/Dockerfile
+      dockerfile: migrate/Dockerfile
       args:
         GOLANG_VERSION: ${GOLANG_VERSION}
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/postgres?sslmode=disable
     volumes:
-      - ./dbmigrate/go/pkg:/go/pkg
+      - ./migrate/go/pkg:/go/pkg
       - ../backend:/app
     restart: always
     depends_on:

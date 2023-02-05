@@ -8,6 +8,6 @@ RUN apk update && apk upgrade && \
     apk add build-base && \
     go install github.com/cosmtrek/air@latest
 
-WORKDIR /app/cmd/dbmigrate
+WORKDIR /app/cmd/migrate
 
 CMD ["air"]
