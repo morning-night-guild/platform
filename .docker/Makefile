@@ -1,5 +1,9 @@
 include .env
 
+.PNONY: init
+init:
+	@cp .tmp.env .env
+
 .PHONY: up
 up:
 	@docker compose --project-name ${APP_NAME} up -d
