@@ -1,7 +1,13 @@
 # supabase
 
-format
+## format
 
+```shell
+deno fmt
 ```
-make fmt
+
+## task runner
+
+```shell
+deno task <target>
 ```
