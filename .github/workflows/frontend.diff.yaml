@@ -32,7 +32,7 @@ jobs:
         working-directory: ./api
         run: |
           docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli generate -i /local/openapi.yaml -g typescript-fetch -o /local/openapi
-          mv openapi ../frontend/src/openapi
+          sudo rm -r ../frontend/src/openapi && sudo mv openapi ../frontend/src/openapi
       - name: Check diff
         run: |
           if [ -n "$(git status --porcelain)" ]; then
