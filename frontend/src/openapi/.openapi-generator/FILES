@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 apis/ArticleApi.ts
 apis/HealthApi.ts
 apis/index.ts
