@@ -1,0 +1,9 @@
+.openapi-generator-ignore
+apis/ArticleApi.ts
+apis/HealthApi.ts
+apis/index.ts
+index.ts
+models/Article.ts
+models/ListArticleResponse.ts
+models/index.ts
+runtime.ts

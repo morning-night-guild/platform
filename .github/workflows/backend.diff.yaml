@@ -31,6 +31,12 @@ jobs:
       - name: Generate connect code
         working-directory: ./api
         run: buf generate --template buf.backend.gen.yaml
+      - name: Generate openapi code
+        working-directory: ./api
+        run: |
+          oapi-codegen -generate types -package openapi openapi.yaml > ../backend/pkg/openapi/types.gen.go
+          oapi-codegen -generate chi-server -package openapi openapi.yaml > ../backend/pkg/openapi/server.gen.go
+          oapi-codegen -generate client -package openapi openapi.yaml > ../backend/pkg/openapi/client.gen.go
       - name: Go Generate
         working-directory: ./backend
         run: go generate ./...

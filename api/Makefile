@@ -9,6 +9,7 @@ tool: ## Install tool.
 .PHONY: lint
 lint: ## Lint proto file.
 	@(cd proto && buf lint)
+	@npx spectral lint openapi.yaml
 
 .PHONY: format
 format: ## Format proto file.
@@ -17,10 +18,16 @@ format: ## Format proto file.
 .PHONY: backend
 backend: ## Generate code for backend.
 	@buf generate --template buf.backend.gen.yaml
+	@oapi-codegen -generate types -package openapi openapi.yaml > ../backend/pkg/openapi/types.gen.go
+	@oapi-codegen -generate chi-server -package openapi openapi.yaml > ../backend/pkg/openapi/server.gen.go
+	@oapi-codegen -generate client -package openapi openapi.yaml > ../backend/pkg/openapi/client.gen.go
+	@(cd ../backend && go mod tidy)
 
 .PHONY: frontend
 frontend: ## Generate code for frontend.
 	@buf generate --template buf.frontend.gen.yaml
+	@docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli generate -i /local/openapi.yaml -g typescript-fetch -o /local/openapi
+	@rm -r ../frontend/src/openapi && mv openapi ../frontend/src/openapi
 
 .PHONY: gen
 gen: ## Generate code.
@@ -29,4 +36,7 @@ gen: ## Generate code.
 
 .PHONY: doc
 doc: ## Generate documentation.
-	@rm -rf doc && mkdir -p doc/api && protoc --doc_out=./doc/api --doc_opt=markdown,README.md "$(shell find . -name "*.proto")"
+	@rm -rf doc
+	@mkdir -p doc/api
+	@protoc --doc_out=./doc/api --doc_opt=markdown,README.md proto/article/**/*.proto proto/health/**/*.proto
+	@npx widdershins --omitHeader --code true openapi.yaml doc/openapi.md
