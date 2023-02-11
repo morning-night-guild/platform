@@ -5,6 +5,8 @@ on:
     paths:
       - .github/workflows/backend.lint.yaml
       - backend/**/*.go
+      - backend/go.mod
+      - backend/go.sum
       - backend/.golangci.yaml
 jobs:
   lint:
