@@ -5,11 +5,13 @@ on:
     branches:
       - main
     paths:
+      - api/openapi.yaml
       - api/**/*.proto
       - backend/pkg/ent/schema/*.go
   pull_request:
     paths:
       - .github/workflows/document.yaml
+      - api/openapi.yaml
       - api/**/*.proto
       - backend/pkg/ent/schema/*.go
 jobs:
