@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/api.lint.yaml
       - api/**/*.proto
+      - api/openapi.yaml
 jobs:
   lint:
     runs-on: ubuntu-22.04
@@ -28,3 +29,13 @@ jobs:
       - name: Buf format
         working-directory: ./api
         run: buf format -d --exit-code
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Set up spectral
+        working-directory: ./api
+        run: npm install -g @stoplight/spectral-cli
+      - name: Lint openapi
+        working-directory: ./api
+        run: spectral lint openapi.yaml

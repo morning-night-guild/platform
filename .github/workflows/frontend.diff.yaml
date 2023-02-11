@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/frontend.diff.yaml
       - api/**/*.proto
+      - api/openapi.yaml
 jobs:
   diff:
     runs-on: ubuntu-22.04
@@ -22,9 +23,16 @@ jobs:
       - name: Setup api go tool
         working-directory: ./api
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua i
-      - name: Generate
+      - name: Generate connect code
         working-directory: ./api
-        run: "npm install\nbuf generate --template buf.frontend.gen.yaml     \n"
+        run: |
+          npm install
+          buf generate --template buf.frontend.gen.yaml
+      - name: Generate openapi code
+        working-directory: ./api
+        run: |
+          docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli generate -i /local/openapi.yaml -g typescript-fetch -o /local/openapi
+          mv openapi ../frontend/src/openapi
       - name: Check diff
         run: |
           if [ -n "$(git status --porcelain)" ]; then

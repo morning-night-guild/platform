@@ -15,3 +15,6 @@ packages:
   - name: github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go
     registry: local
     version: v1.1.0
+  - name: github.com/deepmap/oapi-codegen/cmd/oapi-codegen
+    registry: local
+    version: v1.12.4

@@ -13,6 +13,26 @@ on:
       - api/**/*.proto
       - backend/pkg/ent/schema/*.go
 jobs:
+  openapi:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Set up widderchins
+        run: npm install -g widdershins
+      - name: Generate openapi document
+        run: |
+          mkdir -p public/openapi
+          npx widdershins --omitHeader --code true api/openapi.yaml public/openapi/README.md
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: document-openapi
+          path: public
   api:
     runs-on: ubuntu-22.04
     steps:
@@ -66,9 +86,13 @@ jobs:
           path: public
   publish:
     runs-on: ubuntu-22.04
-    needs: [api, database]
+    needs: [openapi, api, database]
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: Download document openapi
+        uses: actions/download-artifact@v3
+        with:
+          name: document-openapi
       - name: Download document api
         uses: actions/download-artifact@v3
         with:
@@ -83,6 +107,7 @@ jobs:
       - name: Copy
         run: |
           mkdir public
+          cp -r openapi /public/
           cp -r api/ public/
           cp -r database/ public/
       - name: Publish
