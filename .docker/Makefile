@@ -18,4 +18,4 @@ down: ## Delete development environment.
 
 .PHONY: psql
 psql: ## Connect local postgres.
-	@docker exec -it ${APP_NAME}-db psql -U postgres
+	@docker exec -it ${APP_NAME}-postgres psql -U postgres
