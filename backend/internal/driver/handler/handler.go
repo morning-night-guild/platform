@@ -5,7 +5,6 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
 	"github.com/morning-night-guild/platform/internal/adapter/controller"
 	"github.com/morning-night-guild/platform/internal/driver/middleware"
 	"github.com/morning-night-guild/platform/internal/driver/newrelic"
@@ -43,23 +42,16 @@ func NewConnectHandler(
 
 const (
 	baseURL = "/api"
-	maxAge  = 300
 )
 
 func NewOpenAPIHandler(
 	si openapi.ServerInterface,
+	cors openapi.MiddlewareFunc,
 	middleware *middleware.Middleware,
 ) http.Handler {
 	router := chi.NewRouter()
 
-	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
-		MaxAge:           maxAge,
-	}))
+	router.Use(cors)
 
 	return openapi.HandlerWithOptions(si, openapi.ChiServerOptions{
 		BaseURL:     baseURL,

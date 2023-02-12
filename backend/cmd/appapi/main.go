@@ -4,6 +4,7 @@ import (
 	"github.com/morning-night-guild/platform/internal/adapter/api"
 	"github.com/morning-night-guild/platform/internal/driver/config"
 	"github.com/morning-night-guild/platform/internal/driver/connect"
+	"github.com/morning-night-guild/platform/internal/driver/cors"
 	"github.com/morning-night-guild/platform/internal/driver/env"
 	"github.com/morning-night-guild/platform/internal/driver/handler"
 	"github.com/morning-night-guild/platform/internal/driver/middleware"
@@ -20,9 +21,23 @@ func main() {
 		panic(err)
 	}
 
-	h := handler.NewOpenAPIHandler(api.New(c), middleware.New())
+	origins, err := cors.ConvertAllowOrigins(cfg.CORSAllowOrigins)
+	if err != nil {
+		panic(err)
+	}
 
-	srv := server.NewServer(cfg.Port, h)
+	cs, err := cors.New(origins, cors.ConvertDebugEnable(cfg.CORSDebugEnable))
+	if err != nil {
+		panic(err)
+	}
+
+	hd := handler.NewOpenAPIHandler(
+		api.New(c),
+		cs,
+		middleware.New(),
+	)
+
+	srv := server.NewServer(cfg.Port, hd)
 
 	srv.Run()
 }
