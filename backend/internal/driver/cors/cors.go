@@ -11,8 +11,9 @@ import (
 var (
 	errEmptyArray  = errors.New("empty array")
 	errEmptyString = errors.New("empty string")
-	maxAge         = 300
 )
+
+const maxAge = 300
 
 func New(allowOrigins []string, debug bool) (openapi.MiddlewareFunc, error) {
 	if len(allowOrigins) == 0 {
