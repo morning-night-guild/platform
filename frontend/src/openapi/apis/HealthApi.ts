@@ -22,6 +22,33 @@ export class HealthApi extends runtime.BaseAPI {
 
     /**
      * ヘルスチェック
+     * apiヘルスチェック
+     */
+    async v1HealthAPIRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/v1/health/api`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * ヘルスチェック
+     * apiヘルスチェック
+     */
+    async v1HealthAPI(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.v1HealthAPIRaw(initOverrides);
+    }
+
+    /**
+     * ヘルスチェック
      * coreヘルスチェック
      */
     async v1HealthCoreRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -45,33 +72,6 @@ export class HealthApi extends runtime.BaseAPI {
      */
     async v1HealthCore(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.v1HealthCoreRaw(initOverrides);
-    }
-
-    /**
-     * ヘルスチェック
-     * gatewayヘルスチェック
-     */
-    async v1HealthGatewayRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/v1/health/gateway`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * ヘルスチェック
-     * gatewayヘルスチェック
-     */
-    async v1HealthGateway(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1HealthGatewayRaw(initOverrides);
     }
 
 }

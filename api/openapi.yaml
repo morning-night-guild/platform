@@ -51,13 +51,13 @@ paths:
                 $ref: '#/components/schemas/ListArticleResponse'
         '500':
           description: Internal Server Error
-  /v1/health/gateway:
+  /v1/health/api:
     get:
       tags:
         - health
-      summary: gatewayヘルスチェック
+      summary: apiヘルスチェック
       description: ヘルスチェック
-      operationId: v1HealthGateway
+      operationId: v1HealthAPI
       responses:
         '200':
           description: OK
