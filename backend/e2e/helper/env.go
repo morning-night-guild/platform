@@ -11,6 +11,12 @@ func GetAppCoreEndpoint(t *testing.T) string {
 	return os.Getenv("APP_CORE_ENDPOINT")
 }
 
+func GetAppAPIEndpoint(t *testing.T) string {
+	t.Helper()
+
+	return os.Getenv("APP_API_ENDPOINT")
+}
+
 func GetAPIKey(t *testing.T) string {
 	t.Helper()
 

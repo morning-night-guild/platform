@@ -13,7 +13,7 @@ import (
 	healthv1 "github.com/morning-night-guild/platform/pkg/connect/proto/health/v1"
 )
 
-func TestE2EHealthCheck(t *testing.T) {
+func TestAppCoreE2EHealthCheck(t *testing.T) {
 	t.Parallel()
 
 	url := helper.GetAppCoreEndpoint(t)

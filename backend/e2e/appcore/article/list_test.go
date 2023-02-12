@@ -16,7 +16,7 @@ import (
 
 const articleCount = uint32(5)
 
-func TestE2EArticleList(t *testing.T) {
+func TestAppCoreE2EArticleList(t *testing.T) {
 	t.Parallel()
 
 	url := helper.GetAppCoreEndpoint(t)

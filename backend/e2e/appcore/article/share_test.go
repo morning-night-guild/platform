@@ -16,7 +16,7 @@ import (
 	articlev1 "github.com/morning-night-guild/platform/pkg/connect/proto/article/v1"
 )
 
-func TestE2EArticleShare(t *testing.T) {
+func TestAppCoreE2EArticleShare(t *testing.T) {
 	t.Parallel()
 
 	url := helper.GetAppCoreEndpoint(t)
