@@ -19,12 +19,20 @@ const articleCount = uint32(5)
 func TestE2EArticleList(t *testing.T) {
 	t.Parallel()
 
-	helper.BulkInsert(t, int(articleCount+5))
-
 	url := helper.GetAppCoreEndpoint(t)
 
 	t.Run("記事が一覧できる", func(t *testing.T) {
 		t.Parallel()
+
+		db := helper.NewDatabase(t, helper.GetDSN(t))
+
+		ids := helper.GenerateIDs(t, int(articleCount))
+
+		defer db.Close()
+
+		defer db.BulkDelete(ids)
+
+		db.BulkInsertArticles(ids)
 
 		hc := &http.Client{
 			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),

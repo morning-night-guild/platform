@@ -16,3 +16,9 @@ func GetAPIKey(t *testing.T) string {
 
 	return os.Getenv("API_KEY")
 }
+
+func GetDSN(t *testing.T) string {
+	t.Helper()
+
+	return os.Getenv("DATABASE_URL")
+}
