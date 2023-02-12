@@ -1,6 +1,9 @@
 name: backend deploy
 run-name: ${{ github.ref_name }} by @${{ github.actor }} ${{ github.workflow }}
 on:
+  pull_request:
+    paths:
+      - .github/workflows/backend.deploy.yaml
   schedule:
     # 日曜24時(JST)
     - cron: '0 15 * * 6'
@@ -9,11 +12,16 @@ jobs:
   container-push:
     runs-on: ubuntu-22.04
     outputs:
-      image-name: ${{ steps.build-and-push.outputs.image-name }}
-      image-tag: ${{ steps.build-and-push.outputs.image-tag }}
+      tag: ${{ steps.create-tag.outputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Create tag
+        id: create-tag
+        run: |
+          TAG=`date +%Y-%m-%d-%H-%M-%S`
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
       - name: Setup go
         uses: actions/setup-go@v3
         with:
@@ -26,15 +34,23 @@ jobs:
         id: build-and-push
         working-directory: ./backend/cmd/core
         run: |
-          IMAGE_NAME=platform
-          echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
-
-          IMAGE_TAG=`date +%Y-%m-%d-%H-%M-%S`
-          echo "image-tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
-
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform \
+          SOURCE_DATE_EPOCH=$(date +%s) \
+          ko build --sbom=none --bare --tags=${{ env.TAG }},latest ./ --platform=linux/amd64
+      - name: Build and push app api container
+        working-directory: ./backend/cmd/appapi
+        run: |
+          IMAGE_NAME=platform-app-api
           KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
           SOURCE_DATE_EPOCH=$(date +%s) \
-          ko build --sbom=none --bare --tags=${IMAGE_TAG},latest ./ --platform=linux/amd64
+          ko build --sbom=none --bare --tags=${{ env.TAG }},latest ./ --platform=linux/amd64
+      - name: Build and push app core container
+        working-directory: ./backend/cmd/appcore
+        run: |
+          IMAGE_NAME=platform-app-core
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
+          SOURCE_DATE_EPOCH=$(date +%s) \
+          ko build --sbom=none --bare --tags=${{ env.TAG }},latest ./ --platform=linux/amd64
   create-tag:
     needs: container-push
     runs-on: ubuntu-22.04
@@ -51,8 +67,8 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
       - name: Create tag
         run: |
-          git tag ${{ needs.container-push.outputs.image-tag }}
-          git push origin ${{ needs.container-push.outputs.image-tag }}
+          git tag ${{ needs.container-push.outputs.tag }}
+          git push origin ${{ needs.container-push.outputs.tag }}
   repository-dispatch:
     needs: container-push
     runs-on: ubuntu-22.04
@@ -69,4 +85,4 @@ jobs:
             -H "Accespt: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ steps.generate-token.outputs.token }}" \
             https://api.github.com/repos/morning-night-guild/platform-infra/dispatches \
-            -d '{"event_type": "manifest-update-prod", "client_payload": {"tag": "${{ needs.container-push.outputs.image-tag }}"}}'
+            -d '{"event_type": "manifest-update-prod", "client_payload": {"tag": "${{ needs.container-push.outputs.tag }}"}}'

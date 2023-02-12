@@ -9,12 +9,12 @@ import (
 	"github.com/morning-night-guild/platform/pkg/connect/proto/health/v1/healthv1connect"
 )
 
-type Client struct {
+type ConnectClient struct {
 	Article articlev1connect.ArticleServiceClient
 	Health  healthv1connect.HealthServiceClient
 }
 
-func NewClient(t *testing.T, client connect.HTTPClient, url string) *Client {
+func NewConnectClient(t *testing.T, client connect.HTTPClient, url string) *ConnectClient {
 	t.Helper()
 
 	ac := articlev1connect.NewArticleServiceClient(
@@ -27,7 +27,7 @@ func NewClient(t *testing.T, client connect.HTTPClient, url string) *Client {
 		url,
 	)
 
-	return &Client{
+	return &ConnectClient{
 		Article: ac,
 		Health:  hc,
 	}

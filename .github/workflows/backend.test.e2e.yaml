@@ -39,23 +39,39 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
         run: go run cmd/migrate/main.go
-      - name: Run server
+      - name: Run app core
         working-directory: ./backend
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+          PORT: "8888"
           API_KEY: e2e
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
           CORS_ALLOW_ORIGINS: http://localhost:5173
         run: | # サーバー起動待機のためにsleepを導入 TODO health check 待機でも良いかも
-          go run cmd/core/main.go &
-          echo PID=$! >> $GITHUB_ENV
+          go run cmd/appcore/main.go &
+          echo APP_CORE_PID=$! >> $GITHUB_ENV
+          sleep 20
+      - name: Run app api
+        working-directory: ./backend
+        env:
+          PORT: "8080"
+          API_KEY: e2e
+          APP_CORE_URL: http://localhost:8888
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+          CORS_ALLOW_ORIGINS: http://localhost:5173
+        run: | # サーバー起動待機のためにsleepを導入 TODO health check 待機でも良いかも
+          go run cmd/appapi/main.go &
+          echo APP_API_PID=$! >> $GITHUB_ENV
           sleep 20
       - name: Go test e2e
         working-directory: ./backend
         env:
-          ENDPOINT: http://localhost:8080
+          APP_API_ENDPOINT: http://localhost:8080
+          APP_CORE_ENDPOINT: http://localhost:8888
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
           API_KEY: e2e
         run: go test ./e2e/... -tags e2e
       - name: Shutdown
         if: always()
-        run: kill ${{ env.PID }}
+        run: |
+          kill ${{ env.APP_CORE_PID }}
+          kill ${{ env.APP_API_PID }}

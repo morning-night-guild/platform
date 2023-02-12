@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// New.
 func New() connect.UnaryInterceptorFunc {
 	interceptor := func(next connect.UnaryFunc) connect.UnaryFunc {
 		return connect.UnaryFunc(func(

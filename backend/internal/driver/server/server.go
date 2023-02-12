@@ -15,6 +15,7 @@ import (
 	"github.com/morning-night-guild/platform/internal/driver/config"
 	"github.com/morning-night-guild/platform/internal/driver/interceptor"
 	"github.com/morning-night-guild/platform/internal/driver/newrelic"
+	"github.com/morning-night-guild/platform/internal/driver/router"
 	"github.com/morning-night-guild/platform/pkg/connect/proto/article/v1/articlev1connect"
 	"github.com/morning-night-guild/platform/pkg/connect/proto/health/v1/healthv1connect"
 	"github.com/morning-night-guild/platform/pkg/log"
@@ -40,18 +41,18 @@ func NewHTTPServer(
 ) (*HTTPServer, error) {
 	ic := connect.WithInterceptors(interceptor.New())
 
-	routes := []Route{
-		NewRoute(articlev1connect.NewArticleServiceHandler(article, ic)),
-		NewRoute(healthv1connect.NewHealthServiceHandler(health, ic)),
+	routes := []router.Route{
+		router.NewRoute(articlev1connect.NewArticleServiceHandler(article, ic)),
+		router.NewRoute(healthv1connect.NewHealthServiceHandler(health, ic)),
 	}
 
 	if nr != nil {
 		for i, route := range routes {
-			routes[i] = NewRoute(nr.Handle(route.path, route.handler))
+			routes[i] = router.NewRoute(nr.Handle(route.Path, route.Handler))
 		}
 	}
 
-	mux := NewRouter(routes...).Mux()
+	mux := router.New(routes...).Mux()
 
 	allowOrigins, err := ConvertAllowOrigins(config.Get().CORSAllowOrigins)
 	if err != nil {
@@ -104,4 +105,55 @@ func (s *HTTPServer) Run() {
 	}
 
 	log.Log().Info("HTTPServer shutdown")
+}
+
+// Server.
+type Server struct {
+	*http.Server
+}
+
+// NewServer
+// 引数nrはnilでも動作可能（NewRelicへレポートが送信されない）.
+func NewServer(
+	port string,
+	handler http.Handler,
+) *Server {
+	s := &http.Server{
+		Addr:              fmt.Sprintf(":%s", port),
+		Handler:           handler,
+		ReadHeaderTimeout: readHeaderTimeout,
+	}
+
+	return &Server{
+		Server: s,
+	}
+}
+
+// Run.
+func (srv *Server) Run() {
+	log.Log().Sugar().Infof("server running on %s", srv.Addr)
+
+	go func() {
+		if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+			log.Log().Sugar().Errorf("server closed with error: %s", err.Error())
+
+			os.Exit(1)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+
+	signal.Notify(quit, syscall.SIGTERM, os.Interrupt)
+
+	log.Log().Sugar().Infof("SIGNAL %d received, then shutting down...\n", <-quit)
+
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTime*time.Second)
+
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Log().Sugar().Infof("failed to gracefully shutdown:", err)
+	}
+
+	log.Log().Info("server shutdown")
 }
