@@ -21,7 +21,7 @@ func TestE2EArticleList(t *testing.T) {
 
 	helper.BulkInsert(t, int(articleCount+5))
 
-	url := helper.GetEndpoint(t)
+	url := helper.GetAppCoreEndpoint(t)
 
 	t.Run("記事が一覧できる", func(t *testing.T) {
 		t.Parallel()
@@ -30,7 +30,7 @@ func TestE2EArticleList(t *testing.T) {
 			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
 		}
 
-		client := helper.NewClient(t, hc, url)
+		client := helper.NewConnectClient(t, hc, url)
 
 		req := &articlev1.ListRequest{
 			MaxPageSize: articleCount,

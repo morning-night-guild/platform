@@ -42,17 +42,18 @@ jobs:
       - name: Run server
         working-directory: ./backend
         env:
+          PORT: "8888"
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
           API_KEY: e2e
           CORS_ALLOW_ORIGINS: http://localhost:5173
         run: | # サーバー起動待機のためにsleepを導入 TODO health check 待機でも良いかも
-          go run cmd/core/main.go &
+          go run cmd/appcore/main.go &
           echo PID=$! >> $GITHUB_ENV
           sleep 20
       - name: Go test e2e
         working-directory: ./backend
         env:
-          ENDPOINT: http://localhost:8080
+          APP_CORE_ENDPOINT: http://localhost:8888
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
           API_KEY: e2e
         run: go test ./e2e/... -tags e2e

@@ -16,12 +16,12 @@ import (
 func TestE2EHealthCheck(t *testing.T) {
 	t.Parallel()
 
-	url := helper.GetEndpoint(t)
+	url := helper.GetAppCoreEndpoint(t)
 
 	t.Run("ヘルスチェックが成功する", func(t *testing.T) {
 		t.Parallel()
 
-		client := helper.NewClient(t, http.DefaultClient, url)
+		client := helper.NewConnectClient(t, http.DefaultClient, url)
 
 		req := &healthv1.CheckRequest{}
 
