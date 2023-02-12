@@ -30,7 +30,7 @@ func TestE2EArticleList(t *testing.T) {
 
 		defer db.Close()
 
-		defer db.BulkDelete(ids)
+		defer db.BulkDeleteArticles(ids)
 
 		db.BulkInsertArticles(ids)
 

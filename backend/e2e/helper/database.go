@@ -67,10 +67,29 @@ func (db *Database) BulkInsertArticles(ids []uuid.UUID) {
 	}
 }
 
-func (db *Database) BulkDelete(ids []uuid.UUID) {
+func (db *Database) SelectArticleByTitle(title string) *ent.Article {
+	db.T.Helper()
+
+	article, err := db.client.Article.Query().Where(article.TitleEQ(title)).Only(context.Background())
+	if err != nil {
+		db.T.Error(err)
+	}
+
+	return article
+}
+
+func (db *Database) BulkDeleteArticles(ids []uuid.UUID) {
 	db.T.Helper()
 
 	if _, err := db.client.Article.Delete().Where(article.IDIn(ids...)).Exec(context.Background()); err != nil {
+		db.T.Error(err)
+	}
+}
+
+func (db *Database) DeleteArticleByTitle(title string) {
+	db.T.Helper()
+
+	if _, err := db.client.Article.Delete().Where(article.TitleEQ(title)).Exec(context.Background()); err != nil {
 		db.T.Error(err)
 	}
 }
