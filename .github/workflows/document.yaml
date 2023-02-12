@@ -109,7 +109,7 @@ jobs:
       - name: Copy
         run: |
           mkdir public
-          cp -r openapi /public/
+          cp -r openapi/ public/
           cp -r api/ public/
           cp -r database/ public/
       - name: Publish

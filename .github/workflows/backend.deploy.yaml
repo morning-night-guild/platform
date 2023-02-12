@@ -1,4 +1,4 @@
-name: backend container push
+name: backend deploy
 run-name: ${{ github.ref_name }} by @${{ github.actor }} ${{ github.workflow }}
 on:
   schedule:
@@ -49,17 +49,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ steps.generate-token.outputs.token }}
-      - name: Tag
+      - name: Create tag
         run: |
           git tag ${{ needs.container-push.outputs.image-tag }}
           git push origin ${{ needs.container-push.outputs.image-tag }}
-  release-pull-request:
+  repository-dispatch:
     needs: container-push
     runs-on: ubuntu-22.04
-    env:
-      MANIFEST_REPO_NAME: platform-infra
-      DOCKER_REPO_NAME: morningnightguild
-      BRANCH_NAME: release/${{ needs.container-push.outputs.image-tag }}
     steps:
       - name: Generate token
         id: generate-token
@@ -67,34 +63,10 @@ jobs:
         with:
           app_id: ${{ secrets.BOT_GITHUB_APP_ID }}
           private_key: ${{ secrets.BOT_GITHUB_APP_PRIVATE_KEY }}
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ github.repository_owner }}/${{ env.MANIFEST_REPO_NAME }}
-          token: ${{ steps.generate-token.outputs.token }}
-          path: ${{ env.MANIFEST_REPO_NAME }}
-      - name: Install yq
-        run: sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && sudo chmod +x /usr/bin/yq
-      - name: Checkout branch
+      - name: Repository dispatch
         run: |
-          git branch ${{ env.BRANCH_NAME }}
-          git checkout ${{ env.BRANCH_NAME }}
-        working-directory: ${{ env.MANIFEST_REPO_NAME }}
-      - name: Update image tag
-        run: |
-          export IMAGE_TAG=${{ needs.container-push.outputs.image-tag }}
-          yq '.image.tag=env(IMAGE_TAG)' values.yaml > tmp.yml && mv tmp.yml values.yaml
-        working-directory: ${{ env.MANIFEST_REPO_NAME }}/k8s/env/prod
-      - name: Git push
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git commit -m "update image tag ${{ needs.container-push.outputs.image-name }} ${{ needs.container-push.outputs.image-tag }}"
-          git push --set-upstream origin ${{ env.BRANCH_NAME }}
-        working-directory: ${{ env.MANIFEST_REPO_NAME }}
-      - name: Create release pull request
-        run: |
-          export GH_TOKEN=${{ steps.generate-token.outputs.token }}
-          gh pr create --base main --title "Release ${{ needs.container-push.outputs.image-name }} ${{ needs.container-push.outputs.image-tag }}" --body "" --label release
-        working-directory: ${{ env.MANIFEST_REPO_NAME }}
+          curl -X POST \
+            -H "Accespt: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ steps.generate-token.outputs.token }}" \
+            https://api.github.com/repos/morning-night-guild/platform-infra/dispatches \
+            -d '{"event_type": "manifest-update-prod", "client_payload": {"tag": "${{ needs.container.outputs.tag }}"}}'
