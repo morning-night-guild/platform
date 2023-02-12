@@ -1,9 +1,6 @@
 name: backend deploy
 run-name: ${{ github.ref_name }} by @${{ github.actor }} ${{ github.workflow }}
 on:
-  pull_request:
-    paths:
-      - .github/workflows/backend.deploy.yaml
   schedule:
     # 日曜24時(JST)
     - cron: '0 15 * * 6'
