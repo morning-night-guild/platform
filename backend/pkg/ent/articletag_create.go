@@ -136,13 +136,7 @@ func (atc *ArticleTagCreate) sqlSave(ctx context.Context) (*ArticleTag, error) {
 func (atc *ArticleTagCreate) createSpec() (*ArticleTag, *sqlgraph.CreateSpec) {
 	var (
 		_node = &ArticleTag{config: atc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: articletag.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: articletag.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(articletag.Table, sqlgraph.NewFieldSpec(articletag.FieldID, field.TypeUUID))
 	)
 	_spec.OnConflict = atc.conflict
 	if id, ok := atc.mutation.ID(); ok {

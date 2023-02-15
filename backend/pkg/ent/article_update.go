@@ -152,16 +152,7 @@ func (au *ArticleUpdate) defaults() {
 }
 
 func (au *ArticleUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   article.Table,
-			Columns: article.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: article.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(article.Table, article.Columns, sqlgraph.NewFieldSpec(article.FieldID, field.TypeUUID))
 	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -346,6 +337,12 @@ func (auo *ArticleUpdateOne) RemoveTags(a ...*ArticleTag) *ArticleUpdateOne {
 	return auo.RemoveTagIDs(ids...)
 }
 
+// Where appends a list predicates to the ArticleUpdate builder.
+func (auo *ArticleUpdateOne) Where(ps ...predicate.Article) *ArticleUpdateOne {
+	auo.mutation.Where(ps...)
+	return auo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (auo *ArticleUpdateOne) Select(field string, fields ...string) *ArticleUpdateOne {
@@ -390,16 +387,7 @@ func (auo *ArticleUpdateOne) defaults() {
 }
 
 func (auo *ArticleUpdateOne) sqlSave(ctx context.Context) (_node *Article, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   article.Table,
-			Columns: article.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: article.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(article.Table, article.Columns, sqlgraph.NewFieldSpec(article.FieldID, field.TypeUUID))
 	id, ok := auo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Article.id" for update`)}

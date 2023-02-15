@@ -134,9 +134,3 @@ func (at *ArticleTag) String() string {
 
 // ArticleTags is a parsable slice of ArticleTag.
 type ArticleTags []*ArticleTag
-
-func (at ArticleTags) config(cfg config) {
-	for _i := range at {
-		at[_i].config = cfg
-	}
-}
