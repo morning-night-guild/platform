@@ -166,7 +166,7 @@ func (c *ArticleClient) Use(hooks ...Hook) {
 	c.hooks.Article = append(c.hooks.Article, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `article.Intercept(f(g(h())))`.
 func (c *ArticleClient) Intercept(interceptors ...Interceptor) {
 	c.inters.Article = append(c.inters.Article, interceptors...)
@@ -300,7 +300,7 @@ func (c *ArticleTagClient) Use(hooks ...Hook) {
 	c.hooks.ArticleTag = append(c.hooks.ArticleTag, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `articletag.Intercept(f(g(h())))`.
 func (c *ArticleTagClient) Intercept(interceptors ...Interceptor) {
 	c.inters.ArticleTag = append(c.inters.ArticleTag, interceptors...)

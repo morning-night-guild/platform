@@ -176,9 +176,3 @@ func (a *Article) String() string {
 
 // Articles is a parsable slice of Article.
 type Articles []*Article
-
-func (a Articles) config(cfg config) {
-	for _i := range a {
-		a[_i].config = cfg
-	}
-}
