@@ -45,7 +45,7 @@
         },
         "ignores": [
             "src/vite-env.d.ts",
-            "src/api/*"
+            "src/openapi/*"
         ],
         "prettier": true
     }
