@@ -3,8 +3,6 @@
     "license": "UNLICENSED",
     "private": true,
     "devDependencies": {
-        "@bufbuild/protoc-gen-connect-web": "0.2.1",
-        "@bufbuild/protoc-gen-es": "0.1.1",
         "@stoplight/spectral-cli": "^6.6.0",
         "widdershins": "^4.0.1"
     }

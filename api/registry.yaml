@@ -1,7 +1,3 @@
 packages:
   - type: go_install
-    path: google.golang.org/protobuf/cmd/protoc-gen-go
-  - type: go_install
-    path: github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go
-  - type: go_install
     path: github.com/deepmap/oapi-codegen/cmd/oapi-codegen
