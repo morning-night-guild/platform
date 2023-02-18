@@ -14,7 +14,14 @@ Base URLs:
 Email: <a href="mailto:morning.night.guild@example.com">Support</a> 
  License: MIT
 
+# Authentication
+
+* API Key (apiKey)
+    - Parameter Name: **api-key**, in: header. 
+
 <h1 id="morning-night-guild-app-gateway-article">article</h1>
+
+記事
 
 ## v1ListArticles
 
@@ -22,9 +29,9 @@ Email: <a href="mailto:morning.night.guild@example.com">Support</a>
 
 `GET /v1/articles`
 
-*List articles*
+*記事一覧*
 
-List articles
+記事一覧を取得する
 
 <h3 id="v1listarticles-parameters">Parameters</h3>
 
@@ -66,7 +73,50 @@ List articles
 This operation does not require authentication
 </aside>
 
+## v1ShareArticle
+
+<a id="opIdv1ShareArticle"></a>
+
+`POST /v1/articles`
+
+*記事共有*
+
+記事を共有する
+
+> Body parameter
+
+```json
+{
+  "url": "https://example.com",
+  "title": "title",
+  "description": "description",
+  "thumbnail": "https://example.com"
+}
+```
+
+<h3 id="v1sharearticle-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[V1ShareArticleRequest](#schemav1sharearticlerequest)|true|記事共有リクエストボディ|
+
+<h3 id="v1sharearticle-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|成功|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad Request|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Forbidden|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal Server Error|None|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+apiKey
+</aside>
+
 <h1 id="morning-night-guild-app-gateway-health">health</h1>
+
+ヘルスチェック
 
 ## v1HealthAPI
 
@@ -176,4 +226,30 @@ This operation does not require authentication
 |---|---|---|---|---|
 |articles|[[Article](#schemaarticle)]|false|none|none|
 |nextPageToken|string|false|none|次回リクエスト時に指定するページトークン|
+
+<h2 id="tocS_V1ShareArticleRequest">V1ShareArticleRequest</h2>
+<!-- backwards compatibility -->
+<a id="schemav1sharearticlerequest"></a>
+<a id="schema_V1ShareArticleRequest"></a>
+<a id="tocSv1sharearticlerequest"></a>
+<a id="tocsv1sharearticlerequest"></a>
+
+```json
+{
+  "url": "https://example.com",
+  "title": "title",
+  "description": "description",
+  "thumbnail": "https://example.com"
+}
+
+```
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|url|string(uri)|true|none|記事のURL|
+|title|string|false|none|タイトル|
+|description|string|false|none|description|
+|thumbnail|string(uri)|false|none|サムネイルのURL|
 

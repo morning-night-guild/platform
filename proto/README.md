@@ -3,7 +3,7 @@
 
 ## Table of Contents
 
-- [api/proto/article/v1/article.proto](#api_proto_article_v1_article-proto)
+- [backend/proto/article/v1/article.proto](#backend_proto_article_v1_article-proto)
     - [Article](#article-v1-Article)
     - [ListRequest](#article-v1-ListRequest)
     - [ListResponse](#article-v1-ListResponse)
@@ -12,7 +12,7 @@
   
     - [ArticleService](#article-v1-ArticleService)
   
-- [api/proto/health/v1/health.proto](#api_proto_health_v1_health-proto)
+- [backend/proto/health/v1/health.proto](#backend_proto_health_v1_health-proto)
     - [CheckRequest](#health-v1-CheckRequest)
     - [CheckResponse](#health-v1-CheckResponse)
   
@@ -22,10 +22,10 @@
 
 
 
-<a name="api_proto_article_v1_article-proto"></a>
+<a name="backend_proto_article_v1_article-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## api/proto/article/v1/article.proto
+## backend/proto/article/v1/article.proto
 
 
 
@@ -134,10 +134,10 @@
 
 
 
-<a name="api_proto_health_v1_health-proto"></a>
+<a name="backend_proto_health_v1_health-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## api/proto/health/v1/health.proto
+## backend/proto/health/v1/health.proto
 
 
 
