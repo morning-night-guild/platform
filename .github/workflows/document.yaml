@@ -42,11 +42,11 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup protoc
         uses: arduino/setup-protoc@v1
-      - name: Generate grpc document
+      - name: Generate proto document
         run: |
           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
           mkdir -p public/proto
-          protoc --doc_out=./public/proto --doc_opt=markdown,README.md $(find proto -name '*.proto')
+          protoc --doc_out=./public/proto --doc_opt=markdown,README.md $(find backend/proto -name '*.proto')
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
