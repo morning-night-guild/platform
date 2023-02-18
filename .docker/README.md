@@ -16,7 +16,6 @@ make env
 make
 ```
 
-
 ## Troubleshoot
 
 - If you encounter the following error, delete frontend/node_modules and re-run make up
