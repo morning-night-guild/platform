@@ -48,6 +48,7 @@ func TestAppAPIE2EArticleList(t *testing.T) {
 		var article openapi.ListArticleResponse
 		if err := json.Unmarshal(body, &article); err != nil {
 			t.Fatalf("failed marshal response: %s caused by %s", body, err)
+
 			return
 		}
 
