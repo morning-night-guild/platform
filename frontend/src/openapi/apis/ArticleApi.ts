@@ -16,15 +16,22 @@
 import * as runtime from '../runtime';
 import type {
   ListArticleResponse,
+  V1ShareArticleRequest,
 } from '../models';
 import {
     ListArticleResponseFromJSON,
     ListArticleResponseToJSON,
+    V1ShareArticleRequestFromJSON,
+    V1ShareArticleRequestToJSON,
 } from '../models';
 
 export interface V1ListArticlesRequest {
     maxPageSize: number;
     pageToken?: string;
+}
+
+export interface V1ShareArticleOperationRequest {
+    v1ShareArticleRequest: V1ShareArticleRequest;
 }
 
 /**
@@ -33,8 +40,8 @@ export interface V1ListArticlesRequest {
 export class ArticleApi extends runtime.BaseAPI {
 
     /**
-     * List articles
-     * List articles
+     * 記事一覧を取得する
+     * 記事一覧
      */
     async v1ListArticlesRaw(requestParameters: V1ListArticlesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListArticleResponse>> {
         if (requestParameters.maxPageSize === null || requestParameters.maxPageSize === undefined) {
@@ -64,12 +71,50 @@ export class ArticleApi extends runtime.BaseAPI {
     }
 
     /**
-     * List articles
-     * List articles
+     * 記事一覧を取得する
+     * 記事一覧
      */
     async v1ListArticles(requestParameters: V1ListArticlesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListArticleResponse> {
         const response = await this.v1ListArticlesRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     * 記事を共有する
+     * 記事共有
+     */
+    async v1ShareArticleRaw(requestParameters: V1ShareArticleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.v1ShareArticleRequest === null || requestParameters.v1ShareArticleRequest === undefined) {
+            throw new runtime.RequiredError('v1ShareArticleRequest','Required parameter requestParameters.v1ShareArticleRequest was null or undefined when calling v1ShareArticle.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["api-key"] = this.configuration.apiKey("api-key"); // apiKey authentication
+        }
+
+        const response = await this.request({
+            path: `/v1/articles`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: V1ShareArticleRequestToJSON(requestParameters.v1ShareArticleRequest),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * 記事を共有する
+     * 記事共有
+     */
+    async v1ShareArticle(requestParameters: V1ShareArticleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.v1ShareArticleRaw(requestParameters, initOverrides);
     }
 
 }

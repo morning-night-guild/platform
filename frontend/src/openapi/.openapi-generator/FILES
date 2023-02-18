@@ -5,5 +5,6 @@ apis/index.ts
 index.ts
 models/Article.ts
 models/ListArticleResponse.ts
+models/V1ShareArticleRequest.ts
 models/index.ts
 runtime.ts

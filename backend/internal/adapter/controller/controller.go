@@ -29,14 +29,20 @@ var ErrUnauthorized = connect.NewError(
 	errUnauthorized,
 )
 
-// handleError 発生したエラーを対応するgrpcのステータス込みのエラーに変換する関数.
-func handleError(ctx context.Context, err error) error {
+type Controller struct{}
+
+func New() *Controller {
+	return &Controller{}
+}
+
+// HandleConnectError 発生したエラーを対応するconnectのcode込みのエラーに変換する関数.
+func (ctl *Controller) HandleConnectError(ctx context.Context, err error) error {
 	logger := log.GetLogCtx(ctx)
 
 	switch {
 	case
-		asValidationError(err),
-		asURLError(err):
+		ctl.asValidationError(err),
+		ctl.asURLError(err):
 		logger.Warn(err.Error())
 
 		return ErrInvalidArgument
@@ -47,13 +53,13 @@ func handleError(ctx context.Context, err error) error {
 	}
 }
 
-func asValidationError(err error) bool {
+func (ctl *Controller) asValidationError(err error) bool {
 	var target me.ValidationError
 
 	return errors.As(err, &target)
 }
 
-func asURLError(err error) bool {
+func (ctl *Controller) asURLError(err error) bool {
 	var target me.URLError
 
 	return errors.As(err, &target)

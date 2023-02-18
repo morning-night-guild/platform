@@ -4,6 +4,7 @@
 package openapi
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -91,6 +92,11 @@ type ClientInterface interface {
 	// V1ListArticles request
 	V1ListArticles(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// V1ShareArticle request with any body
+	V1ShareArticleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	V1ShareArticle(ctx context.Context, body V1ShareArticleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// V1HealthAPI request
 	V1HealthAPI(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -100,6 +106,30 @@ type ClientInterface interface {
 
 func (c *Client) V1ListArticles(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewV1ListArticlesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) V1ShareArticleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewV1ShareArticleRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) V1ShareArticle(ctx context.Context, body V1ShareArticleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewV1ShareArticleRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -189,6 +219,46 @@ func NewV1ListArticlesRequest(server string, params *V1ListArticlesParams) (*htt
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewV1ShareArticleRequest calls the generic V1ShareArticle builder with application/json body
+func NewV1ShareArticleRequest(server string, body V1ShareArticleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewV1ShareArticleRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewV1ShareArticleRequestWithBody generates requests for V1ShareArticle with any type of body
+func NewV1ShareArticleRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/articles")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -293,6 +363,11 @@ type ClientWithResponsesInterface interface {
 	// V1ListArticles request
 	V1ListArticlesWithResponse(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*V1ListArticlesResponse, error)
 
+	// V1ShareArticle request with any body
+	V1ShareArticleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*V1ShareArticleResponse, error)
+
+	V1ShareArticleWithResponse(ctx context.Context, body V1ShareArticleJSONRequestBody, reqEditors ...RequestEditorFn) (*V1ShareArticleResponse, error)
+
 	// V1HealthAPI request
 	V1HealthAPIWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1HealthAPIResponse, error)
 
@@ -316,6 +391,27 @@ func (r V1ListArticlesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r V1ListArticlesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type V1ShareArticleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r V1ShareArticleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r V1ShareArticleResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -373,6 +469,23 @@ func (c *ClientWithResponses) V1ListArticlesWithResponse(ctx context.Context, pa
 	return ParseV1ListArticlesResponse(rsp)
 }
 
+// V1ShareArticleWithBodyWithResponse request with arbitrary body returning *V1ShareArticleResponse
+func (c *ClientWithResponses) V1ShareArticleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*V1ShareArticleResponse, error) {
+	rsp, err := c.V1ShareArticleWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseV1ShareArticleResponse(rsp)
+}
+
+func (c *ClientWithResponses) V1ShareArticleWithResponse(ctx context.Context, body V1ShareArticleJSONRequestBody, reqEditors ...RequestEditorFn) (*V1ShareArticleResponse, error) {
+	rsp, err := c.V1ShareArticle(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseV1ShareArticleResponse(rsp)
+}
+
 // V1HealthAPIWithResponse request returning *V1HealthAPIResponse
 func (c *ClientWithResponses) V1HealthAPIWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1HealthAPIResponse, error) {
 	rsp, err := c.V1HealthAPI(ctx, reqEditors...)
@@ -412,6 +525,22 @@ func ParseV1ListArticlesResponse(rsp *http.Response) (*V1ListArticlesResponse, e
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParseV1ShareArticleResponse parses an HTTP response from a V1ShareArticleWithResponse call
+func ParseV1ShareArticleResponse(rsp *http.Response) (*V1ShareArticleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &V1ShareArticleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
 	}
 
 	return response, nil

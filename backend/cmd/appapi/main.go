@@ -32,7 +32,7 @@ func main() {
 	}
 
 	hd := handler.NewOpenAPIHandler(
-		api.New(c),
+		api.New(cfg.APIKey, c),
 		cs,
 		middleware.New(),
 	)

@@ -24,11 +24,7 @@ func TestAppCoreE2EArticleShare(t *testing.T) {
 	t.Run("記事が共有できる", func(t *testing.T) {
 		t.Parallel()
 
-		hc := &http.Client{
-			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
-		}
-
-		client := helper.NewConnectClient(t, hc, url)
+		client := helper.NewConnectClient(t, &http.Client{}, url)
 
 		title := uuid.NewString()
 
@@ -81,11 +77,7 @@ func TestAppCoreE2EArticleShare(t *testing.T) {
 	t.Run("不正なURLが指定されて記事が共有できない", func(t *testing.T) {
 		t.Parallel()
 
-		hc := &http.Client{
-			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
-		}
-
-		client := helper.NewConnectClient(t, hc, url)
+		client := helper.NewConnectClient(t, &http.Client{}, url)
 
 		req := &articlev1.ShareRequest{
 			Url:         "http://www.example.com",
@@ -106,11 +98,7 @@ func TestAppCoreE2EArticleShare(t *testing.T) {
 	t.Run("不正なThumbnailが指定されて記事が共有できない", func(t *testing.T) {
 		t.Parallel()
 
-		hc := &http.Client{
-			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
-		}
-
-		client := helper.NewConnectClient(t, hc, url)
+		client := helper.NewConnectClient(t, &http.Client{}, url)
 
 		req := &articlev1.ShareRequest{
 			Url:         "https://www.example.com",
@@ -124,26 +112,6 @@ func TestAppCoreE2EArticleShare(t *testing.T) {
 			t.Errorf("err = %v", err)
 		}
 		if !strings.Contains(err.Error(), "bad request") {
-			t.Errorf("err = %v", err)
-		}
-	})
-
-	t.Run("Api-Keyがなくて記事が共有できない", func(t *testing.T) {
-		t.Parallel()
-
-		hc := &http.Client{}
-
-		client := helper.NewConnectClient(t, hc, url)
-
-		req := &articlev1.ShareRequest{
-			Url: "https://www.example.com",
-		}
-
-		_, err := client.Article.Share(context.Background(), connect.NewRequest(req))
-		if !strings.Contains(err.Error(), "unauthenticated") {
-			t.Errorf("err = %v", err)
-		}
-		if !strings.Contains(err.Error(), "unauthorized") {
 			t.Errorf("err = %v", err)
 		}
 	})

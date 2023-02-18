@@ -21,8 +21,8 @@ jobs:
       - name: Supabase sercets
         run: |
           supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase secrets set CORE_API_KEY=${{ secrets.CORE_API_KEY }}
-          supabase secrets set CORE_SERVICE_URL=${{ secrets.CORE_SERVICE_URL }}
+          supabase secrets set APP_API_KEY=${{ secrets.APP_API_KEY }}
+          supabase secrets set APP_API_URL=${{ secrets.APP_API_URL }}
           supabase secrets set SLACK_VERIFICATION_TOKEN=${{ secrets.SLACK_VERIFICATION_TOKEN }}
       - name: Deploy
         run: supabase functions deploy slack --no-verify-jwt --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
