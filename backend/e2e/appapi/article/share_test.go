@@ -83,7 +83,7 @@ func TestAppAPIE2EArticleShare(t *testing.T) {
 		}
 
 		if !reflect.DeepEqual(res.StatusCode, http.StatusUnauthorized) {
-			t.Errorf("StatusCode = %v, want %v", res.StatusCode, http.StatusOK)
+			t.Errorf("StatusCode = %v, want %v", res.StatusCode, http.StatusUnauthorized)
 		}
 	})
 }
