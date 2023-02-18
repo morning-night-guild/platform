@@ -1,6 +1,3 @@
-//go:build e2e
-// +build e2e
-
 package health_test
 
 import (
@@ -27,6 +24,8 @@ func TestAppAPIE2EHealthCheck(t *testing.T) {
 			t.Fatalf("failed to health check: %s", err)
 		}
 
+		defer res.Body.Close()
+
 		if !reflect.DeepEqual(res.StatusCode, http.StatusOK) {
 			t.Errorf("Articles actual = %v, want %v", res.StatusCode, http.StatusOK)
 		}
@@ -41,6 +40,8 @@ func TestAppAPIE2EHealthCheck(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to health check: %s", err)
 		}
+
+		defer res.Body.Close()
 
 		if !reflect.DeepEqual(res.StatusCode, http.StatusOK) {
 			t.Errorf("Articles actual = %v, want %v", res.StatusCode, http.StatusOK)

@@ -1,6 +1,3 @@
-//go:build e2e
-// +build e2e
-
 package article_test
 
 import (
@@ -42,6 +39,8 @@ func TestAppAPIE2EArticleShare(t *testing.T) {
 			t.Fatalf("failed to share article: %s", err)
 		}
 
+		defer res.Body.Close()
+
 		if !reflect.DeepEqual(res.StatusCode, http.StatusOK) {
 			t.Errorf("StatusCode = %v, want %v", res.StatusCode, http.StatusOK)
 		}
@@ -62,6 +61,8 @@ func TestAppAPIE2EArticleShare(t *testing.T) {
 			t.Fatalf("failed to share article: %s", err)
 		}
 
+		defer res.Body.Close()
+
 		if !reflect.DeepEqual(res.StatusCode, http.StatusBadRequest) {
 			t.Errorf("StatusCode = %v, want %v", res.StatusCode, http.StatusBadRequest)
 		}
@@ -81,6 +82,8 @@ func TestAppAPIE2EArticleShare(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to share article: %s", err)
 		}
+
+		defer res.Body.Close()
 
 		if !reflect.DeepEqual(res.StatusCode, http.StatusUnauthorized) {
 			t.Errorf("StatusCode = %v, want %v", res.StatusCode, http.StatusUnauthorized)

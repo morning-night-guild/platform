@@ -50,9 +50,9 @@ e2e: ## Run e2e test. If you want to invalidate the cache, please specify an arg
 
 define _e2e
 if [ -z "$1" ]; then \
-	go test ./e2e/... -tags e2e ; \
+	go test ./e2e/... ; \
 else \
-	go test ./e2e/... -tags e2e -count=1 ; \
+	go test ./e2e/... -count=1 ; \
 fi
 endef
 
