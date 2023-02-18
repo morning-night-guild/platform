@@ -1,0 +1,30 @@
+name: backend buf lint
+run-name: ${{ github.ref_name }} by @${{ github.actor }} ${{ github.workflow }}
+on:
+  pull_request:
+    paths:
+      - .github/workflows/backend.buf.lint.yaml
+      - backend/**/*.proto
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: backend/go.mod
+      - name: Setup aqua
+        uses: aquaproj/aqua-installer@v2.0.2
+        with:
+          aqua_version: v1.33.0
+      - name: Setup go tool
+        working-directory: ./backend
+        run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua i
+      - name: Buf lint
+        working-directory: ./backend/proto
+        run: buf lint
+      - name: Buf format
+        working-directory: ./backend
+        run: buf format -d --exit-code

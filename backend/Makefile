@@ -58,8 +58,22 @@ endef
 
 .PHONY: gen
 gen: ## Generate code.
-	@go generate ./... && go mod tidy
+	@go generate ./...
+	@buf generate --template ./proto/buf.gen.yaml
+	@go mod tidy
 
 .PHONY: doc
 doc: ## Generate documentation.
-	@rm -rf doc && tbls doc $(DATABASE_URL) doc/databases
+	@rm -rf doc
+	@mkdir -p doc/proto
+	@tbls doc $(DATABASE_URL) doc/databases
+	@protoc --doc_out=./doc/proto --doc_opt=markdown,README.md proto/article/**/*.proto proto/health/**/*.proto
+
+.PHONY: buflint
+buflint: ## Lint proto file.
+	@(cd proto && buf lint)
+
+.PHONY: buffmt
+buffmt: ## Format proto file.
+	@buf format -w
+

@@ -6,13 +6,13 @@ on:
       - main
     paths:
       - api/openapi.yaml
-      - api/**/*.proto
+      - backend/proto/**/*.proto
       - backend/pkg/ent/schema/*.go
   pull_request:
     paths:
       - .github/workflows/document.yaml
       - api/openapi.yaml
-      - api/**/*.proto
+      - backend/proto/**/*.proto
       - backend/pkg/ent/schema/*.go
 jobs:
   openapi:
@@ -35,7 +35,7 @@ jobs:
         with:
           name: document-openapi
           path: public
-  api:
+  proto:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -45,12 +45,12 @@ jobs:
       - name: Generate grpc document
         run: |
           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
-          mkdir -p public/api
-          protoc --doc_out=./public/api --doc_opt=markdown,README.md $(find api -name '*.proto')
+          mkdir -p public/proto
+          protoc --doc_out=./public/proto --doc_opt=markdown,README.md $(find proto -name '*.proto')
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: document-api
+          name: document-proto
           path: public
   database:
     runs-on: ubuntu-22.04
@@ -88,29 +88,26 @@ jobs:
           path: public
   publish:
     runs-on: ubuntu-22.04
-    needs: [openapi, api, database]
+    needs: [openapi, proto, database]
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Download document openapi
         uses: actions/download-artifact@v3
         with:
           name: document-openapi
-      - name: Download document api
+      - name: Download document proto
         uses: actions/download-artifact@v3
         with:
-          name: document-api
+          name: document-proto
       - name: Download document database
         uses: actions/download-artifact@v3
         with:
           name: document-database
-      - name: Confirm
-        working-directory: api
-        run: ls -la
       - name: Copy
         run: |
           mkdir public
           cp -r openapi/ public/
-          cp -r api/ public/
+          cp -r proto/ public/
           cp -r database/ public/
       - name: Publish
         uses: peaceiris/actions-gh-pages@v3

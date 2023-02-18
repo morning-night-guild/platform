@@ -7,14 +7,6 @@ registries:
     type: local
     path: registry.yaml
 packages:
-  - name: bufbuild/buf@v1.14.0
-  - name: fullstorydev/grpcurl@v1.8.7
-  - name: google.golang.org/protobuf/cmd/protoc-gen-go
-    registry: local
-    version: v1.28.1
-  - name: github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go
-    registry: local
-    version: v1.1.0
   - name: github.com/deepmap/oapi-codegen/cmd/oapi-codegen
     registry: local
     version: v1.12.4
