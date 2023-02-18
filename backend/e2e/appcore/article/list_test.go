@@ -34,11 +34,7 @@ func TestAppCoreE2EArticleList(t *testing.T) {
 
 		db.BulkInsertArticles(ids)
 
-		hc := &http.Client{
-			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
-		}
-
-		client := helper.NewConnectClient(t, hc, url)
+		client := helper.NewConnectClient(t, &http.Client{}, url)
 
 		req := &articlev1.ListRequest{
 			MaxPageSize: articleCount,

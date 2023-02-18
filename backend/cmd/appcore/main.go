@@ -32,7 +32,9 @@ func main() {
 
 	articleListItr := article.NewListInteractor(articleRepo)
 
-	articleCtr := controller.NewArticle(cfg.APIKey, articleShareItr, articleListItr)
+	ctl := controller.New()
+
+	articleCtr := controller.NewArticle(ctl, articleShareItr, articleListItr)
 
 	healthCtr := controller.NewHealth()
 

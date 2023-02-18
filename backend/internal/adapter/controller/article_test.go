@@ -22,9 +22,8 @@ func TestArticleShare(t *testing.T) {
 	t.Parallel()
 
 	type fields struct {
-		apiKey string
-		share  usecase.Usecase[port.ShareArticleInput, port.ShareArticleOutput]
-		list   usecase.Usecase[port.ListArticleInput, port.ListArticleOutput]
+		share usecase.Usecase[port.ShareArticleInput, port.ShareArticleOutput]
+		list  usecase.Usecase[port.ListArticleInput, port.ListArticleOutput]
 	}
 
 	type args struct {
@@ -42,7 +41,6 @@ func TestArticleShare(t *testing.T) {
 		{
 			name: "記事の共有ができる",
 			fields: fields{
-				apiKey: "test",
 				share: mock.ShareUsecase{
 					T:   t,
 					Err: nil,
@@ -72,33 +70,8 @@ func TestArticleShare(t *testing.T) {
 			wantErr: nil,
 		},
 		{
-			name: "X-Api-Keyが不正の時、認証エラーになる",
-			fields: fields{
-				apiKey: "invalid-api-key",
-				share: mock.ShareUsecase{
-					T:   t,
-					Err: nil,
-				},
-				list: mock.ListUsecase{},
-			},
-			args: args{
-				ctx: context.Background(),
-				req: &connect.Request[articlev1.ShareRequest]{
-					Msg: &articlev1.ShareRequest{
-						Url:         "https://example.com",
-						Title:       "title",
-						Description: "description",
-						Thumbnail:   "https://example.com",
-					},
-				},
-			},
-			want:    nil,
-			wantErr: controller.ErrUnauthorized,
-		},
-		{
 			name: "URLが不正の時、バッドリクエストエラーになる",
 			fields: fields{
-				apiKey: "test",
 				share: mock.ShareUsecase{
 					T:   t,
 					Err: nil,
@@ -122,7 +95,6 @@ func TestArticleShare(t *testing.T) {
 		{
 			name: "Thumbnailが不正の時、バッドリクエストエラーになる",
 			fields: fields{
-				apiKey: "test",
 				share: mock.ShareUsecase{
 					T:   t,
 					Err: nil,
@@ -146,7 +118,6 @@ func TestArticleShare(t *testing.T) {
 		{
 			name: "ユースケースでバリデーションエラーが発生した際、バッドリクエストエラーになる",
 			fields: fields{
-				apiKey: "test",
 				share: mock.ShareUsecase{
 					T:   t,
 					Err: dme.NewValidationError("validation error"),
@@ -170,7 +141,6 @@ func TestArticleShare(t *testing.T) {
 		{
 			name: "ユースケースでバリデーションエラー以外のエラーが発生した際、サーバーエラーになる",
 			fields: fields{
-				apiKey: "test",
 				share: mock.ShareUsecase{
 					T:   t,
 					Err: errors.New("unknown error"),
@@ -196,8 +166,7 @@ func TestArticleShare(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			a := controller.NewArticle("test", tt.fields.share, tt.fields.list)
-			tt.args.req.Header().Set("X-Api-Key", tt.fields.apiKey)
+			a := controller.NewArticle(controller.New(), tt.fields.share, tt.fields.list)
 			got, err := a.Share(tt.args.ctx, tt.args.req)
 			if err != nil && err != tt.wantErr {
 				t.Errorf("Article.Share() error = %v, wantErr %v", err, tt.wantErr)
@@ -356,7 +325,7 @@ func TestArticleList(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			a := controller.NewArticle("test", tt.fields.share, tt.fields.list)
+			a := controller.NewArticle(controller.New(), tt.fields.share, tt.fields.list)
 			got, err := a.List(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Article.List() error = %v, wantErr %v", err, tt.wantErr)

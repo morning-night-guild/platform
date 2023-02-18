@@ -2,15 +2,19 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/bufbuild/connect-go"
 	"github.com/google/uuid"
 	articlev1 "github.com/morning-night-guild/platform/pkg/connect/proto/article/v1"
+	"github.com/morning-night-guild/platform/pkg/log"
 	"github.com/morning-night-guild/platform/pkg/openapi"
 )
 
-func (api API) V1ListArticles(w http.ResponseWriter, r *http.Request, params openapi.V1ListArticlesParams) {
+func (api *API) V1ListArticles(w http.ResponseWriter, r *http.Request, params openapi.V1ListArticlesParams) {
+	ctx := log.SetLogCtx(r.Context())
+
 	pageToken := ""
 	if params.PageToken != nil {
 		pageToken = *params.PageToken
@@ -21,9 +25,11 @@ func (api API) V1ListArticles(w http.ResponseWriter, r *http.Request, params ope
 		MaxPageSize: uint32(params.MaxPageSize),
 	}
 
-	res, err := api.connect.Article.List(r.Context(), connect.NewRequest(req))
+	res, err := api.connect.Article.List(ctx, connect.NewRequest(req))
 	if err != nil {
-		w.WriteHeader(http.StatusServiceUnavailable)
+		log.GetLogCtx(ctx).Error("failed to list articles", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte(err.Error()))
 
 		return
@@ -50,6 +56,50 @@ func (api API) V1ListArticles(w http.ResponseWriter, r *http.Request, params ope
 	}
 
 	if err := json.NewEncoder(w).Encode(rs); err != nil {
+		log.GetLogCtx(ctx).Error("failed to encode response", log.ErrorField(err))
+
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+}
+
+func (api *API) V1ShareArticle(w http.ResponseWriter, r *http.Request) {
+	ctx := log.SetLogCtx(r.Context())
+
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("%+v", w.Header()))
+
+	key := r.Header.Get("Api-Key")
+	if key != api.key {
+		log.GetLogCtx(ctx).Warn(fmt.Sprintf("invalid api key. api key = %s", key))
+
+		w.WriteHeader(http.StatusUnauthorized)
+		_, _ = w.Write([]byte("unauthorized"))
+
+		return
+	}
+
+	var body openapi.V1ShareArticleRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		log.GetLogCtx(ctx).Error("failed to decode request body", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	req := &articlev1.ShareRequest{
+		Url:         body.Url,
+		Title:       *body.Title,
+		Description: *body.Description,
+		Thumbnail:   *body.Thumbnail,
+	}
+
+	res, err := api.connect.Article.Share(ctx, connect.NewRequest(req))
+	if err != nil {
+		w.WriteHeader(api.HandleConnectError(ctx, err))
+
+		return
+	}
+
+	log.GetLogCtx(ctx).Debug(fmt.Sprintf("article shared id = %s", res.Msg.Article.Id))
 }

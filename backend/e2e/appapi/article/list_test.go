@@ -38,7 +38,7 @@ func TestAppAPIE2EArticleList(t *testing.T) {
 
 		res, err := client.Client.V1ListArticles(context.Background(), &openapi.V1ListArticlesParams{
 			PageToken:   nil,
-			MaxPageSize: 20,
+			MaxPageSize: int(size),
 		})
 		if err != nil {
 			t.Fatalf("failed to list article: %s", err)

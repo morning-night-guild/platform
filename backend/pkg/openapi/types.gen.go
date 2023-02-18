@@ -7,6 +7,10 @@ import (
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 )
 
+const (
+	ApiKeyScopes = "apiKey.Scopes"
+)
+
 // Article defines model for Article.
 type Article struct {
 	// Description description
@@ -36,6 +40,21 @@ type ListArticleResponse struct {
 	NextPageToken *string `json:"nextPageToken,omitempty"`
 }
 
+// V1ShareArticleRequest defines model for V1ShareArticleRequest.
+type V1ShareArticleRequest struct {
+	// Description description
+	Description *string `json:"description,omitempty"`
+
+	// Thumbnail サムネイルのURL
+	Thumbnail *string `json:"thumbnail,omitempty"`
+
+	// Title タイトル
+	Title *string `json:"title,omitempty"`
+
+	// Url 記事のURL
+	Url string `json:"url"`
+}
+
 // V1ListArticlesParams defines parameters for V1ListArticles.
 type V1ListArticlesParams struct {
 	// PageToken トークン
@@ -44,3 +63,6 @@ type V1ListArticlesParams struct {
 	// MaxPageSize ページサイズ
 	MaxPageSize int `form:"maxPageSize" json:"maxPageSize"`
 }
+
+// V1ShareArticleJSONRequestBody defines body for V1ShareArticle for application/json ContentType.
+type V1ShareArticleJSONRequestBody = V1ShareArticleRequest

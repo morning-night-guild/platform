@@ -4,6 +4,7 @@
 package openapi
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -13,9 +14,12 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// List articles
+	// 記事一覧
 	// (GET /v1/articles)
 	V1ListArticles(w http.ResponseWriter, r *http.Request, params V1ListArticlesParams)
+	// 記事共有
+	// (POST /v1/articles)
+	V1ShareArticle(w http.ResponseWriter, r *http.Request)
 	// apiヘルスチェック
 	// (GET /v1/health/api)
 	V1HealthAPI(w http.ResponseWriter, r *http.Request)
@@ -67,6 +71,23 @@ func (siw *ServerInterfaceWrapper) V1ListArticles(w http.ResponseWriter, r *http
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.V1ListArticles(w, r, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// V1ShareArticle operation middleware
+func (siw *ServerInterfaceWrapper) V1ShareArticle(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, ApiKeyScopes, []string{""})
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1ShareArticle(w, r)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -221,6 +242,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/articles", wrapper.V1ListArticles)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/articles", wrapper.V1ShareArticle)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/health/api", wrapper.V1HealthAPI)

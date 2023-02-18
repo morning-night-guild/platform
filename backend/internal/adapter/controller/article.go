@@ -12,19 +12,19 @@ import (
 
 // Article.
 type Article struct {
-	key   string
+	ctl   *Controller
 	share port.ShareArticle
 	list  port.ListArticle
 }
 
 // NewArticle 記事のコントローラを新規作成する関数.
 func NewArticle(
-	key string,
+	ctl *Controller,
 	share port.ShareArticle,
 	list port.ListArticle,
 ) *Article {
 	return &Article{
-		key:   key,
+		ctl:   ctl,
 		share: share,
 		list:  list,
 	}
@@ -35,28 +35,24 @@ func (a *Article) Share(
 	ctx context.Context,
 	req *connect.Request[articlev1.ShareRequest],
 ) (*connect.Response[articlev1.ShareResponse], error) {
-	if req.Header().Get("X-Api-Key") != a.key {
-		return nil, ErrUnauthorized
-	}
-
 	url, err := article.NewURL(req.Msg.Url)
 	if err != nil {
-		return nil, handleError(ctx, err)
+		return nil, a.ctl.HandleConnectError(ctx, err)
 	}
 
 	title, err := article.NewTitle(req.Msg.Title)
 	if err != nil {
-		return nil, handleError(ctx, err)
+		return nil, a.ctl.HandleConnectError(ctx, err)
 	}
 
 	description, err := article.NewDescription(req.Msg.Description)
 	if err != nil {
-		return nil, handleError(ctx, err)
+		return nil, a.ctl.HandleConnectError(ctx, err)
 	}
 
 	thumbnail, err := article.NewThumbnail(req.Msg.Thumbnail)
 	if err != nil {
-		return nil, handleError(ctx, err)
+		return nil, a.ctl.HandleConnectError(ctx, err)
 	}
 
 	input := port.ShareArticleInput{
@@ -68,7 +64,7 @@ func (a *Article) Share(
 
 	output, err := a.share.Execute(ctx, input)
 	if err != nil {
-		return nil, handleError(ctx, err)
+		return nil, a.ctl.HandleConnectError(ctx, err)
 	}
 
 	return connect.NewResponse(&articlev1.ShareResponse{
@@ -94,7 +90,7 @@ func (a *Article) List(
 
 	size, err := repository.NewSize(int(req.Msg.MaxPageSize))
 	if err != nil {
-		return nil, handleError(ctx, err)
+		return nil, a.ctl.HandleConnectError(ctx, err)
 	}
 
 	input := port.ListArticleInput{
@@ -104,7 +100,7 @@ func (a *Article) List(
 
 	output, err := a.list.Execute(ctx, input)
 	if err != nil {
-		return nil, handleError(ctx, err)
+		return nil, a.ctl.HandleConnectError(ctx, err)
 	}
 
 	result := make([]*articlev1.Article, len(output.Articles))
