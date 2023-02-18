@@ -1,15 +1,11 @@
 import useSWR, { useSWRConfig } from 'swr';
 
-import { createPromiseClient } from '@bufbuild/connect-web';
-import { ArticleService } from '../api/connect/proto/article/v1/article_connectweb';
-import type { Article } from '../api/connect/proto/article/v1/article_pb';
-import { transport } from './transport';
+import type { V1ListArticlesRequest } from '../openapi/apis/ArticleApi';
+import type { Article } from '../openapi/models';
+import { client } from './client';
 
 // 1回に取得する記事の数
 const articlesPerPage = 20;
-
-// クライアント作成
-const client = createPromiseClient(ArticleService, transport);
 
 type ArticlesState = {
     data: Article[];
@@ -24,18 +20,17 @@ const articlesState: ArticlesState = {
 export const useListArticles = () => {
     const key = `/api/v1/articles`;
 
-    const request = {
+    const request: V1ListArticlesRequest = {
         maxPageSize: articlesPerPage,
-        pageToken: articlesState.currentIndex,
+        pageToken: articlesState.currentIndex ?? '',
     };
 
-    const fetcher = async () => client.list(request);
-
+    const fetcher = async () => client.v1ListArticles(request);
     const { data } = useSWR(key, fetcher);
 
     const fetchedArticles = data?.articles ?? [];
-    const existIds = articlesState.data.map(d => d.id);
-    const additionalArticles = fetchedArticles.filter(d => existIds.indexOf(d.id) < 0);
+    const existIds = new Set(articlesState.data.map((d) => d.id));
+    const additionalArticles = fetchedArticles.filter((d) => !existIds.has(d.id));
     articlesState.data.push(...additionalArticles);
 
     // NextPageTokenが空の場合、もうこれ以上データがないのでcurrentIndexを更新しない
