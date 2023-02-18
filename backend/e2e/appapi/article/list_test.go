@@ -14,7 +14,7 @@ import (
 	"github.com/morning-night-guild/platform/pkg/openapi"
 )
 
-func TestAPIE2EArticleList(t *testing.T) {
+func TestAppAPIE2EArticleList(t *testing.T) {
 	t.Parallel()
 
 	size := uint32(5)

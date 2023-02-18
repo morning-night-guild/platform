@@ -12,7 +12,7 @@ import (
 	"github.com/morning-night-guild/platform/e2e/helper"
 )
 
-func TestAPPAPIE2EHealthCheck(t *testing.T) {
+func TestAppAPIE2EHealthCheck(t *testing.T) {
 	t.Parallel()
 
 	url := helper.GetAppAPIEndpoint(t)
