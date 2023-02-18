@@ -25,8 +25,9 @@ export function Article() {
                                     <GridItem key={article.id} colSpan={1}>
                                         <ArticleCard
                                             thumbnailURL={article.thumbnail}
-                                            url={article.url}
-                                            title={article.title}
+                                            // TODO 必ず存在するプロパティはopenapi.yamlでrequiredにする
+                                            url={article.url ?? ''}
+                                            title={article.title ?? ''}
                                         />
                                     </GridItem>
                                 );

@@ -17,11 +17,6 @@ jobs:
       - name: Install
         working-directory: ./frontend
         run: yarn install
-      - name: Generate connect code
-        working-directory: ./api
-        run: |
-          npm install
-          buf generate --template buf.frontend.gen.yaml
       - name: Build
         working-directory: ./frontend
         run: yarn build

@@ -8,7 +8,7 @@
         "build": "tsc && vite build",
         "preview": "vite preview",
         "xo": "xo --fix",
-        "setup": "echo VITE_SERVICE_ENDPOINT=http://localhost:8080 > .env.local"
+        "setup": "echo VITE_SERVICE_ENDPOINT=${VITE_SERVICE_ENDPOINT} > .env.local"
     },
     "dependencies": {
         "@bufbuild/connect-web": "0.7.0",
@@ -45,7 +45,7 @@
         },
         "ignores": [
             "src/vite-env.d.ts",
-            "src/api/*"
+            "src/openapi/*"
         ],
         "prettier": true
     }
