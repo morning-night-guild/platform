@@ -24,7 +24,7 @@ func TestControllerHandleConnectError(t *testing.T) {
 		wantCode connect.Code
 	}{
 		{
-			name: "",
+			name: "URLエラーがInvalidArgumentに変換できる",
 			args: args{
 				ctx: context.Background(),
 				err: me.NewURLError(""),
@@ -32,7 +32,7 @@ func TestControllerHandleConnectError(t *testing.T) {
 			wantCode: connect.CodeInvalidArgument,
 		},
 		{
-			name: "",
+			name: "ValidationエラーがInvalidArgumentに変換できる",
 			args: args{
 				ctx: context.Background(),
 				err: me.NewValidationError(""),
@@ -40,7 +40,7 @@ func TestControllerHandleConnectError(t *testing.T) {
 			wantCode: connect.CodeInvalidArgument,
 		},
 		{
-			name: "",
+			name: "未知のエラーがInternalに変換できる",
 			args: args{
 				ctx: context.Background(),
 				err: errors.New("unknown error"),
