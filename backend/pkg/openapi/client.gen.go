@@ -91,11 +91,11 @@ type ClientInterface interface {
 	// V1ListArticles request
 	V1ListArticles(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// V1HealthAPI request
+	V1HealthAPI(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// V1HealthCore request
 	V1HealthCore(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// V1HealthGateway request
-	V1HealthGateway(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) V1ListArticles(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -110,8 +110,8 @@ func (c *Client) V1ListArticles(ctx context.Context, params *V1ListArticlesParam
 	return c.Client.Do(req)
 }
 
-func (c *Client) V1HealthCore(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewV1HealthCoreRequest(c.Server)
+func (c *Client) V1HealthAPI(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewV1HealthAPIRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -122,8 +122,8 @@ func (c *Client) V1HealthCore(ctx context.Context, reqEditors ...RequestEditorFn
 	return c.Client.Do(req)
 }
 
-func (c *Client) V1HealthGateway(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewV1HealthGatewayRequest(c.Server)
+func (c *Client) V1HealthCore(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewV1HealthCoreRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -193,8 +193,8 @@ func NewV1ListArticlesRequest(server string, params *V1ListArticlesParams) (*htt
 	return req, nil
 }
 
-// NewV1HealthCoreRequest generates requests for V1HealthCore
-func NewV1HealthCoreRequest(server string) (*http.Request, error) {
+// NewV1HealthAPIRequest generates requests for V1HealthAPI
+func NewV1HealthAPIRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -202,7 +202,7 @@ func NewV1HealthCoreRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/health/core")
+	operationPath := fmt.Sprintf("/v1/health/api")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -220,8 +220,8 @@ func NewV1HealthCoreRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewV1HealthGatewayRequest generates requests for V1HealthGateway
-func NewV1HealthGatewayRequest(server string) (*http.Request, error) {
+// NewV1HealthCoreRequest generates requests for V1HealthCore
+func NewV1HealthCoreRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -229,7 +229,7 @@ func NewV1HealthGatewayRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/health/gateway")
+	operationPath := fmt.Sprintf("/v1/health/core")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -293,11 +293,11 @@ type ClientWithResponsesInterface interface {
 	// V1ListArticles request
 	V1ListArticlesWithResponse(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*V1ListArticlesResponse, error)
 
+	// V1HealthAPI request
+	V1HealthAPIWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1HealthAPIResponse, error)
+
 	// V1HealthCore request
 	V1HealthCoreWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1HealthCoreResponse, error)
-
-	// V1HealthGateway request
-	V1HealthGatewayWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1HealthGatewayResponse, error)
 }
 
 type V1ListArticlesResponse struct {
@@ -316,6 +316,27 @@ func (r V1ListArticlesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r V1ListArticlesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type V1HealthAPIResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r V1HealthAPIResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r V1HealthAPIResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -343,27 +364,6 @@ func (r V1HealthCoreResponse) StatusCode() int {
 	return 0
 }
 
-type V1HealthGatewayResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r V1HealthGatewayResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r V1HealthGatewayResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 // V1ListArticlesWithResponse request returning *V1ListArticlesResponse
 func (c *ClientWithResponses) V1ListArticlesWithResponse(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*V1ListArticlesResponse, error) {
 	rsp, err := c.V1ListArticles(ctx, params, reqEditors...)
@@ -373,6 +373,15 @@ func (c *ClientWithResponses) V1ListArticlesWithResponse(ctx context.Context, pa
 	return ParseV1ListArticlesResponse(rsp)
 }
 
+// V1HealthAPIWithResponse request returning *V1HealthAPIResponse
+func (c *ClientWithResponses) V1HealthAPIWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1HealthAPIResponse, error) {
+	rsp, err := c.V1HealthAPI(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseV1HealthAPIResponse(rsp)
+}
+
 // V1HealthCoreWithResponse request returning *V1HealthCoreResponse
 func (c *ClientWithResponses) V1HealthCoreWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1HealthCoreResponse, error) {
 	rsp, err := c.V1HealthCore(ctx, reqEditors...)
@@ -380,15 +389,6 @@ func (c *ClientWithResponses) V1HealthCoreWithResponse(ctx context.Context, reqE
 		return nil, err
 	}
 	return ParseV1HealthCoreResponse(rsp)
-}
-
-// V1HealthGatewayWithResponse request returning *V1HealthGatewayResponse
-func (c *ClientWithResponses) V1HealthGatewayWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1HealthGatewayResponse, error) {
-	rsp, err := c.V1HealthGateway(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseV1HealthGatewayResponse(rsp)
 }
 
 // ParseV1ListArticlesResponse parses an HTTP response from a V1ListArticlesWithResponse call
@@ -417,6 +417,22 @@ func ParseV1ListArticlesResponse(rsp *http.Response) (*V1ListArticlesResponse, e
 	return response, nil
 }
 
+// ParseV1HealthAPIResponse parses an HTTP response from a V1HealthAPIWithResponse call
+func ParseV1HealthAPIResponse(rsp *http.Response) (*V1HealthAPIResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &V1HealthAPIResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
 // ParseV1HealthCoreResponse parses an HTTP response from a V1HealthCoreWithResponse call
 func ParseV1HealthCoreResponse(rsp *http.Response) (*V1HealthCoreResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -426,22 +442,6 @@ func ParseV1HealthCoreResponse(rsp *http.Response) (*V1HealthCoreResponse, error
 	}
 
 	response := &V1HealthCoreResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseV1HealthGatewayResponse parses an HTTP response from a V1HealthGatewayWithResponse call
-func ParseV1HealthGatewayResponse(rsp *http.Response) (*V1HealthGatewayResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &V1HealthGatewayResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

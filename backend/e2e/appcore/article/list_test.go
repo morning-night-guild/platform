@@ -16,21 +16,29 @@ import (
 
 const articleCount = uint32(5)
 
-func TestE2EArticleList(t *testing.T) {
+func TestAppCoreE2EArticleList(t *testing.T) {
 	t.Parallel()
 
-	helper.BulkInsert(t, int(articleCount+5))
-
-	url := helper.GetEndpoint(t)
+	url := helper.GetAppCoreEndpoint(t)
 
 	t.Run("記事が一覧できる", func(t *testing.T) {
 		t.Parallel()
+
+		db := helper.NewDatabase(t, helper.GetDSN(t))
+
+		ids := helper.GenerateIDs(t, int(articleCount))
+
+		defer db.Close()
+
+		defer db.BulkDeleteArticles(ids)
+
+		db.BulkInsertArticles(ids)
 
 		hc := &http.Client{
 			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
 		}
 
-		client := helper.NewClient(t, hc, url)
+		client := helper.NewConnectClient(t, hc, url)
 
 		req := &articlev1.ListRequest{
 			MaxPageSize: articleCount,

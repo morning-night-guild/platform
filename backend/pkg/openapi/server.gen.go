@@ -16,12 +16,12 @@ type ServerInterface interface {
 	// List articles
 	// (GET /v1/articles)
 	V1ListArticles(w http.ResponseWriter, r *http.Request, params V1ListArticlesParams)
+	// apiヘルスチェック
+	// (GET /v1/health/api)
+	V1HealthAPI(w http.ResponseWriter, r *http.Request)
 	// coreヘルスチェック
 	// (GET /v1/health/core)
 	V1HealthCore(w http.ResponseWriter, r *http.Request)
-	// gatewayヘルスチェック
-	// (GET /v1/health/gateway)
-	V1HealthGateway(w http.ResponseWriter, r *http.Request)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -76,12 +76,12 @@ func (siw *ServerInterfaceWrapper) V1ListArticles(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// V1HealthCore operation middleware
-func (siw *ServerInterfaceWrapper) V1HealthCore(w http.ResponseWriter, r *http.Request) {
+// V1HealthAPI operation middleware
+func (siw *ServerInterfaceWrapper) V1HealthAPI(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.V1HealthCore(w, r)
+		siw.Handler.V1HealthAPI(w, r)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -91,12 +91,12 @@ func (siw *ServerInterfaceWrapper) V1HealthCore(w http.ResponseWriter, r *http.R
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// V1HealthGateway operation middleware
-func (siw *ServerInterfaceWrapper) V1HealthGateway(w http.ResponseWriter, r *http.Request) {
+// V1HealthCore operation middleware
+func (siw *ServerInterfaceWrapper) V1HealthCore(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.V1HealthGateway(w, r)
+		siw.Handler.V1HealthCore(w, r)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -223,10 +223,10 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/v1/articles", wrapper.V1ListArticles)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/v1/health/core", wrapper.V1HealthCore)
+		r.Get(options.BaseURL+"/v1/health/api", wrapper.V1HealthAPI)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/v1/health/gateway", wrapper.V1HealthGateway)
+		r.Get(options.BaseURL+"/v1/health/core", wrapper.V1HealthCore)
 	})
 
 	return r

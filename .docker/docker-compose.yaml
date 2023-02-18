@@ -1,6 +1,6 @@
 services:
-  db:
-    container_name: ${APP_NAME}-db
+  postgres:
+    container_name: ${APP_NAME}-postgres
     image: postgres:${POSTGRES_VERSION}-alpine
     ports:
       - ${DB_PORT}:5432
@@ -21,13 +21,57 @@ services:
       args:
         GOLANG_VERSION: ${GOLANG_VERSION}
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/postgres?sslmode=disable
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
     volumes:
       - ./migrate/go/pkg:/go/pkg
       - ../backend:/app
     restart: always
     depends_on:
-      - db
+      - postgres
+  app-api:
+    container_name: ${APP_NAME}-app-api
+    build:
+      context: .
+      dockerfile: appapi/Dockerfile
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
+    ports:
+      - ${APP_API_PORT}:8080
+    environment:
+      ENV: ${ENV}
+      API_KEY: local
+      APP_CORE_URL: http://app-core:8080
+      NEWRELIC_APP_NAME: ${NEWRELIC_APP_NAME}
+      NEWRELIC_LICENSE: ${NEWRELIC_LICENSE}
+      CORS_ALLOW_ORIGINS: http://localhost:5173
+      CORS_DEBUG_ENABLE: true
+    volumes:
+      - ./appapi/go/pkg:/go/pkg
+      - ../backend:/app
+    restart: always
+    depends_on:
+      - app-core
+  app-core:
+    container_name: ${APP_NAME}-app-core
+    build:
+      context: .
+      dockerfile: appcore/Dockerfile
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
+    ports:
+      - ${APP_CORE_PORT}:8080
+    environment:
+      ENV: ${ENV}
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
+      API_KEY: local
+      NEWRELIC_APP_NAME: ${NEWRELIC_APP_NAME}
+      NEWRELIC_LICENSE: ${NEWRELIC_LICENSE}
+    volumes:
+      - ./appcore/go/pkg:/go/pkg
+      - ../backend:/app
+    restart: always
+    depends_on:
+      - postgres
   core:
     container_name: ${APP_NAME}-core
     build:
@@ -38,7 +82,7 @@ services:
     ports:
       - ${APP_PORT}:8080
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/postgres?sslmode=disable
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
       API_KEY: local
       ENV: ${ENV}
       NEWRELIC_APP_NAME: ${NEWRELIC_APP_NAME}
@@ -50,7 +94,7 @@ services:
       - ../backend:/app
     restart: always
     depends_on:
-      - db
+      - postgres
   web:
     container_name: ${APP_NAME}-web
     build:
