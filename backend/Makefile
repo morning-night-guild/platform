@@ -32,6 +32,10 @@ renovate: ## Update modules with dependencies.
 compile: ## Compile code.
 	@go build -v ./... && go clean
 
+.PHONY: update
+update:
+	@go mod tidy -go=${version}
+
 .PHONY: test
 test: ## Run unit test. If you want to invalidate the cache, please specify an argument like `make test c=c`.
 	@$(call _test,${c})
